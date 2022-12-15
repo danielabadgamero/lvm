@@ -36,7 +36,7 @@ namespace Lightning
 	int* addr{ RAM };
 	bool running{ true };
 
-	void loadFileSystem()
+	void loadFilesystem()
 	{
 		if (std::filesystem::exists("fs"))
 		{
@@ -48,11 +48,36 @@ namespace Lightning
 		}
 	}
 
-	void saveFileSystem()
+	void writeFilesystem(Dir* dir)
+	{
+		fs_out.write(dir->name.c_str(), dir->name.size());
+		fs_out.write("/", 1);
+		for (int i{}; i != dir->subDirs.size(); i++)
+		{
+			fs_out.write(dir->subDirs[i]->name.c_str(), dir->subDirs[i]->name.size());
+			if (i != dir->subDirs.size() - 1)
+				fs_out.write(",", 1);
+		}
+		fs_out.write(";", 1);
+		for (int i{}; i != dir->files.size(); i++)
+		{
+			fs_out.write(dir->files[i].name.c_str(), dir->files[i].name.size());
+			if (i != dir->files.size() - 1)
+				fs_out.write(",", 1);
+		}
+		fs_out.write(":", 1);
+
+		for (int i{}; i != dir->subDirs.size(); i++)
+			writeFilesystem(dir->subDirs.at(i));
+	}
+
+	void saveFilesystem()
 	{
 		if (std::filesystem::exists("fs"))
 			std::remove("fs");
 		fs_out.open("fs", std::ios::binary);
+
+		writeFilesystem(&FileSystem);
 	}
 
 	void printPath()
@@ -81,7 +106,7 @@ namespace Lightning
 		if (cmd == "exit")
 		{
 			running = false;
-			saveFileSystem();
+			saveFilesystem();
 		}
 		else if (cmd == "help")
 		{

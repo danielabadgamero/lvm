@@ -5,7 +5,7 @@
 
 int main()
 {
-	Lightning::loadFileSystem();
+	Lightning::loadFilesystem();
 
 	std::string command{};
 
