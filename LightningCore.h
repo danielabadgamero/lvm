@@ -13,7 +13,7 @@ namespace Lightning
 	{
 		HALT,
 	};
-
+	
 	struct Dir
 	{
 		struct File
@@ -33,6 +33,7 @@ namespace Lightning
 	std::ofstream fs_out{};
 	Dir FileSystem{};
 	std::vector<Dir*> path{ &FileSystem };
+	Dir::File* targetFile{ nullptr };
 
 	int* addr{ RAM };
 	bool running{ true };
@@ -90,8 +91,18 @@ namespace Lightning
 				{
 					nextContent = false;
 					std::string content{};
+					std::streampos pos{ fs_in.tellg() };
 					std::getline(fs_in, content);
-					path.back()->files.back().content = content;
+					content += '\n';
+					while (content.front() != '/' && !fs_in.eof())
+					{
+						pos = fs_in.tellg();
+						path.back()->files.back().content += content;
+						std::getline(fs_in, content);
+						content += '\n';
+					}
+					fs_in.seekg(pos);
+					path.back()->files.back().content.pop_back();
 					path.clear();
 					path.push_back(&FileSystem);
 				}
@@ -141,6 +152,8 @@ namespace Lightning
 	{
 		for (Dir* dir : path)
 			std::cout << dir->name << '/';
+		if (targetFile != nullptr)
+			std::cout << targetFile->name;
 	}
 
 	void printUnknown(std::string* cmd, std::string* arg)
@@ -215,9 +228,14 @@ namespace Lightning
 		{
 			if (!arg.empty())
 			{
+				targetFile = nullptr;
 				Dir* target{ nullptr };
 				if (arg == ".." && path.size() > 1)
+				{
 					path.pop_back();
+					if (path.size() == 1)
+						target = &FileSystem;
+				}
 				else
 				{
 					for (std::vector<Dir*>::iterator i{ path.back()->subDirs.begin() }; i != path.back()->subDirs.end(); i++)
@@ -271,6 +289,73 @@ namespace Lightning
 			}
 			else
 				printUnknown(&cmd, &arg);
+		}
+		else if (cmd == "print")
+		{
+			if (!arg.empty() || (targetFile != nullptr))
+			{
+				Dir::File* file{ targetFile };
+				for (std::vector<Dir::File>::iterator f{ path.back()->files.begin() }; f != path.back()->files.end(); f++)
+					if (f->name == arg)
+					{
+						file = &(*f);
+						break;
+					}
+				if (file != nullptr)
+				{
+					int line{ 1 };
+					std::cout << line << "   ";
+					for (std::string::iterator c{ file->content.begin() }; c != file->content.end(); c++)
+						if (*c == '\\')
+						{
+							line++;
+							c++;
+							std::cout << '\n' << line;
+							if (line < 10)
+								std::cout << "   ";
+							else if (line < 100)
+								std::cout << "  ";
+							else
+								std::cout << ' ';
+						}
+						else
+							std::cout << *c;
+					std::cout << '\n';
+				}
+				else
+					std::cout << "Error: Couldn't find file with name \"" << arg << "\"\n";
+			}
+			else
+				printUnknown(&cmd, &arg);
+		}
+		else if (cmd == "open")
+		{
+			if (!arg.empty())
+			{
+				Dir::File* file{ nullptr };
+				for (std::vector<Dir::File>::iterator f{ path.back()->files.begin() }; f != path.back()->files.end(); f++)
+					if (f->name == arg)
+					{
+						file = &(*f);
+						break;
+					}
+				if (file != nullptr)
+				{
+					targetFile = file;
+				}
+				else
+					std::cout << "Error: Couldn't find file with name \"" << arg << "\"\n";
+			}
+			else
+				printUnknown(&cmd, &arg);
+		}
+		else if (cmd.front() == '/' && (targetFile != nullptr))
+		{
+			cmd.erase(cmd.begin());
+			targetFile->content.append(cmd + " " + arg + "\n");
+		}
+		else if (cmd.front() == '-' && (targetFile != nullptr))
+		{
 		}
 		else
 			printUnknown(&cmd, &arg);
