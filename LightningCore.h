@@ -385,11 +385,11 @@ namespace Lightning
 					lines.push_back("");
 				else
 					lines.back().push_back(c);
-					
+			
 			int numLine{ std::stoi(cmd.substr(1)) - 1 };
 			std::vector<std::string>::iterator line{ lines.begin() + numLine };
-			lines.erase(line);
-
+			lines.insert(line, arg);
+			
 			targetFile->content.clear();
 			for (std::string str : lines)
 				targetFile->content.append(str + '\n');
