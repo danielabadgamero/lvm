@@ -45,7 +45,7 @@ namespace Lightning
 			fs_in.open("fs", std::ios::binary);
 			std::vector<std::string> dirPaths{};
 			bool nextContent{ false };
-			while (!fs_in.eof())
+			while (!fs_in.eof() && !fs_in.fail())
 			{
 				if (!nextContent)
 				{
@@ -306,10 +306,9 @@ namespace Lightning
 					int line{ 1 };
 					std::cout << line << "   ";
 					for (std::string::iterator c{ file->content.begin() }; c != file->content.end(); c++)
-						if (*c == '\\')
+						if (*c == '\n' && (c + 1 != file->content.end()))
 						{
 							line++;
-							c++;
 							std::cout << '\n' << line;
 							if (line < 10)
 								std::cout << "   ";
@@ -356,6 +355,45 @@ namespace Lightning
 		}
 		else if (cmd.front() == '-' && (targetFile != nullptr))
 		{
+			std::vector<std::string> lines{""};
+			for (char c : targetFile->content)
+				if (c == '\n')
+					lines.push_back("");
+				else
+					lines.back().push_back(c);
+			if (cmd.size() == 1)
+				lines.pop_back();
+			else
+			{
+				int numLine{ std::stoi(cmd.substr(1)) - 1 };
+				std::vector<std::string>::iterator line{ lines.begin() + numLine };
+				lines.erase(line);
+			}
+			targetFile->content.clear();
+			if (lines.size() > 0)
+			{
+				for (std::string str : lines)
+					targetFile->content.append(str + '\n');
+				targetFile->content.pop_back();
+			}
+		}
+		else if (cmd.front() == '+' && (targetFile != nullptr))
+		{
+			std::vector<std::string> lines{ "" };
+			for (char c : targetFile->content)
+				if (c == '\n')
+					lines.push_back("");
+				else
+					lines.back().push_back(c);
+					
+			int numLine{ std::stoi(cmd.substr(1)) - 1 };
+			std::vector<std::string>::iterator line{ lines.begin() + numLine };
+			lines.erase(line);
+
+			targetFile->content.clear();
+			for (std::string str : lines)
+				targetFile->content.append(str + '\n');
+			targetFile->content.pop_back();
 		}
 		else
 			printUnknown(&cmd, &arg);
