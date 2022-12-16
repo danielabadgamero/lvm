@@ -19,6 +19,7 @@ namespace Lightning
 		struct File
 		{
 			std::string name{};
+			std::string content{};
 		};
 
 		std::string name{};
@@ -31,44 +32,40 @@ namespace Lightning
 	std::ifstream fs_in{};
 	std::ofstream fs_out{};
 	Dir FileSystem{};
-	std::vector<Dir*> path{};
+	std::vector<Dir*> path{ &FileSystem };
 
 	int* addr{ RAM };
 	bool running{ true };
 
 	void loadFilesystem()
 	{
-		if (std::filesystem::exists("fs"))
-		{
-			fs_in.open("fs", std::ios::binary);
-		}
-		else
-		{
-			path.push_back(&FileSystem);
-		}
+	}
+
+	std::string getPath()
+	{
+		std::string pathName{};
+		for (Dir* dir : path)
+			pathName.append(dir->name + "/");
+		return pathName;
 	}
 
 	void writeFilesystem(Dir* dir)
 	{
-		fs_out.write(dir->name.c_str(), dir->name.size());
-		fs_out.write("/", 1);
-		for (int i{}; i != dir->subDirs.size(); i++)
+		path.push_back(dir);
+		for (Dir::File file : dir->files)
 		{
-			fs_out.write(dir->subDirs[i]->name.c_str(), dir->subDirs[i]->name.size());
-			if (i != dir->subDirs.size() - 1)
-				fs_out.write(",", 1);
+			std::string name{ getPath() + file.name + "\n" };
+			std::string content{ file.content + "\n" };
+			fs_out.write(name.c_str(), name.size());
+			fs_out.write(content.c_str(), content.size());
 		}
-		fs_out.write(";", 1);
-		for (int i{}; i != dir->files.size(); i++)
+		for (Dir* subDir : dir->subDirs)
 		{
-			fs_out.write(dir->files[i].name.c_str(), dir->files[i].name.size());
-			if (i != dir->files.size() - 1)
-				fs_out.write(",", 1);
+			std::string name{ getPath() + subDir->name + "/\n" };
+			fs_out.write(name.c_str(), name.size());
+			writeFilesystem(subDir);
 		}
-		fs_out.write(":", 1);
-
-		for (int i{}; i != dir->subDirs.size(); i++)
-			writeFilesystem(dir->subDirs.at(i));
+		path.pop_back();
 	}
 
 	void saveFilesystem()
@@ -76,8 +73,10 @@ namespace Lightning
 		if (std::filesystem::exists("fs"))
 			std::remove("fs");
 		fs_out.open("fs", std::ios::binary);
-
+		path.clear();
 		writeFilesystem(&FileSystem);
+
+		fs_out.close();
 	}
 
 	void printPath()
