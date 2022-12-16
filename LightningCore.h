@@ -271,7 +271,13 @@ namespace Lightning
 						break;
 					}
 				if (valid)
+				{
 					path.back()->files.push_back({ arg });
+					std::sort(path.back()->files.begin(), path.back()->files.end(), [&](Dir::File A, Dir::File B)
+						{
+							return A.name < B.name;
+						});
+				}
 			}
 			else
 				printUnknown(&cmd, &arg);
@@ -306,7 +312,7 @@ namespace Lightning
 					int line{ 1 };
 					std::cout << line << "   ";
 					for (std::string::iterator c{ file->content.begin() }; c != file->content.end(); c++)
-						if (*c == '\n' && (c + 1 != file->content.end()))
+						if (*c == '\n')
 						{
 							line++;
 							std::cout << '\n' << line;
