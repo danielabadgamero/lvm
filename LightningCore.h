@@ -6,12 +6,21 @@
 #include <fstream>
 #include <filesystem>
 #include <algorithm>
+#include <map>
+
+#include "LightningCMD.h"
 
 namespace Lightning
 {
 	enum class OP
 	{
 		HALT,
+	};
+
+	enum class MODE
+	{
+		CMD,
+		FILE,
 	};
 	
 	struct Dir
@@ -34,6 +43,7 @@ namespace Lightning
 	Dir FileSystem{};
 	std::vector<Dir*> path{ &FileSystem };
 	Dir::File* targetFile{ nullptr };
+	MODE mode{ MODE::CMD };
 
 	int* addr{ RAM };
 	bool running{ true };
@@ -156,204 +166,50 @@ namespace Lightning
 			std::cout << targetFile->name;
 	}
 
-	void printUnknown(std::string* cmd, std::string* arg)
+	void handleCommand(std::string* command, std::map<std::string, std::string>* arguments)
 	{
-		std::cout << "\n\rUnknown command: \"" << *cmd << ' ' << *arg <<
-			"\". Please type \"help all\" to see a list of all available commands, or \"help <command>\" to see the usage of a specific command.\n\n";
-	}
+		switch (mode)
+		{
+		case MODE::CMD:
+			if (*command == "exit")
+				CMD::exit();
 
-	void handleCommand(std::string* command)
-	{
-		int argSep{ static_cast<int>(command->find(' ')) };
-		std::string cmd{ *command };
-		std::string arg{};
-		if (argSep >= 0)
-		{
-			arg = command->substr(argSep + 1);
-			cmd = command->substr(0, argSep);
+			else if (*command == "help")
+				CMD::help(arguments);
+
+			else if (*command == "mkdir")
+				CMD::mkdir(arguments);
+
+			else if (*command == "rmdir")
+				CMD::rmdir(arguments);
+
+			else if (*command == "cd")
+				CMD::cd(arguments);
+
+			else if (*command == "ls")
+				CMD::ls();
+
+			else if (*command == "touch")
+				CMD::touch(arguments);
+
+			else if (*command == "rm")
+				CMD::rm(arguments);
+
+			else if (*command == "print")
+				CMD::print(arguments);
+
+			else if (*command == "open")
+				CMD::open(arguments);
+
+			else
+				std::cout << "Command not found.\n";
+
+			break;
+
+		case MODE::FILE:
+			break;
 		}
 
-		if (cmd == "exit")
-		{
-			running = false;
-			saveFilesystem();
-		}
-		else if (cmd == "help")
-		{
-			if (arg == "all")
-				std::cout << "\n\rhelp <command>: \tthis command.\n" <<
-				"exit: \t\t\texit from the VM and terminate all processes.\n\n";
-			else
-				printUnknown(&cmd, &arg);
-		}
-		else if (cmd == "mkdir")
-		{
-			if (!arg.empty())
-			{
-				bool valid{ true };
-				for (Dir* subDir : path.back()->subDirs)
-					if (subDir->name == arg)
-					{
-						std::cout << "Could not create directory \"" << arg << "\": directory already exists.\n";
-						valid = false;
-						break;
-					}
-				if (valid)
-				{
-					path.back()->subDirs.push_back(new Dir{ arg });
-					std::sort(path.back()->subDirs.begin(), path.back()->subDirs.end(), [&](Dir* A, Dir* B)
-						{
-							return A->name < B->name;
-						});
-				}
-			}
-			else
-				printUnknown(&cmd, &arg);
-		}
-		else if (cmd == "rmdir")
-		{
-			if (!arg.empty())
-			{
-				for (std::vector<Dir*>::iterator dir{ path.back()->subDirs.begin() }; dir != path.back()->subDirs.end(); dir++)
-					if ((*dir)->name == arg)
-					{
-						path.back()->subDirs.erase(dir);
-						break;
-					}
-			}
-			else
-				printUnknown(&cmd, &arg);
-		}
-		else if (cmd == "cd")
-		{
-			if (!arg.empty())
-			{
-				targetFile = nullptr;
-				Dir* target{ nullptr };
-				if (arg == ".." && path.size() > 1)
-				{
-					path.pop_back();
-					if (path.size() == 1)
-						target = &FileSystem;
-				}
-				else
-				{
-					for (std::vector<Dir*>::iterator i{ path.back()->subDirs.begin() }; i != path.back()->subDirs.end(); i++)
-						if ((*i)->name == arg)
-						{
-							target = *i;
-							path.push_back(target);
-							break;
-						}
-					if (target == nullptr)
-						std::cout << "Error: Directory name not found.\n";
-				}
-			}
-			else
-				printUnknown(&cmd, &arg);
-		}
-		else if (cmd == "ls")
-		{
-			for (Dir* subDir : path.back()->subDirs)
-				std::cout << "Dir: " << subDir->name << '\n';
-			for (Dir::File file : path.back()->files)
-				std::cout << "File: " << file.name << '\n';
-		}
-		else if (cmd == "touch")
-		{
-			if (!arg.empty())
-			{
-				bool valid{ true };
-				for (Dir::File file : path.back()->files)
-					if (file.name == arg)
-					{
-						valid = false;
-						break;
-					}
-				if (valid)
-				{
-					path.back()->files.push_back({ arg });
-					std::sort(path.back()->files.begin(), path.back()->files.end(), [&](Dir::File A, Dir::File B)
-						{
-							return A.name < B.name;
-						});
-				}
-			}
-			else
-				printUnknown(&cmd, &arg);
-		}
-		else if (cmd == "rm")
-		{
-			if (!arg.empty())
-			{
-				for (std::vector<Dir::File>::iterator file{ path.back()->files.begin() }; file != path.back()->files.end(); file++)
-					if (file->name == arg)
-					{
-						path.back()->files.erase(file);
-						break;
-					}
-			}
-			else
-				printUnknown(&cmd, &arg);
-		}
-		else if (cmd == "print")
-		{
-			if (!arg.empty() || (targetFile != nullptr))
-			{
-				Dir::File* file{ targetFile };
-				for (std::vector<Dir::File>::iterator f{ path.back()->files.begin() }; f != path.back()->files.end(); f++)
-					if (f->name == arg)
-					{
-						file = &(*f);
-						break;
-					}
-				if (file != nullptr)
-				{
-					int line{ 1 };
-					std::cout << line << "   ";
-					for (std::string::iterator c{ file->content.begin() }; c != file->content.end(); c++)
-						if (*c == '\n')
-						{
-							line++;
-							std::cout << '\n' << line;
-							if (line < 10)
-								std::cout << "   ";
-							else if (line < 100)
-								std::cout << "  ";
-							else
-								std::cout << ' ';
-						}
-						else
-							std::cout << *c;
-					std::cout << '\n';
-				}
-				else
-					std::cout << "Error: Couldn't find file with name \"" << arg << "\"\n";
-			}
-			else
-				printUnknown(&cmd, &arg);
-		}
-		else if (cmd == "open")
-		{
-			if (!arg.empty())
-			{
-				Dir::File* file{ nullptr };
-				for (std::vector<Dir::File>::iterator f{ path.back()->files.begin() }; f != path.back()->files.end(); f++)
-					if (f->name == arg)
-					{
-						file = &(*f);
-						break;
-					}
-				if (file != nullptr)
-				{
-					targetFile = file;
-				}
-				else
-					std::cout << "Error: Couldn't find file with name \"" << arg << "\"\n";
-			}
-			else
-				printUnknown(&cmd, &arg);
-		}
 		else if (cmd.front() == '/' && (targetFile != nullptr))
 		{
 			cmd.erase(cmd.begin());
