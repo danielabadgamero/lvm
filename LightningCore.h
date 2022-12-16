@@ -39,6 +39,64 @@ namespace Lightning
 
 	void loadFilesystem()
 	{
+		if (std::filesystem::exists("fs"))
+		{
+			fs_in.open("fs", std::ios::binary);
+			std::vector<std::string> dirPaths{};
+			bool nextContent{ false };
+			while (!fs_in.eof())
+			{
+				if (!nextContent)
+				{
+					dirPaths.push_back("");
+					std::getline(fs_in, dirPaths.back());
+					std::vector<std::string> dirs{};
+					for (char c : dirPaths.back())
+						if (c == '/')
+							dirs.push_back("");
+						else
+							dirs.back().push_back(c);
+					for (std::string targetDir : dirs)
+					{
+						if (!targetDir.empty() && targetDir != dirs.back())
+						{
+							bool exists{ false };
+							for (std::vector<Dir*>::iterator subDir{ path.back()->subDirs.begin() }; subDir != path.back()->subDirs.end(); subDir++)
+								if ((*subDir)->name == targetDir)
+								{
+									exists = true;
+									path.push_back(*subDir);
+									break;
+								}
+							if (!exists)
+							{
+								path.back()->subDirs.push_back(new Dir{ targetDir });
+								path.push_back(path.back()->subDirs.back());
+							}
+						}
+						if (!dirs.back().empty() && targetDir == dirs.back())
+						{
+							path.back()->files.push_back({ targetDir });
+							nextContent = true;
+						}
+					}
+					if (!nextContent)
+					{
+						path.clear();
+						path.push_back(&FileSystem);
+					}
+				}
+				else
+				{
+					nextContent = false;
+					std::string content{};
+					std::getline(fs_in, content);
+					path.back()->files.back().content = content;
+					path.clear();
+					path.push_back(&FileSystem);
+				}
+			}
+		}
 	}
 
 	std::string getPath()
@@ -139,6 +197,20 @@ namespace Lightning
 			else
 				printUnknown(&cmd, &arg);
 		}
+		else if (cmd == "rmdir")
+		{
+			if (!arg.empty())
+			{
+				for (std::vector<Dir*>::iterator dir{ path.back()->subDirs.begin() }; dir != path.back()->subDirs.end(); dir++)
+					if ((*dir)->name == arg)
+					{
+						path.back()->subDirs.erase(dir);
+						break;
+					}
+			}
+			else
+				printUnknown(&cmd, &arg);
+		}
 		else if (cmd == "cd")
 		{
 			if (!arg.empty())
@@ -168,6 +240,37 @@ namespace Lightning
 				std::cout << "Dir: " << subDir->name << '\n';
 			for (Dir::File file : path.back()->files)
 				std::cout << "File: " << file.name << '\n';
+		}
+		else if (cmd == "touch")
+		{
+			if (!arg.empty())
+			{
+				bool valid{ true };
+				for (Dir::File file : path.back()->files)
+					if (file.name == arg)
+					{
+						valid = false;
+						break;
+					}
+				if (valid)
+					path.back()->files.push_back({ arg });
+			}
+			else
+				printUnknown(&cmd, &arg);
+		}
+		else if (cmd == "rm")
+		{
+			if (!arg.empty())
+			{
+				for (std::vector<Dir::File>::iterator file{ path.back()->files.begin() }; file != path.back()->files.end(); file++)
+					if (file->name == arg)
+					{
+						path.back()->files.erase(file);
+						break;
+					}
+			}
+			else
+				printUnknown(&cmd, &arg);
 		}
 		else
 			printUnknown(&cmd, &arg);
