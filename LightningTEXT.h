@@ -3,17 +3,31 @@
 
 #include <map>
 #include <string>
+#include <functional>
 
 #include "LightningCore.h"
-#include "LightningCMD.h"
 
 namespace Lightning
 {
 	namespace TEXT
 	{
-		void addLine(std::map<std::string, std::string>* arguments, std::vector<std::string>* content);
-		void remLine(std::map<std::string, std::string>* arguments, std::vector<std::string>* content);
-		void close();
+		inline struct
+		{
+			char cmd{};
+			int line{};
+			std::string content{};
+		} command;
+
+		inline std::map<char, std::function<void()>> commandFunctions
+		{
+			{ '+', nullptr },
+			{ '-', nullptr },
+			{ '/', nullptr },
+		};
+
+		void loadFunctions();
+		bool parseCommand(std::string* input);
+		void processCommand();
 	}
 }
 

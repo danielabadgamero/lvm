@@ -10,13 +10,17 @@
 
 #include "LightningCore.h"
 
-typedef std::map<std::string, std::string>* Arguments;
-
 namespace Lightning
 {
 	namespace CMD
 	{
-		inline std::map<std::string, std::function<void(Arguments)>> commandFunctions
+		inline struct
+		{
+			std::string cmd{};
+			std::map<std::string, std::string> args{};
+		} command;
+
+		inline std::map<std::string, std::function<void()>> commandFunctions
 		{
 			{ std::string{ "exit" }, nullptr },
 			{ std::string{ "help" }, nullptr },
@@ -33,6 +37,8 @@ namespace Lightning
 		inline std::map<std::string, std::string> commandDescriptions{};
 
 		void loadFunctions();
+		bool parseCommand(std::string* input);
+		void processCommand();
 	}
 }
 

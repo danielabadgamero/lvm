@@ -1,57 +1,59 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <stdexcept>
 
 #include "LightningCore.h"
-#include "LightningCMD.h"
 #include "LightningTEXT.h"
 
-void Lightning::TEXT::addLine(std::map<std::string, std::string>* arguments, std::vector<std::string>* content)
+void Lightning::TEXT::loadFunctions()
 {
-	if (arguments->contains("content"))
-		if (arguments->contains("line"))
+	commandFunctions['+'] = []()
+	{
+		if (!command.content.empty())
+			if (command.line > 0 && command.line < fileContent.size())
+				fileContent.insert(fileContent.begin() + command.line, command.content);
+			else
+				fileContent.push_back(command.content);
+	};
+
+	commandFunctions['-'] = []()
+	{
+		if (command.line > 0 && command.line < fileContent.size())
+			fileContent.erase(fileContent.begin() + command.line);
+		else if (fileContent.size() > 0)
+			fileContent.pop_back();
+	};
+
+	commandFunctions['/'] = []()
+	{
+		mode = Mode::CMD;
+		targetFile = nullptr;
+	};
+}
+
+bool Lightning::TEXT::parseCommand(std::string* input)
+{
+	command.cmd = input->substr(0, 1).front();
+	std::string lineNum{};
+	if (input->size() > 1)
+		if (input->at(1) != ' ')
 		{
-			int line{};
-			try
-			{
-				line = std::stoi(arguments->at("line"));
-			}
-			catch (std::invalid_argument e)
-			{
-				std::cout << e.what() << '\n';
-				return;
-			}
-			if (line >= 1 && line <= content->size())
-				content->insert(content->begin() + std::stoi(arguments->at("line")) - 1, arguments->at("content"));
+			for (int i{ 1 }; i != input->size(); i++)
+				if (input->at(i) == ' ')
+				{
+					command.content.append(input->substr(1 + i));
+					break;
+				}
+				else
+					lineNum.push_back(input->at(i));
+			command.line = std::stoi(lineNum);
 		}
 		else
-			content->push_back(arguments->at("content"));
+			command.content.append(input->substr(2));
+	return true;
 }
 
-void Lightning::TEXT::remLine(std::map<std::string, std::string>* arguments, std::vector<std::string>* content)
+void Lightning::TEXT::processCommand()
 {
-	if (arguments->contains("line"))
-	{
-		int line{};
-		try
-		{
-			line = std::stoi(arguments->at("line")) - 1;
-		}
-		catch (std::invalid_argument e)
-		{
-			std::cout << e.what() << '\n';
-			return;
-		}
-		if (line >= 0 && line < content->size())
-			content->erase(content->begin() + line);
-	}
-	else if (content->size() > 0)
-		content->pop_back();
-}
-
-void Lightning::TEXT::close()
-{
-	mode = Mode::CMD;
-	targetFile = nullptr;
+	commandFunctions[command.cmd]();
 }

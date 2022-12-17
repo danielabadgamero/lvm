@@ -10,41 +10,27 @@
 
 void Lightning::CMD::loadFunctions()
 {
-	commandFunctions.at("exit") = [](Arguments arguments)
+	commandFunctions["exit"] = []()
 	{
-		arguments;
 		running = false;
 		saveFilesystem();
 	};
 
-	commandFunctions["help"] = [](Arguments arguments)
+	commandFunctions["help"] = []()
 	{
-		if (arguments->empty())
-			for (std::map<std::string, std::function<void(Arguments)>>::iterator pair{ commandFunctions.begin() }; pair != commandFunctions.end(); pair++)
-				std::cout << pair->first << '\t' << commandDescriptions.at(pair->first) << '\n';
-		else
-		{
-			std::string command{ arguments->at("command") };
-			if (!command.empty())
-			{
-				// TODO: write specific command syntax
-			}
-		}
+		for (std::map<std::string, std::function<void()>>::iterator pair{ commandFunctions.begin() }; pair != commandFunctions.end(); pair++)
+			std::cout << pair->first << '\t' << commandDescriptions.at(pair->first) << '\n';
 	};
 
-	commandFunctions["mkdir"] = [](Arguments arguments)
+	commandFunctions["mkdir"] = []()
 	{
-		std::string dirName{ arguments->at("name") };
 		bool valid{ true };
 		for (Dir* subDir : path.back()->subDirs)
-			if (subDir->name == dirName)
-			{
+			if (subDir->name == command.args.at("name"))
 				valid = false;
-				break;
-			}
 		if (valid)
 		{
-			path.back()->subDirs.push_back(new Dir{ dirName });
+			path.back()->subDirs.push_back(new Dir{ command.args.at("name") });
 			std::sort(path.back()->subDirs.begin(), path.back()->subDirs.end(), [&](Dir* A, Dir* B)
 				{
 					return A->name < B->name;
@@ -52,56 +38,46 @@ void Lightning::CMD::loadFunctions()
 		}
 	};
 
-	commandFunctions["rmdir"] = [](Arguments arguments)
+	commandFunctions["rmdir"] = []()
 	{
-		std::string dirName{ arguments->at("name") };
-
 		for (std::vector<Dir*>::iterator dir{ path.back()->subDirs.begin() }; dir != path.back()->subDirs.end(); dir++)
-			if ((*dir)->name == dirName)
+			if ((*dir)->name == command.args.at("name"))
 			{
 				path.back()->subDirs.erase(dir);
 				break;
 			}
 	};
 
-	commandFunctions["cd"] = [](Arguments arguments)
+	commandFunctions["cd"] = []()
 	{
-		std::string dirName{ arguments->at("name") };
-
-		if (dirName == ".." && path.size() > 1)
+		if (command.args.at("name") == ".." && path.size() > 1)
 			path.pop_back();
 		else
-			for (std::vector<Dir*>::iterator i{ path.back()->subDirs.begin() }; i != path.back()->subDirs.end(); i++)
-				if ((*i)->name == dirName)
+			for (int i{}; i != path.back()->subDirs.size(); i++)
+				if (path.back()->subDirs.at(i)->name == command.args.at("name"))
 				{
-					path.push_back(*i);
+					path.push_back(path.back()->subDirs.at(i));
 					break;
 				}
 	};
 
-	commandFunctions["ls"] = [](Arguments arguments)
+	commandFunctions["ls"] = []()
 	{
-		arguments;
 		for (Dir* subDir : path.back()->subDirs)
 			std::cout << "Dir: " << subDir->name << '\n';
 		for (Dir::File file : path.back()->files)
 			std::cout << "File: " << file.name << '\n';
 	};
 
-	commandFunctions["touch"] = [](Arguments arguments)
+	commandFunctions["touch"] = []()
 	{
-		std::string fileName{ arguments->at("name") };
-
 		bool valid{ true };
 		for (Dir::File file : path.back()->files)
-			if (file.name == fileName)
-			{
+			if (file.name == command.args.at("name"))
 				valid = false;
-				break;
-			}
 		if (valid)
 		{
-			path.back()->files.push_back({ fileName });
+			path.back()->files.push_back({ command.args.at("name") });
 			std::sort(path.back()->files.begin(), path.back()->files.end(), [&](Dir::File A, Dir::File B)
 				{
 					return A.name < B.name;
@@ -109,30 +85,19 @@ void Lightning::CMD::loadFunctions()
 		}
 	};
 
-	commandFunctions["rm"] = [](Arguments arguments)
+	commandFunctions["rm"] = []()
 	{
-		std::string fileName{ arguments->at("name") };
-
 		for (std::vector<Dir::File>::iterator file{ path.back()->files.begin() }; file != path.back()->files.end(); file++)
-			if (file->name == fileName)
-			{
+			if (file->name == command.args.at("name"))
 				path.back()->files.erase(file);
-				break;
-			}
 	};
 
-	commandFunctions["print"] = [](Arguments arguments)
+	commandFunctions["print"] = []()
 	{
-		std::string fileName{ arguments->at("name") };
-
 		Dir::File* file{ nullptr };
 		for (std::vector<Dir::File>::iterator f{ path.back()->files.begin() }; f != path.back()->files.end(); f++)
-			if (f->name == fileName)
-			{
+			if (f->name == command.args.at("name"))
 				file = &(*f);
-				break;
-			}
-
 		int line{ 1 };
 		std::cout << line << "   ";
 		if (file != nullptr)
@@ -150,25 +115,22 @@ void Lightning::CMD::loadFunctions()
 				}
 				else
 					std::cout << *c;
-
 		std::cout << '\n';
 	};
 
-	commandFunctions["open"] = [](Arguments arguments)
+	commandFunctions["open"] = []()
 	{
 		clearScreen();
-		std::string fileName{ arguments->at("name") };
-
-		Dir::File* file{ nullptr };
 		for (std::vector<Dir::File>::iterator f{ path.back()->files.begin() }; f != path.back()->files.end(); f++)
-			if (f->name == fileName)
-			{
-				file = &(*f);
-				break;
-			}
-
-		targetFile = file;
+			if (f->name == command.args.at("name"))
+				targetFile = &(*f);
 		mode = Mode::TEXT;
+
+		for (char c : targetFile->content)
+			if (c == '\n')
+				fileContent.push_back("");
+			else if (fileContent.size() != 0)
+				fileContent.back().push_back(c);
 	};
 
 	commandDescriptions.emplace("cd", "Change to a directory in the current path.");
@@ -181,4 +143,36 @@ void Lightning::CMD::loadFunctions()
 	commandDescriptions.emplace("rm", "Remove a file in the current path.");
 	commandDescriptions.emplace("rmdir", "Remove a directory in the current path and all of its contents.");
 	commandDescriptions.emplace("touch", "Create a file in the current path.");
+}
+
+bool Lightning::CMD::parseCommand(std::string* input)
+{
+	std::string argument{};
+	command.cmd = *input;
+	command.args.clear();
+	for (int i{}; i != input->size(); i++)
+		if (input->at(i) == ' ')
+			if (command.cmd == *input)
+				command.cmd = input->substr(0, i);
+			else
+			{
+				size_t mark{ argument.find('=') };
+				command.args.emplace(argument.substr(0, mark), argument.substr(mark + 1));
+			}
+		else if (command.cmd != *input)
+			argument.push_back(input->at(i));
+	if (!argument.empty())
+	{
+		int mark{ (int)argument.find('=') };
+		if (mark > 0)
+			command.args.emplace(argument.substr(0, mark), argument.substr(mark + 1));
+		else
+			command.args.emplace("name", argument);
+	}
+	return true;
+}
+
+void Lightning::CMD::processCommand()
+{
+	commandFunctions[command.cmd]();
 }

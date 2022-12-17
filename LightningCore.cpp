@@ -23,6 +23,7 @@ void Lightning::clearScreen()
 void Lightning::loadFilesystem()
 {
 	CMD::loadFunctions();
+	TEXT::loadFunctions();
 	if (std::filesystem::exists("fs"))
 	{
 		fs_in.open("fs", std::ios::binary);
@@ -131,26 +132,6 @@ void Lightning::saveFilesystem()
 	fs_out.close();
 }
 
-std::vector<std::string> Lightning::fileToVector()
-{
-	std::vector<std::string> lines{ "" };
-	for (char c : targetFile->content)
-		if (c == '\n')
-			lines.push_back("");
-		else if (lines.size() != 0)
-			lines.back().push_back(c);
-	return lines;
-}
-
-void Lightning::vectorToFile(std::vector<std::string>* content)
-{
-	targetFile->content.clear();
-	for (std::string str : *content)
-		targetFile->content.append(str + '\n');
-	if (targetFile->content.size() != 0)
-		targetFile->content.pop_back();
-}
-
 void Lightning::printPath()
 {
 	for (Dir* dir : path)
@@ -161,37 +142,11 @@ void Lightning::printPath()
 
 void Lightning::printFileContent()
 {
-	std::map<std::string, std::string> file{};
-	file.emplace("name", targetFile->name);
-	CMD::commandFunctions["print"](&file);
-}
-
-void Lightning::handleCommand(std::string* command, std::map<std::string, std::string>* arguments)
-{
-	switch (mode)
-	{
-	case Mode::CMD:
-		CMD::commandFunctions.at(*command)(arguments);
-		break;
-	case Mode::TEXT:
-		std::vector<std::string> content{ fileToVector() };
-		if (!command->empty())
-			switch (command->front())
-			{
-			case '+':
-				TEXT::addLine(arguments, &content);
-				break;
-			case '-':
-				TEXT::remLine(arguments, &content);
-				break;
-			case '/':
-				TEXT::close();
-				break;
-			default:
-				std::cout << "Command not found.\n";
-			}
-		if (targetFile)
-			vectorToFile(&content);
-		break;
-	}
+	targetFile->content.clear();
+	for (std::string str : fileContent)
+		targetFile->content.append(str + '\n');
+	if (targetFile->content.size() != 0)
+		targetFile->content.pop_back();
+	CMD::command.args.emplace("name", targetFile->name);
+	CMD::commandFunctions["print"]();
 }

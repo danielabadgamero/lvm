@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <map>
 
+typedef std::map<std::string, std::string>* Arguments;
+
 namespace Lightning
 {
 	enum class Opcode
@@ -42,6 +44,7 @@ namespace Lightning
 	inline std::vector<Dir*> path{ &Filesystem };
 	inline Dir::File* targetFile{ nullptr };
 	inline Mode mode{ Mode::CMD };
+	inline std::vector<std::string> fileContent{};
 
 	inline int* addr{ RAM };
 	inline bool running{ true };
@@ -49,12 +52,9 @@ namespace Lightning
 	void loadFilesystem();
 	void writeFilesystem(Dir* dir);
 	void saveFilesystem();
-	std::vector<std::string> fileToVector();
-	void vectorToFile(std::vector<std::string>* content);
 	std::string getPath();
 	void printPath();
 	void printFileContent();
-	void handleCommand(std::string* command, std::map<std::string, std::string>* arguments);
 	void clearScreen();
 }
 
