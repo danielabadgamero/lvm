@@ -16,7 +16,7 @@ int main()
 
 		switch (Lightning::mode)
 		{
-		case Lightning::MODE::CMD:
+		case Lightning::Mode::CMD:
 			Lightning::printPath();
 			std::cout << "> ";
 			std::getline(std::cin, input);
@@ -45,7 +45,7 @@ int main()
 				}
 			}
 			break;
-		case Lightning::MODE::TEXT:
+		case Lightning::Mode::TEXT:
 			Lightning::printFileContent();
 			Lightning::printPath();
 			std::cout << "> ";
