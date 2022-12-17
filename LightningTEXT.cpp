@@ -67,6 +67,7 @@ bool Lightning::TEXT::parseCommand(std::string* input)
 			catch (std::exception e)
 			{
 				std::cout << e.what() << '\n';
+				return false;
 			}
 		}
 		else
