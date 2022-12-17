@@ -24,6 +24,9 @@
     <ClCompile Include="LightningTEXT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LightningCore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LightningCore.h">

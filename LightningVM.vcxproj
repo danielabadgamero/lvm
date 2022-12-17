@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LightningCMD.cpp" />
+    <ClCompile Include="LightningCore.cpp" />
     <ClCompile Include="LightningTEXT.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

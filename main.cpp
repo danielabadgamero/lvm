@@ -8,12 +8,12 @@ int main()
 {
 	Lightning::loadFilesystem();
 
-	std::string input{};
-	std::string command{};
-	std::map<std::string, std::string> arguments{};
-
 	while (Lightning::running)
 	{
+		std::string input{};
+		std::string command{};
+		std::map<std::string, std::string> arguments{};
+
 		switch (Lightning::mode)
 		{
 		case Lightning::MODE::CMD:
@@ -26,38 +26,50 @@ int main()
 				command = input;
 				for (int i{}; i != input.size(); i++)
 					if (input[i] == ' ')
-						if (command.empty())
+						if (command == input)
 							command = input.substr(0, i);
 						else
 						{
 							size_t mark{ argument.find('=') };
 							arguments.emplace(argument.substr(0, mark), argument.substr(mark + 1));
 						}
-					else if (!command.empty())
+					else if (command != input)
 						argument.push_back(input[i]);
+				if (!argument.empty())
+				{
+					int mark{ (int)argument.find('=') };
+					if (mark > 0)
+						arguments.emplace(argument.substr(0, mark), argument.substr(mark + 1));
+					else
+						arguments.emplace("name", argument);
+				}
 			}
 			break;
-		case Lightning::MODE::FILE:
+		case Lightning::MODE::TEXT:
 			Lightning::printFileContent();
 			Lightning::printPath();
 			std::cout << "> ";
 			std::getline(std::cin, input);
+			system("cls");
 			if (!input.empty())
 			{
-				system("cls");
 				command = input.substr(0, 1);
 				std::string lineNum{};
-				if (input.at(1) != ' ')
-				{
-					for (int i{ 1 }; i != input.size(); i++)
-						if (input.at(i) == ' ')
-							break;
-						else
-							lineNum.push_back(input.at(i));
-					arguments.emplace("line", lineNum);
-				}
-				else
-					arguments.emplace("content", input.substr(2));
+				if (input.size() > 1)
+					if (input.at(1) != ' ')
+					{
+						for (int i{ 1 }; i != input.size(); i++)
+							if (input.at(i) == ' ')
+							{
+								arguments.emplace("content", input.substr(1 + i));
+								break;
+							}
+							else
+								lineNum.push_back(input.at(i));
+						arguments.emplace("line", lineNum);
+					}
+					else
+						arguments.emplace("content", input.substr(2));
 			}
 			break;
 		}

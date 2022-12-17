@@ -7,8 +7,9 @@
 #include "LightningCore.h"
 #include "LightningCMD.h"
 
-void Lightning::CMD::exit()
+void Lightning::CMD::exit(std::map<std::string, std::string>* arguments)
 {
+	arguments;
 	running = false;
 	saveFilesystem();
 }
@@ -77,8 +78,9 @@ void Lightning::CMD::cd(std::map<std::string, std::string>* arguments)
 			}
 }
 
-void Lightning::CMD::ls()
+void Lightning::CMD::ls(std::map<std::string, std::string>* arguments)
 {
+	arguments;
 	for (Dir* subDir : path.back()->subDirs)
 		std::cout << "Dir: " << subDir->name << '\n';
 	for (Dir::File file : path.back()->files)
@@ -152,6 +154,7 @@ void Lightning::CMD::print(std::map<std::string, std::string>* arguments)
 
 void Lightning::CMD::open(std::map<std::string, std::string>* arguments)
 {
+	system("cls");
 	std::string fileName{ arguments->at("name") };
 
 	Dir::File* file{ nullptr };

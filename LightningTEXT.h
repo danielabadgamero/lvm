@@ -13,6 +13,7 @@ namespace Lightning
 	{
 		void addLine(std::map<std::string, std::string>* arguments, std::vector<std::string>* content);
 		void remLine(std::map<std::string, std::string>* arguments, std::vector<std::string>* content);
+		void close();
 	}
 }
 
