@@ -30,6 +30,8 @@ namespace Lightning
 			{ std::string{ "open" }, nullptr },
 		};
 
+		inline std::map<std::string, std::string> commandDescriptions{};
+
 		void loadFunctions();
 	}
 }

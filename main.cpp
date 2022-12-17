@@ -51,7 +51,7 @@ int main()
 			Lightning::printPath();
 			std::cout << "> ";
 			std::getline(std::cin, input);
-			system("cls");
+			Lightning::clearScreen();
 			if (!input.empty())
 			{
 				command = input.substr(0, 1);

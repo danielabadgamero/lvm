@@ -55,6 +55,7 @@ namespace Lightning
 	void printPath();
 	void printFileContent();
 	void handleCommand(std::string* command, std::map<std::string, std::string>* arguments);
+	void clearScreen();
 }
 
 #endif
