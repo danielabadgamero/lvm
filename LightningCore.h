@@ -38,30 +38,22 @@ namespace Lightning
 	inline int REG[8];
 	inline std::ifstream fs_in{};
 	inline std::ofstream fs_out{};
-	inline Dir FileSystem{};
-	inline std::vector<Dir*> path{ &FileSystem };
+	inline Dir Filesystem{};
+	inline std::vector<Dir*> path{ &Filesystem };
 	inline Dir::File* targetFile{ nullptr };
-	inline MODE mode{ MODE::CMD };
+	inline Mode mode{ Mode::CMD };
 
 	inline int* addr{ RAM };
 	inline bool running{ true };
 
 	void loadFilesystem();
-
-	std::string getPath();
-
 	void writeFilesystem(Dir* dir);
-
 	void saveFilesystem();
-
 	std::vector<std::string> fileToVector();
-
 	void vectorToFile(std::vector<std::string>* content);
-
+	std::string getPath();
 	void printPath();
-
 	void printFileContent();
-
 	void handleCommand(std::string* command, std::map<std::string, std::string>* arguments);
 }
 

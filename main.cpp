@@ -20,6 +20,7 @@ int main()
 			Lightning::printPath();
 			std::cout << "> ";
 			std::getline(std::cin, input);
+			input.erase(std::remove(input.begin(), input.end(), '\r'), input.end());
 			if (!input.empty())
 			{
 				std::string argument{};

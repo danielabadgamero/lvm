@@ -52,6 +52,6 @@ void Lightning::TEXT::remLine(std::map<std::string, std::string>* arguments, std
 
 void Lightning::TEXT::close()
 {
-	mode = MODE::CMD;
+	mode = Mode::CMD;
 	targetFile = nullptr;
 }

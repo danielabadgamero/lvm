@@ -8,6 +8,7 @@
 
 void Lightning::loadFilesystem()
 {
+	CMD::loadFunctions();
 	if (std::filesystem::exists("fs"))
 	{
 		fs_in.open("fs", std::ios::binary);
@@ -52,7 +53,7 @@ void Lightning::loadFilesystem()
 				if (!nextContent)
 				{
 					path.clear();
-					path.push_back(&FileSystem);
+					path.push_back(&Filesystem);
 				}
 			}
 			else
@@ -72,7 +73,7 @@ void Lightning::loadFilesystem()
 				fs_in.seekg(pos);
 				path.back()->files.back().content.pop_back();
 				path.clear();
-				path.push_back(&FileSystem);
+				path.push_back(&Filesystem);
 			}
 		}
 	}
@@ -111,7 +112,7 @@ void Lightning::saveFilesystem()
 		std::remove("fs");
 	fs_out.open("fs", std::ios::binary);
 	path.clear();
-	writeFilesystem(&FileSystem);
+	writeFilesystem(&Filesystem);
 
 	fs_out.close();
 }
@@ -148,50 +149,17 @@ void Lightning::printFileContent()
 {
 	std::map<std::string, std::string> file{};
 	file.emplace("name", targetFile->name);
-	CMD::print(&file);
+	CMD::commandFunctions["print"](&file);
 }
 
 void Lightning::handleCommand(std::string* command, std::map<std::string, std::string>* arguments)
 {
 	switch (mode)
 	{
-	case MODE::CMD:
-		if (*command == "exit")
-			CMD::exit(arguments);
-
-		else if (*command == "help")
-			CMD::help(arguments);
-
-		else if (*command == "mkdir")
-			CMD::mkdir(arguments);
-
-		else if (*command == "rmdir")
-			CMD::rmdir(arguments);
-		
-		else if (*command == "cd")
-			CMD::cd(arguments);
-
-		else if (*command == "ls")
-			CMD::ls(arguments);
-
-		else if (*command == "touch")
-			CMD::touch(arguments);
-
-		else if (*command == "rm")
-			CMD::rm(arguments);
-
-		else if (*command == "print")
-			CMD::print(arguments);
-
-		else if (*command == "open")
-			CMD::open(arguments);
-
-		else
-			std::cout << "Command not found.\n";
-
+	case Mode::CMD:
+		CMD::commandFunctions.at(*command)(arguments);
 		break;
-
-	case MODE::TEXT:
+	case Mode::TEXT:
 		std::vector<std::string> content{ fileToVector() };
 		if (!command->empty())
 			switch (command->front())

@@ -6,41 +6,31 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <functional>
 
 #include "LightningCore.h"
+
+typedef std::map<std::string, std::string>* Arguments;
 
 namespace Lightning
 {
 	namespace CMD
 	{
-		enum class Command
+		inline std::map<std::string, std::function<void(Arguments)>> commandFunctions
 		{
-			exit,
-			help,
-			mkdir,
-			rmdir,
-			cd,
-			ls,
-			touch,
-			rm,
-			print,
-			open,
-
-			total_commands
+			{ std::string{ "exit" }, nullptr },
+			{ std::string{ "help" }, nullptr },
+			{ std::string{ "mkdir" }, nullptr },
+			{ std::string{ "rmdir" }, nullptr },
+			{ std::string{ "cd" }, nullptr },
+			{ std::string{ "ls" }, nullptr },
+			{ std::string{ "touch" }, nullptr },
+			{ std::string{ "rm" }, nullptr },
+			{ std::string{ "print" }, nullptr },
+			{ std::string{ "open" }, nullptr },
 		};
 
-		inline void (*commands[static_cast<int>(Command::total_commands)])(std::map<std::string, std::string>*);
-
-		void exit(std::map<std::string, std::string>* arguments);
-		void help(std::map<std::string, std::string>* arguments);
-		void mkdir(std::map<std::string, std::string>* arguments);
-		void rmdir(std::map<std::string, std::string>* arguments);
-		void cd(std::map<std::string, std::string>* arguments);
-		void ls(std::map<std::string, std::string>* arguments);
-		void touch(std::map<std::string, std::string>* arguments);
-		void rm(std::map<std::string, std::string>* arguments);
-		void print(std::map<std::string, std::string>* arguments);
-		void open(std::map<std::string, std::string>* arguments);
+		void loadFunctions();
 	}
 }
 
