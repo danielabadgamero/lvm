@@ -131,12 +131,14 @@
   <ItemGroup>
     <ClCompile Include="LightningCMD.cpp" />
     <ClCompile Include="LightningCore.cpp" />
+    <ClCompile Include="LightningFS.cpp" />
     <ClCompile Include="LightningTEXT.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LightningCMD.h" />
     <ClInclude Include="LightningCore.h" />
+    <ClInclude Include="LightningFS.h" />
     <ClInclude Include="LightningTEXT.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

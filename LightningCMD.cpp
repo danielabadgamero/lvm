@@ -7,13 +7,14 @@
 
 #include "LightningCore.h"
 #include "LightningCMD.h"
+#include "LightningFS.h"
 
 void Lightning::CMD::loadFunctions()
 {
 	commandFunctions["exit"] = []()
 	{
 		running = false;
-		saveFilesystem();
+		FS::saveFilesystem();
 	};
 
 	commandFunctions["help"] = []()
@@ -25,13 +26,13 @@ void Lightning::CMD::loadFunctions()
 	commandFunctions["mkdir"] = []()
 	{
 		bool valid{ true };
-		for (Dir* subDir : path.back()->subDirs)
+		for (FS::Dir* subDir : FS::path.back()->subDirs)
 			if (subDir->name == command.args.at("name"))
 				valid = false;
 		if (valid)
 		{
-			path.back()->subDirs.push_back(new Dir{ command.args.at("name") });
-			std::sort(path.back()->subDirs.begin(), path.back()->subDirs.end(), [&](Dir* A, Dir* B)
+			FS::path.back()->subDirs.push_back(new FS::Dir{ command.args.at("name") });
+			std::sort(FS::path.back()->subDirs.begin(), FS::path.back()->subDirs.end(), [&](FS::Dir* A, FS::Dir* B)
 				{
 					return A->name < B->name;
 				});
@@ -40,45 +41,45 @@ void Lightning::CMD::loadFunctions()
 
 	commandFunctions["rmdir"] = []()
 	{
-		for (std::vector<Dir*>::iterator dir{ path.back()->subDirs.begin() }; dir != path.back()->subDirs.end(); dir++)
+		for (std::vector<FS::Dir*>::iterator dir{ FS::path.back()->subDirs.begin() }; dir != FS::path.back()->subDirs.end(); dir++)
 			if ((*dir)->name == command.args.at("name"))
 			{
-				path.back()->subDirs.erase(dir);
+				FS::path.back()->subDirs.erase(dir);
 				break;
 			}
 	};
 
 	commandFunctions["cd"] = []()
 	{
-		if (command.args.at("name") == ".." && path.size() > 1)
-			path.pop_back();
+		if (command.args.at("name") == ".." && FS::path.size() > 1)
+			FS::path.pop_back();
 		else
-			for (int i{}; i != path.back()->subDirs.size(); i++)
-				if (path.back()->subDirs.at(i)->name == command.args.at("name"))
+			for (int i{}; i != FS::path.back()->subDirs.size(); i++)
+				if (FS::path.back()->subDirs.at(i)->name == command.args.at("name"))
 				{
-					path.push_back(path.back()->subDirs.at(i));
+					FS::path.push_back(FS::path.back()->subDirs.at(i));
 					break;
 				}
 	};
 
 	commandFunctions["ls"] = []()
 	{
-		for (Dir* subDir : path.back()->subDirs)
+		for (FS::Dir* subDir : FS::path.back()->subDirs)
 			std::cout << "Dir: " << subDir->name << '\n';
-		for (Dir::File file : path.back()->files)
+		for (FS::Dir::File file : FS::path.back()->files)
 			std::cout << "File: " << file.name << '\n';
 	};
 
 	commandFunctions["touch"] = []()
 	{
 		bool valid{ true };
-		for (Dir::File file : path.back()->files)
+		for (FS::Dir::File file : FS::path.back()->files)
 			if (file.name == command.args.at("name"))
 				valid = false;
 		if (valid)
 		{
-			path.back()->files.push_back({ command.args.at("name") });
-			std::sort(path.back()->files.begin(), path.back()->files.end(), [&](Dir::File A, Dir::File B)
+			FS::path.back()->files.push_back({ command.args.at("name") });
+			std::sort(FS::path.back()->files.begin(), FS::path.back()->files.end(), [&](FS::Dir::File A, FS::Dir::File B)
 				{
 					return A.name < B.name;
 				});
@@ -87,15 +88,18 @@ void Lightning::CMD::loadFunctions()
 
 	commandFunctions["rm"] = []()
 	{
-		for (std::vector<Dir::File>::iterator file{ path.back()->files.begin() }; file != path.back()->files.end(); file++)
+		for (std::vector<FS::Dir::File>::iterator file{ FS::path.back()->files.begin() }; file != FS::path.back()->files.end(); file++)
 			if (file->name == command.args.at("name"))
-				path.back()->files.erase(file);
+			{
+				FS::path.back()->files.erase(file);
+				break;
+			}
 	};
 
 	commandFunctions["print"] = []()
 	{
-		Dir::File* file{ nullptr };
-		for (std::vector<Dir::File>::iterator f{ path.back()->files.begin() }; f != path.back()->files.end(); f++)
+		FS::Dir::File* file{ nullptr };
+		for (std::vector<FS::Dir::File>::iterator f{ FS::path.back()->files.begin() }; f != FS::path.back()->files.end(); f++)
 			if (f->name == command.args.at("name"))
 				file = &(*f);
 		int line{ 1 };
@@ -120,17 +124,22 @@ void Lightning::CMD::loadFunctions()
 
 	commandFunctions["open"] = []()
 	{
-		clearScreen();
-		for (std::vector<Dir::File>::iterator f{ path.back()->files.begin() }; f != path.back()->files.end(); f++)
+		for (std::vector<FS::Dir::File>::iterator f{ FS::path.back()->files.begin() }; f != FS::path.back()->files.end(); f++)
 			if (f->name == command.args.at("name"))
-				targetFile = &(*f);
-		mode = Mode::TEXT;
+				FS::targetFile = &(*f);
 
-		for (char c : targetFile->content)
-			if (c == '\n')
-				fileContent.push_back("");
-			else if (fileContent.size() != 0)
-				fileContent.back().push_back(c);
+		if (FS::targetFile)
+		{
+			clearScreen();
+			mode = Mode::TEXT;
+			for (char c : FS::targetFile->content)
+				if (c == '\n')
+					FS::targetFile->contentVector.push_back("");
+				else if (FS::targetFile->contentVector.size() != 0)
+					FS::targetFile->contentVector.back().push_back(c);
+		}
+		else
+			std::cout << "File not found\n";
 	};
 
 	commandDescriptions.emplace("cd", "Change to a directory in the current path.");

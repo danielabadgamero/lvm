@@ -5,8 +5,6 @@
 #include <string>
 #include <functional>
 
-#include "LightningCore.h"
-
 namespace Lightning
 {
 	namespace TEXT
@@ -16,17 +14,20 @@ namespace Lightning
 			char cmd{};
 			int line{};
 			std::string content{};
-		} command;
+		} command{};
 
 		inline std::map<char, std::function<void()>> commandFunctions
 		{
 			{ '+', nullptr },
 			{ '-', nullptr },
 			{ '/', nullptr },
+			{ '?', nullptr },
 		};
 
+		inline std::map<char, std::string> commandDescriptions{};
+
 		void loadFunctions();
-		bool parseCommand(std::string* input);
+		bool parseCommand(std::string*);
 		void processCommand();
 	}
 }

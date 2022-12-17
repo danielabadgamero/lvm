@@ -8,8 +8,6 @@
 #include <vector>
 #include <functional>
 
-#include "LightningCore.h"
-
 namespace Lightning
 {
 	namespace CMD
@@ -18,7 +16,7 @@ namespace Lightning
 		{
 			std::string cmd{};
 			std::map<std::string, std::string> args{};
-		} command;
+		} command{};
 
 		inline std::map<std::string, std::function<void()>> commandFunctions
 		{
@@ -37,7 +35,7 @@ namespace Lightning
 		inline std::map<std::string, std::string> commandDescriptions{};
 
 		void loadFunctions();
-		bool parseCommand(std::string* input);
+		bool parseCommand(std::string*);
 		void processCommand();
 	}
 }

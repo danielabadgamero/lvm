@@ -5,10 +5,11 @@
 #include "LightningCore.h"
 #include "LightningCMD.h"
 #include "LightningTEXT.h"
+#include "LightningFS.h"
 
 int main()
 {
-	Lightning::loadFilesystem();
+	Lightning::init();
 
 	while (Lightning::running)
 	{
@@ -16,7 +17,7 @@ int main()
 		switch (Lightning::mode)
 		{
 		case Lightning::Mode::CMD:
-			Lightning::printPath();
+			Lightning::FS::printPath();
 			std::cout << "> ";
 			std::getline(std::cin, input);
 			if (!input.empty())
@@ -33,8 +34,8 @@ int main()
 				}
 			break;
 		case Lightning::Mode::TEXT:
-			Lightning::printFileContent();
-			Lightning::printPath();
+			Lightning::FS::printFileContent();
+			Lightning::FS::printPath();
 			std::cout << "> ";
 			std::getline(std::cin, input);
 			Lightning::clearScreen();
