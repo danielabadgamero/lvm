@@ -163,9 +163,5 @@ void Lightning::CMD::open(std::map<std::string, std::string>* arguments)
 		}
 
 	targetFile = file;
-}
-
-void Lightning::CMD::close()
-{
-	targetFile = nullptr;
+	mode = MODE::TEXT;
 }

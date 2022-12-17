@@ -9,6 +9,7 @@
 #include <map>
 
 #include "LightningCMD.h"
+#include "LightningTEXT.h"
 
 namespace Lightning
 {
@@ -20,7 +21,7 @@ namespace Lightning
 	enum class MODE
 	{
 		CMD,
-		FILE,
+		TEXT,
 	};
 	
 	struct Dir
@@ -158,12 +159,36 @@ namespace Lightning
 		fs_out.close();
 	}
 
+	std::vector<std::string> fileToVector()
+	{
+		std::vector<std::string> lines{ "" };
+		for (char c : targetFile->content)
+			if (c == '\n')
+				lines.push_back("");
+			else
+				lines.back().push_back(c);
+		return lines;
+	}
+
+	void vectorToFile(std::vector<std::string>* content)
+	{
+		targetFile->content.clear();
+		for (std::string str : *content)
+			targetFile->content.append(str + '\n');
+		targetFile->content.pop_back();
+	}
+
 	void printPath()
 	{
 		for (Dir* dir : path)
 			std::cout << dir->name << '/';
 		if (targetFile != nullptr)
 			std::cout << targetFile->name;
+	}
+
+	void printFileContent()
+	{
+		CMD::print(new std::map<std::string, std::string>{ std::string("name"), targetFile->name });
 	}
 
 	void handleCommand(std::string* command, std::map<std::string, std::string>* arguments)
@@ -206,59 +231,20 @@ namespace Lightning
 
 			break;
 
-		case MODE::FILE:
+		case MODE::TEXT:
+			std::vector<std::string> content{ fileToVector() };
+			switch (command->front())
+			{
+			case '+':
+				TEXT::addLine(arguments, &content);
+				break;
+			case '-':
+				TEXT::remLine(arguments, &content);
+				break;
+			}
+			vectorToFile(&content);
 			break;
 		}
-
-		else if (cmd.front() == '/' && (targetFile != nullptr))
-		{
-			cmd.erase(cmd.begin());
-			targetFile->content.append(cmd + " " + arg + "\n");
-		}
-		else if (cmd.front() == '-' && (targetFile != nullptr))
-		{
-			std::vector<std::string> lines{""};
-			for (char c : targetFile->content)
-				if (c == '\n')
-					lines.push_back("");
-				else
-					lines.back().push_back(c);
-			if (cmd.size() == 1)
-				lines.pop_back();
-			else
-			{
-				int numLine{ std::stoi(cmd.substr(1)) - 1 };
-				std::vector<std::string>::iterator line{ lines.begin() + numLine };
-				lines.erase(line);
-			}
-			targetFile->content.clear();
-			if (lines.size() > 0)
-			{
-				for (std::string str : lines)
-					targetFile->content.append(str + '\n');
-				targetFile->content.pop_back();
-			}
-		}
-		else if (cmd.front() == '+' && (targetFile != nullptr))
-		{
-			std::vector<std::string> lines{ "" };
-			for (char c : targetFile->content)
-				if (c == '\n')
-					lines.push_back("");
-				else
-					lines.back().push_back(c);
-			
-			int numLine{ std::stoi(cmd.substr(1)) - 1 };
-			std::vector<std::string>::iterator line{ lines.begin() + numLine };
-			lines.insert(line, arg);
-			
-			targetFile->content.clear();
-			for (std::string str : lines)
-				targetFile->content.append(str + '\n');
-			targetFile->content.pop_back();
-		}
-		else
-			printUnknown(&cmd, &arg);
 	}
 }
 

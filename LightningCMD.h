@@ -23,7 +23,6 @@ namespace Lightning
 		void rm(std::map<std::string, std::string>* arguments);
 		void print(std::map<std::string, std::string>* arguments);
 		void open(std::map<std::string, std::string>* arguments);
-		void close();
 	}
 }
 
