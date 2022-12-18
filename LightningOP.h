@@ -1,10 +1,14 @@
 #ifndef LIGHTNING_OP
 #define LIGHTNING_OP
 
+#undef OUT
+
 #include <functional>
 #include <vector>
 #include <map>
 #include <string>
+
+#include "LightningCore.h"
 
 namespace Lightning
 {
@@ -20,6 +24,7 @@ namespace Lightning
 			CALL,	// <a> Push next instruction to the stack and jump to memory address <a>.
 			RET,	// <> Jump to the address at the top of the stack and pop it afterwards.
 			ADD,	// <a> <b> <c> Set register <a> to the sum of <b> and <c>.
+			EQ,		// <a> <b> <c> Set register <a> to 1 if <b> equals <c>, otherwise to 0.
 			OUT,	// <a> Print the ASCII value of <a> to the console.
 		};
 
@@ -39,6 +44,7 @@ namespace Lightning
 			{ CALL, nullptr },
 			{ RET, nullptr },
 			{ ADD, nullptr },
+			{ EQ, nullptr },
 			{ OUT, nullptr },
 		};
 

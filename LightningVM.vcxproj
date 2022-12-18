@@ -132,11 +132,13 @@
     <ClCompile Include="LightningCMD.cpp" />
     <ClCompile Include="LightningCore.cpp" />
     <ClCompile Include="LightningFS.cpp" />
+    <ClCompile Include="LightningLL.cpp" />
     <ClCompile Include="LightningOP.cpp" />
     <ClCompile Include="LightningTEXT.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="LightningLL.h" />
     <ClInclude Include="LightningOP.h" />
     <ClInclude Include="LightningCMD.h" />
     <ClInclude Include="LightningCore.h" />

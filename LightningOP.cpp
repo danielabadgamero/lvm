@@ -20,31 +20,31 @@ void Lightning::OP::loadOperations()
 
 	operations[SET] = []()
 	{
-		REG[*operation.args[0]] = operation.args[1]->value;
-		REG[*operation.args[0]].occupied = true;
+		REG[operation.args[0]->value].value = operation.args[1]->value;
+		REG[operation.args[0]->value].occupied = true;
 	};
 
 	operations[GET] = []()
 	{
-		operation.args[1]->value = REG[*operation.args[0]];
-		REG[*operation.args[0]].occupied = false;
+		operation.args[1]->value = REG[operation.args[0]->value].value;
+		REG[operation.args[0]->value].occupied = false;
 	};
 
 	operations[RMEM] = []()
 	{
-		operation.args[1]->value = RAM[operation.args[0]->value];
+		operation.args[1]->value = RAM[operation.args[0]->value].value;
 	};
 
 	operations[WMEM] = []()
 	{
-		RAM[operation.args[0]->value] = operation.args[1]->value;
+		RAM[operation.args[0]->value].value = operation.args[1]->value;
 	};
-
+	
 	operations[CALL] = []()
 	{
-		stack.push(addr + 2);
-		addr = operation.args[0];
-		addr--;
+		stack.push(addr + 1);
+		addr = &RAM[operation.args[0]->value];
+		addr -= 2;
 	};
 
 	operations[RET] = []()
@@ -55,7 +55,12 @@ void Lightning::OP::loadOperations()
 
 	operations[ADD] = []()
 	{
-		REG[operation.args[0]->value] = operation.args[1]->value + operation.args[2]->value;
+		REG[operation.args[0]->value].value = operation.args[1]->value + operation.args[2]->value;
+	};
+
+	operations[EQ] = []()
+	{
+		REG[operation.args[0]->value].value = operation.args[1]->value == operation.args[2]->value;
 	};
 
 	operations[OUT] = []()
@@ -89,10 +94,12 @@ bool Lightning::OP::parseOperation()
 	default:
 		operation.args.resize(0);
 	}
+
+	return true;
 }
 
 void Lightning::OP::processOperation()
 {
 	operations[operation.opcode]();
-	addr += static_cast<int>(operation.args.size());
+	addr += static_cast<int>(operation.args.size() + 1);
 }

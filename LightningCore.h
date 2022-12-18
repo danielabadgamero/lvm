@@ -10,7 +10,7 @@
 
 namespace Lightning
 {
-	enum class Mode
+	inline enum class Mode
 	{
 		CMD,
 		TEXT,
@@ -29,12 +29,6 @@ namespace Lightning
 		bool occupied{};
 	} REG[8];
 
-	struct Symbol
-	{
-		std::string name{};
-		int address{};
-	};
-
 	struct Programme
 	{
 		std::string name{};
@@ -42,7 +36,6 @@ namespace Lightning
 	};
 
 	inline std::vector<Programme> loadedProgrammes{};
-	inline std::vector<Symbol> symbols{};
 	inline std::stack<Cell*> stack{};
 	inline Cell* addr{ RAM };
 	inline bool running{ true };
