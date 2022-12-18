@@ -20,16 +20,19 @@ namespace Lightning
 
 		inline std::map<std::string, std::function<void()>> commandFunctions
 		{
-			{ std::string{ "exit" }, nullptr },
-			{ std::string{ "help" }, nullptr },
-			{ std::string{ "mkdir" }, nullptr },
-			{ std::string{ "rmdir" }, nullptr },
-			{ std::string{ "cd" }, nullptr },
-			{ std::string{ "ls" }, nullptr },
-			{ std::string{ "touch" }, nullptr },
-			{ std::string{ "rm" }, nullptr },
-			{ std::string{ "print" }, nullptr },
-			{ std::string{ "open" }, nullptr },
+			{ "exit", nullptr },
+			{ "help", nullptr },
+			{ "mkdir", nullptr },
+			{ "rmdir", nullptr },
+			{ "cd", nullptr },
+			{ "ls", nullptr },
+			{ "touch", nullptr },
+			{ "rm", nullptr },
+			{ "print", nullptr },
+			{ "open", nullptr },
+			{ "write", nullptr },
+			{ "start", nullptr },
+			{ "prg", nullptr },
 		};
 
 		inline std::map<std::string, std::string> commandDescriptions{};

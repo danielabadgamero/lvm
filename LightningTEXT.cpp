@@ -12,7 +12,7 @@ void Lightning::TEXT::loadFunctions()
 	commandFunctions['+'] = []()
 	{
 		if (!command.content.empty())
-			if (command.line > 0 && command.line < FS::targetFile->contentVector.size())
+			if (command.line >= 0 && command.line < FS::targetFile->contentVector.size())
 				FS::targetFile->contentVector.insert(FS::targetFile->contentVector.begin() + command.line, command.content);
 			else
 				FS::targetFile->contentVector.push_back(command.content);
@@ -20,7 +20,7 @@ void Lightning::TEXT::loadFunctions()
 
 	commandFunctions['-'] = []()
 	{
-		if (command.line > 0 && command.line < FS::targetFile->contentVector.size())
+		if (command.line >= 0 && command.line < FS::targetFile->contentVector.size())
 			FS::targetFile->contentVector.erase(FS::targetFile->contentVector.begin() + command.line);
 		else if (FS::targetFile->contentVector.size() > 0)
 			FS::targetFile->contentVector.pop_back();
@@ -48,6 +48,13 @@ bool Lightning::TEXT::parseCommand(std::string* input)
 {
 	command.cmd = input->substr(0, 1).front();
 	command.content.clear();
+	command.line = -1;
+	if (command.cmd != '+' && command.cmd != '-' && command.cmd != '?' && command.cmd != '/') // Fix this awful looking line
+	{
+		command.cmd = '+';
+		command.content = *input;
+		return true;
+	}
 	std::string lineNum{};
 	if (input->size() > 1)
 		if (input->at(1) != ' ')

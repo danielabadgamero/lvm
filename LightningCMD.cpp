@@ -132,6 +132,8 @@ void Lightning::CMD::loadFunctions()
 		{
 			clearScreen();
 			mode = Mode::TEXT;
+			FS::targetFile->contentVector.clear();
+			FS::targetFile->contentVector.push_back("");
 			for (char c : FS::targetFile->content)
 				if (c == '\n')
 					FS::targetFile->contentVector.push_back("");
@@ -142,16 +144,85 @@ void Lightning::CMD::loadFunctions()
 			std::cout << "File not found\n";
 	};
 
+	commandFunctions["write"] = []()
+	{
+		for (std::vector<FS::Dir::File>::iterator f{ FS::path.back()->files.begin() }; f != FS::path.back()->files.end(); f++)
+			if (f->name == command.args.at("name"))
+				FS::targetFile = &(*f);
+
+		if (FS::targetFile)
+		{
+			FS::targetFile->contentVector.clear();
+			FS::targetFile->contentVector.push_back("");
+			for (char c : FS::targetFile->content)
+				if (c == '\n')
+					FS::targetFile->contentVector.push_back("");
+				else if (FS::targetFile->contentVector.size() != 0)
+					FS::targetFile->contentVector.back().push_back(c);
+			loadProgramme();
+		}
+		else
+			std::cout << "File not found\n";
+
+		FS::targetFile = nullptr;
+	};
+
+	commandFunctions["start"] = []()
+	{
+		for (int i{}; i != loadedProgrammes.size(); i++)
+			if (loadedProgrammes.at(i).name == command.args.at("name"))
+			{
+				addr = RAM + loadedProgrammes.at(i).add;
+				mode = Mode::EXEC;
+				clearScreen();
+				break;
+			}
+	};
+
+	commandFunctions["prg"] = []()
+	{
+		for (Programme prg : loadedProgrammes)
+			std::cout << prg.name << ":\t" << prg.add << '\n';
+	};
+
+	commandFunctions["free"] = []()
+	{
+		int index{};
+		for (int i{}; i != loadedProgrammes.size(); i++)
+			if (loadedProgrammes.at(i).name == command.args.at("name"))
+				index = i;
+		try
+		{
+			addr = RAM + loadedProgrammes.at(index).add;
+			while (addr->allocated)
+			{
+				addr->value = 0;
+				addr->allocated = false;
+				addr++;
+			}
+			loadedProgrammes.erase(loadedProgrammes.begin() + index);
+		}
+		catch (std::exception e)
+		{
+			std::cout << e.what() << '\n';
+		}
+		addr = RAM;
+	};
+
 	commandDescriptions.emplace("cd", "Change to a directory in the current path.");
-	commandDescriptions.emplace("exit", "Terminate the programme saving the current filesystem.");
+	commandDescriptions.emplace("exit", "Exit the virutal machine saving the current filesystem.");
+	commandDescriptions.emplace("free", "Free up all resources allocated for the given programme.");
 	commandDescriptions.emplace("help", "This command.");
 	commandDescriptions.emplace("ls", "List all files and directories in the current path.");
 	commandDescriptions.emplace("mkdir", "Create a directory in the current path.");
 	commandDescriptions.emplace("open", "Open a file in the current path and enter TEXT mode.");
+	commandDescriptions.emplace("prg", "Show all loaded programmes.");
 	commandDescriptions.emplace("print", "Print the contents of a file in the current path.");
 	commandDescriptions.emplace("rm", "Remove a file in the current path.");
 	commandDescriptions.emplace("rmdir", "Remove a directory in the current path and all of its contents.");
+	commandDescriptions.emplace("start", "Execute the programme with the specified name.");
 	commandDescriptions.emplace("touch", "Create a file in the current path.");
+	commandDescriptions.emplace("write", "Write a programme's instructions to the memory.");
 }
 
 bool Lightning::CMD::parseCommand(std::string* input)
