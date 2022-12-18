@@ -25,6 +25,7 @@ namespace Lightning
 			RET,	// <> Jump to the address at the top of the stack and pop it afterwards.
 			ADD,	// <a> <b> <c> Set register <a> to the sum of <b> and <c>.
 			EQ,		// <a> <b> <c> Set register <a> to 1 if <b> equals <c>, otherwise to 0.
+			JF,		// <a> <b> <c> Jump to address <b> if <a> is non-zero, otherwise to <c>.
 			OUT,	// <a> Print the ASCII value of <a> to the console.
 		};
 

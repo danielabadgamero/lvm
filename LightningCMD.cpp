@@ -206,7 +206,7 @@ void Lightning::CMD::loadFunctions()
 		{
 			std::cout << e.what() << '\n';
 		}
-		addr = RAM;
+		addr = prog_start;
 	};
 
 	commandDescriptions.emplace("cd", "Change to a directory in the current path.");

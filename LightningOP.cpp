@@ -63,6 +63,12 @@ void Lightning::OP::loadOperations()
 		REG[operation.args[0]->value].value = operation.args[1]->value == operation.args[2]->value;
 	};
 
+	operations[JF] = []()
+	{
+		// complete
+		addr -= 4;
+	};
+
 	operations[OUT] = []()
 	{
 		std::cout << static_cast<char>(operation.args[0]->value);

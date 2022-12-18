@@ -39,7 +39,7 @@ void Lightning::loadProgramme()
 		FS::targetFile->contentVector.erase(FS::targetFile->contentVector.begin());
 	else
 		return;
-	addr = RAM;
+	addr = prog_start;
 	while (addr->allocated || (addr + 1)->allocated)
 		addr++;
 	std::string prgName{ FS::targetFile->contentVector.front() };
