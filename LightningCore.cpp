@@ -29,20 +29,6 @@ void Lightning::init()
 	Lightning::CMD::loadFunctions();
 	Lightning::TEXT::loadFunctions();
 	Lightning::OP::loadOperations();
-
-	// cout Function
-	functions.at("cout").add = static_cast<int>(addr - RAM);
-	*addr = { static_cast<int>(Opcode::COUT), true };
-	addr++;
-	functions.at("cout").args.push_back(static_cast<int>(addr - RAM));
-	addr->allocated = true;
-	addr++;
-	functions.at("cout").args.push_back(static_cast<int>(addr - RAM));
-	addr->allocated = true;
-	addr++;
-	addr->allocated = true;
-	addr->value = static_cast<int>(Opcode::RET);
-	addr++;
 }
 
 void Lightning::loadProgramme()

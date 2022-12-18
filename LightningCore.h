@@ -17,7 +17,7 @@ namespace Lightning
 		EXEC,
 	} mode;
 
-	inline struct
+	inline struct Cell
 	{
 		int value{};
 		bool allocated{};
@@ -35,9 +35,16 @@ namespace Lightning
 		int address{};
 	};
 
+	struct Programme
+	{
+		std::string name{};
+		int address{};
+	};
+
+	inline std::vector<Programme> loadedProgrammes{};
 	inline std::vector<Symbol> symbols{};
-	inline std::stack<int> stack{};
-	inline auto addr{ RAM };
+	inline std::stack<Cell*> stack{};
+	inline Cell* addr{ RAM };
 	inline bool running{ true };
 
 	void init();

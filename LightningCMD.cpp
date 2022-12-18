@@ -172,7 +172,7 @@ void Lightning::CMD::loadFunctions()
 		for (int i{}; i != loadedProgrammes.size(); i++)
 			if (loadedProgrammes.at(i).name == command.args.at("name"))
 			{
-				addr = RAM + loadedProgrammes.at(i).add;
+				addr = RAM + loadedProgrammes.at(i).address;
 				mode = Mode::EXEC;
 				clearScreen();
 				break;
@@ -182,7 +182,7 @@ void Lightning::CMD::loadFunctions()
 	commandFunctions["prg"] = []()
 	{
 		for (Programme prg : loadedProgrammes)
-			std::cout << prg.name << ":\t" << prg.add << '\n';
+			std::cout << prg.name << ":\t" << prg.address << '\n';
 	};
 
 	commandFunctions["free"] = []()
@@ -193,7 +193,7 @@ void Lightning::CMD::loadFunctions()
 				index = i;
 		try
 		{
-			addr = RAM + loadedProgrammes.at(index).add;
+			addr = RAM + loadedProgrammes.at(index).address;
 			while (addr->allocated)
 			{
 				addr->value = 0;
@@ -227,6 +227,7 @@ void Lightning::CMD::loadFunctions()
 
 bool Lightning::CMD::parseCommand(std::string* input)
 {
+	// TODO: change std::map<std::string, std::string> command's arguments to std::vector
 	std::string argument{};
 	command.cmd = *input;
 	command.args.clear();
