@@ -13,65 +13,45 @@ void Lightning::OP::loadOperations()
 	operations[HALT] = []()
 	{
 		mode = Mode::CMD;
-		std::cout << "\nProgramme terminated. Press any key to return to CMD mode.\n";
-		while (!_kbhit());
 		addr = RAM;
-	};
-
-	operations[SET] = []()
-	{
-		REG[operation.args[0]->value].value = operation.args[1]->value;
-		REG[operation.args[0]->value].occupied = true;
-	};
-
-	operations[GET] = []()
-	{
-		operation.args[1]->value = REG[operation.args[0]->value].value;
-		REG[operation.args[0]->value].occupied = false;
+		while (addr->allocated)
+		{
+			addr->value = 0;
+			addr->allocated = false;
+			addr++;
+		}
+		return nullptr;
 	};
 
 	operations[RMEM] = []()
 	{
 		operation.args[1]->value = RAM[operation.args[0]->value].value;
+		return addr + 3;
 	};
 
 	operations[WMEM] = []()
 	{
-		RAM[operation.args[0]->value].value = operation.args[1]->value;
+		RAM[operation.args[1]->value].value = operation.args[0]->value;
+		return addr + 3;
 	};
-	
+
 	operations[CALL] = []()
 	{
-		stack.push(addr + 1);
-		addr = &RAM[operation.args[0]->value];
-		addr -= 2;
+		stack.push(operation.args[0] + 1);
+		return &RAM[operation.args[0]->value];
 	};
 
 	operations[RET] = []()
 	{
-		addr = stack.top();
+		Cell* temp{ stack.top() };
 		stack.pop();
-	};
-
-	operations[ADD] = []()
-	{
-		REG[operation.args[0]->value].value = operation.args[1]->value + operation.args[2]->value;
-	};
-
-	operations[EQ] = []()
-	{
-		REG[operation.args[0]->value].value = operation.args[1]->value == operation.args[2]->value;
-	};
-
-	operations[JF] = []()
-	{
-		// complete
-		addr -= 4;
+		return temp;
 	};
 
 	operations[OUT] = []()
 	{
 		std::cout << static_cast<char>(operation.args[0]->value);
+		return addr + 2;
 	};
 }
 
@@ -81,23 +61,15 @@ bool Lightning::OP::parseOperation()
 	operation.args.clear();
 	switch (operation.opcode)
 	{
-	case CALL:
-	case OUT:
-		operation.args.push_back(addr + 1);
-		break;
-	case SET:
-	case GET:
 	case RMEM:
 	case WMEM:
 		operation.args.push_back(addr + 1);
 		operation.args.push_back(addr + 2);
-		break;
-	case ADD:
+	case CALL:
+	case OUT:
 		operation.args.push_back(addr + 1);
-		operation.args.push_back(addr + 2);
-		operation.args.push_back(addr + 3);
-		break;
-	default:
+	case HALT:
+	case RET:
 		operation.args.resize(0);
 	}
 
@@ -106,6 +78,5 @@ bool Lightning::OP::parseOperation()
 
 void Lightning::OP::processOperation()
 {
-	operations[operation.opcode]();
-	addr += static_cast<int>(operation.args.size() + 1);
+	addr = operations[operation.opcode]();
 }

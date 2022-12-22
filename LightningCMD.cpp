@@ -9,6 +9,30 @@
 #include "LightningCMD.h"
 #include "LightningFS.h"
 
+static void alloc(Lightning::Cell* begin, int places)
+{
+	for (int i{}; i != places; i++)
+		(begin + i)->allocated = true;
+}
+
+static void advanceAddr(int freeCells)
+{
+	bool avail{ true };
+	do
+		for (int i{}; i != freeCells; i++)
+			if ((Lightning::addr + i)->allocated)
+			{
+				avail = false;
+				Lightning::addr += i;
+				break;
+			}
+			else if (i == freeCells - 1)
+				avail = true;
+	while (!avail);
+
+	alloc(Lightning::addr, freeCells);
+}
+
 void Lightning::CMD::loadFunctions()
 {
 	commandFunctions["exit"] = []()
@@ -102,23 +126,17 @@ void Lightning::CMD::loadFunctions()
 		for (std::vector<FS::Dir::File>::iterator f{ FS::path.back()->files.begin() }; f != FS::path.back()->files.end(); f++)
 			if (f->name == command.args.at("name"))
 				file = &(*f);
-		int line{ 1 };
-		std::cout << line << "   ";
 		if (file != nullptr)
-			for (std::string::iterator c{ file->content.begin() }; c != file->content.end(); c++)
-				if (*c == '\n')
-				{
-					line++;
-					std::cout << '\n' << line;
-					if (line < 10)
-						std::cout << "   ";
-					else if (line < 100)
-						std::cout << "  ";
-					else
-						std::cout << ' ';
-				}
-				else
-					std::cout << *c;
+			for (int i{}; i != file->contentVector.size(); i++)
+			{
+				if (i < 9)
+					std::cout << i + 1 << "   ";
+				else if (i < 99)
+					std::cout << i + 1 << "  ";
+				else if (i < 999)
+					std::cout << i + 1 << " ";
+				std::cout << file->contentVector.at(i) << '\n';
+			}
 		std::cout << '\n';
 	};
 
@@ -132,13 +150,6 @@ void Lightning::CMD::loadFunctions()
 		{
 			clearScreen();
 			mode = Mode::TEXT;
-			FS::targetFile->contentVector.clear();
-			FS::targetFile->contentVector.push_back("");
-			for (char c : FS::targetFile->content)
-				if (c == '\n')
-					FS::targetFile->contentVector.push_back("");
-				else if (FS::targetFile->contentVector.size() != 0)
-					FS::targetFile->contentVector.back().push_back(c);
 		}
 		else
 			std::cout << "File not found\n";
@@ -146,21 +157,21 @@ void Lightning::CMD::loadFunctions()
 
 	commandFunctions["write"] = []()
 	{
+		for (std::vector<FS::Dir::File>::iterator file{ FS::path.back()->files.begin() }; file != FS::path.back()->files.end(); file++)
+			if (file->name == "main.exe")
+			{
+				FS::path.back()->files.erase(file);
+				break;
+			}
+
+		FS::path.back()->files.push_back({ "main.exe" });
+
 		for (std::vector<FS::Dir::File>::iterator f{ FS::path.back()->files.begin() }; f != FS::path.back()->files.end(); f++)
 			if (f->name == command.args.at("name"))
 				FS::targetFile = &(*f);
 
 		if (FS::targetFile)
-		{
-			FS::targetFile->contentVector.clear();
-			FS::targetFile->contentVector.push_back("");
-			for (char c : FS::targetFile->content)
-				if (c == '\n')
-					FS::targetFile->contentVector.push_back("");
-				else if (FS::targetFile->contentVector.size() != 0)
-					FS::targetFile->contentVector.back().push_back(c);
 			loadProgramme();
-		}
 		else
 			std::cout << "File not found\n";
 
@@ -169,44 +180,41 @@ void Lightning::CMD::loadFunctions()
 
 	commandFunctions["start"] = []()
 	{
-		for (int i{}; i != loadedProgrammes.size(); i++)
-			if (loadedProgrammes.at(i).name == command.args.at("name"))
+		for (std::vector<FS::Dir::File>::iterator file{ FS::path.back()->files.begin() }; file != FS::path.back()->files.end(); file++)
+			if (file->name == command.args.at("name"))
 			{
-				addr = RAM + loadedProgrammes.at(i).address;
+				std::vector<std::string>* vec{ &file->contentVector };
+				int size{ std::stoi(vec->front()) };
+				advanceAddr(size);
+				std::map<std::string, int> symbols{};
+				for (std::vector<std::string>::iterator i{ vec->begin() }; i != std::find(vec->begin(), vec->end(), "%%"); i++)
+				{
+					std::string name{ i->substr(0, i->find(' ')) };
+					std::string value{ i->substr(i->find(' ') + 1) };
+					addr->value = std::stoi(value);
+					symbols.emplace(name, static_cast<int>(addr - RAM));
+					addr++;
+				}
+				Cell* start{ addr };
+				for (std::vector<std::string>::iterator i{ std::find(vec->begin(), vec->end(), "%%") + 1 }; i != vec->end(); i++);
+				{
+					try
+					{
+						int n{ std::stoi(*i) };
+						addr->value = n;
+						addr++;
+					}
+					catch (std::invalid_argument)
+					{
+						addr->value = symbols.at(*i);
+						addr++;
+					}
+				}
+
 				mode = Mode::EXEC;
 				clearScreen();
 				break;
 			}
-	};
-
-	commandFunctions["prg"] = []()
-	{
-		for (Programme prg : loadedProgrammes)
-			std::cout << prg.name << ":\t" << prg.address << '\n';
-	};
-
-	commandFunctions["free"] = []()
-	{
-		int index{};
-		for (int i{}; i != loadedProgrammes.size(); i++)
-			if (loadedProgrammes.at(i).name == command.args.at("name"))
-				index = i;
-		try
-		{
-			addr = RAM + loadedProgrammes.at(index).address;
-			while (addr->allocated)
-			{
-				addr->value = 0;
-				addr->allocated = false;
-				addr++;
-			}
-			loadedProgrammes.erase(loadedProgrammes.begin() + index);
-		}
-		catch (std::exception e)
-		{
-			std::cout << e.what() << '\n';
-		}
-		addr = prog_start;
 	};
 
 	commandDescriptions.emplace("cd", "Change to a directory in the current path.");

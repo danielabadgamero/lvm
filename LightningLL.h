@@ -22,13 +22,11 @@ namespace Lightning
 		inline std::map<std::string, Function> functions
 		{
 			{ "set", {} },			// <a> <b>: set variable <a> to integer <b>.
-			{ "cout_int", {} },		// <a> <b>: print <b> values starting at <a> as integers.
-			{ "cout_char", {} },	// <a> <b>: print <b> values starting at <b> as chars.
+			{ "print", {} },		// <a> <>: print <a> to the console.
 			{ "halt", {} },			// <> <>  : terminates the programme.
 		};
 
-		void loadFunctions();
-		void compile(std::vector<std::string>*);
+		void compile(std::vector<std::string>*, std::vector<std::string>*);
 	}
 }
 

@@ -15,7 +15,6 @@ namespace Lightning
 			struct File
 			{
 				std::string name{};
-				std::string content{};
 				std::vector<std::string> contentVector{};
 			};
 

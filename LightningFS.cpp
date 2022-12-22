@@ -64,12 +64,14 @@ void Lightning::FS::loadFilesystem()
 				while (content.front() != '/' && !fs_in.eof())
 				{
 					pos = fs_in.tellg();
-					path.back()->files.back().content += content;
+					path.back()->files.back().contentVector.push_back(content);
 					std::getline(fs_in, content);
 					content += '\n';
 				}
 				fs_in.seekg(pos);
-				path.back()->files.back().content.pop_back();
+				for (int i{}; i != path.back()->files.back().contentVector.size(); i++)
+					path.back()->files.back().contentVector.at(i).pop_back();
+				path.back()->files.back().contentVector.pop_back();
 				path.clear();
 				path.push_back(&Filesystem);
 			}
@@ -94,7 +96,10 @@ void Lightning::FS::writeFilesystem(Dir* dir)
 	for (Dir::File file : dir->files)
 	{
 		std::string name{ getPath() + file.name + "\n" };
-		std::string content{ file.content + "\n" };
+		std::string content{};
+		for (std::string str : file.contentVector)
+			content.append(str + "\n");
+		content.push_back('\n');
 		fs_out.write(name.c_str(), name.size());
 		fs_out.write(content.c_str(), content.size());
 	}
@@ -125,11 +130,6 @@ void Lightning::FS::printPath()
 
 void Lightning::FS::printFileContent()
 {
-	targetFile->content.clear();
-	for (std::string str : targetFile->contentVector)
-		targetFile->content.append(str + '\n');
-	if (targetFile->content.size() != 0)
-		targetFile->content.pop_back();
 	CMD::command.args.emplace("name", targetFile->name);
 	CMD::commandFunctions["print"]();
 }

@@ -29,34 +29,17 @@ void Lightning::init()
 	Lightning::FS::loadFilesystem();
 	Lightning::CMD::loadFunctions();
 	Lightning::TEXT::loadFunctions();
-	Lightning::LL::loadFunctions();
-	Lightning::OP::loadOperations();
 }
 
 void Lightning::loadProgramme()
 {
-	if (FS::targetFile->contentVector.front() == "LightLang v1.0")
+	if (FS::targetFile->contentVector.front() == "LightLang v1.1")
 		FS::targetFile->contentVector.erase(FS::targetFile->contentVector.begin());
 	else
 		return;
-	addr = prog_start;
-	while (addr->allocated || (addr + 1)->allocated)
-		addr++;
-	std::string prgName{ FS::targetFile->contentVector.front() };
-	bool exists{ false };
-	for (int i{}; i != loadedProgrammes.size(); i++)
-		if (loadedProgrammes.at(i).name == prgName)
-		{
-			loadedProgrammes.at(i) = { prgName, static_cast<int>(addr - RAM) };
-			exists = true;
-			break;
-		}
-	if (!exists)
-		loadedProgrammes.push_back({ prgName, static_cast<int>(addr - RAM) });
-	FS::targetFile->contentVector.erase(FS::targetFile->contentVector.begin());
 
-	LL::compile(&FS::targetFile->contentVector);
+	std::vector<std::string>* bin{ &FS::path.back()->files.back().contentVector };
+	LL::compile(&FS::targetFile->contentVector, bin);
 	
-	FS::targetFile->contentVector.insert(FS::targetFile->contentVector.begin(), prgName);
-	FS::targetFile->contentVector.insert(FS::targetFile->contentVector.begin(), "LightLang v1.0");
+	FS::targetFile->contentVector.insert(FS::targetFile->contentVector.begin(), "LightLang v1.1");
 }
