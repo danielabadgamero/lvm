@@ -184,8 +184,7 @@ void Lightning::CMD::loadFunctions()
 			if (file->name == command.args.at("name"))
 			{
 				std::vector<std::string>* vec{ &file->contentVector };
-				int size{ std::stoi(vec->front()) };
-				advanceAddr(size);
+				advanceAddr(static_cast<int>(file->contentVector.size()));
 				std::map<std::string, int> symbols{};
 				for (std::vector<std::string>::iterator i{ vec->begin() }; i != std::find(vec->begin(), vec->end(), "%%"); i++)
 				{
@@ -196,7 +195,7 @@ void Lightning::CMD::loadFunctions()
 					addr++;
 				}
 				Cell* start{ addr };
-				for (std::vector<std::string>::iterator i{ std::find(vec->begin(), vec->end(), "%%") + 1 }; i != vec->end(); i++);
+				for (std::vector<std::string>::iterator i{ std::find(vec->begin(), vec->end(), "%%") + 1 }; i != vec->end(); i++)
 				{
 					try
 					{
@@ -210,7 +209,7 @@ void Lightning::CMD::loadFunctions()
 						addr++;
 					}
 				}
-
+				addr = start;
 				mode = Mode::EXEC;
 				clearScreen();
 				break;

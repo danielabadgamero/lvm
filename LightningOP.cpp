@@ -20,7 +20,15 @@ void Lightning::OP::loadOperations()
 			addr->allocated = false;
 			addr++;
 		}
-		return nullptr;
+		std::cout << "\n\n";
+		system("pause");
+		return RAM;
+	};
+
+	operations[RWMEM] = []()
+	{
+		(addr + operation.args[1]->value)->value = RAM[operation.args[0]->value].value;
+		return addr + 3;
 	};
 
 	operations[RMEM] = []()
@@ -31,26 +39,13 @@ void Lightning::OP::loadOperations()
 
 	operations[WMEM] = []()
 	{
-		RAM[operation.args[1]->value].value = operation.args[0]->value;
+		RAM[operation.args[0]->value].value = operation.args[1]->value;
 		return addr + 3;
-	};
-
-	operations[CALL] = []()
-	{
-		stack.push(operation.args[0] + 1);
-		return &RAM[operation.args[0]->value];
-	};
-
-	operations[RET] = []()
-	{
-		Cell* temp{ stack.top() };
-		stack.pop();
-		return temp;
 	};
 
 	operations[OUT] = []()
 	{
-		std::cout << static_cast<char>(operation.args[0]->value);
+		std::cout << operation.args[0]->value << '\n';
 		return addr + 2;
 	};
 }
@@ -61,16 +56,18 @@ bool Lightning::OP::parseOperation()
 	operation.args.clear();
 	switch (operation.opcode)
 	{
+	case RWMEM:
 	case RMEM:
 	case WMEM:
 		operation.args.push_back(addr + 1);
 		operation.args.push_back(addr + 2);
-	case CALL:
+		break;
 	case OUT:
 		operation.args.push_back(addr + 1);
+		break;
 	case HALT:
-	case RET:
 		operation.args.resize(0);
+		break;
 	}
 
 	return true;

@@ -29,7 +29,6 @@ namespace Lightning
 		bool occupied{};
 	} REG[8];
 
-	inline std::stack<Cell*> stack{};
 	inline Cell* addr{ RAM };
 	inline bool running{ true };
 

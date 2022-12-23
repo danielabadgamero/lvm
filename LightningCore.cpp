@@ -29,6 +29,8 @@ void Lightning::init()
 	Lightning::FS::loadFilesystem();
 	Lightning::CMD::loadFunctions();
 	Lightning::TEXT::loadFunctions();
+	Lightning::LL::loadFunctions();
+	Lightning::OP::loadOperations();
 }
 
 void Lightning::loadProgramme()
