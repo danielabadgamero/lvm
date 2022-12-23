@@ -156,6 +156,54 @@ void Lightning::CMD::loadFunctions()
 
 	commandFunctions["start"] = []()
 	{
+		clearScreen();
+		mode = Mode::EXEC;
+		PC = RAM;
+		Cell* prgStartCell{ nullptr };
+		for (std::vector<FS::Dir::File>::iterator file{ FS::path.back()->files.begin() }; file != FS::path.back()->files.end(); file++)
+			if (file->name == command.args.at("name"))
+			{
+				std::map<std::string, int> symbols{};
+				bool prgStart{ false };
+				for (std::string line : file->contentVector)
+					if (line == "%%")
+					{
+						prgStart = true;
+						prgStartCell = PC;
+						continue;
+					}
+					else
+						if (!prgStart)
+						{
+							symbols.emplace(line, static_cast<int>(PC - RAM));
+							PC->allocated = true;
+							PC++;
+						}
+						else
+						{
+							std::vector<std::string> args{ "" };
+							for (char c : line)
+								if (c == ' ')
+									args.push_back("");
+								else
+									args.back().push_back(c);
+							PC->allocated = true;
+							PC->opcode = std::stoi(args[0]);
+							PC->Rd = std::stoi(args[1]);
+							PC->Rs1 = std::stoi(args[2]);
+							PC->Rs2 = std::stoi(args[3]);
+							try
+							{
+								PC->imm = std::stoi(args[4]);
+							}
+							catch (std::invalid_argument)
+							{
+								PC->imm = symbols[args[4]];
+							}
+							PC++;
+						}
+			}
+		PC = prgStartCell;
 	};
 
 	commandFunctions["clear"] = []()
@@ -182,7 +230,6 @@ void Lightning::CMD::loadFunctions()
 
 bool Lightning::CMD::parseCommand(std::string* input)
 {
-	// TODO: change std::map<std::string, std::string> command's arguments to std::vector
 	std::string argument{};
 	command.cmd = *input;
 	command.args.clear();

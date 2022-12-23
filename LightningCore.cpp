@@ -35,7 +35,7 @@ void Lightning::init()
 
 void Lightning::loadProgramme()
 {
-	if (FS::targetFile->contentVector.front() == "LightLang v1.1")
+	if (FS::targetFile->contentVector.front() == "LightLang v1.2")
 		FS::targetFile->contentVector.erase(FS::targetFile->contentVector.begin());
 	else
 		return;
@@ -43,5 +43,5 @@ void Lightning::loadProgramme()
 	std::vector<std::string>* bin{ &FS::path.back()->files.back().contentVector };
 	LL::compile(&FS::targetFile->contentVector, bin);
 	
-	FS::targetFile->contentVector.insert(FS::targetFile->contentVector.begin(), "LightLang v1.1");
+	FS::targetFile->contentVector.insert(FS::targetFile->contentVector.begin(), "LightLang v1.2");
 }

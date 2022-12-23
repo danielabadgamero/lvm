@@ -4,6 +4,7 @@
 #include <stack>
 #include <bitset>
 
+
 namespace Lightning
 {
 	inline enum class Mode
@@ -25,6 +26,8 @@ namespace Lightning
 
 	inline long REG[8];
 	inline std::stack<long> stack{};
+	inline constexpr int ADDR{ 0 };
+	inline constexpr int VAL{ 1 };
 
 	inline Cell* PC{ RAM };
 	inline bool running{ true };

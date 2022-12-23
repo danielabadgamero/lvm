@@ -12,7 +12,17 @@ namespace Lightning
 {
 	namespace LL
 	{
-		inline std::map<std::string, int> symbols{};
+		inline std::vector<std::string> symbols{};
+		inline std::map <std::string, std::function<void()>> functions
+		{
+			{ "alloc", nullptr },
+			{ "print", nullptr },
+			{ "set", nullptr },
+			{ "halt", nullptr },
+		};
+
+		inline std::string args{};
+		inline std::vector<std::string>* bin{};
 
 		void loadFunctions();
 		void compile(std::vector<std::string>*, std::vector<std::string>*);

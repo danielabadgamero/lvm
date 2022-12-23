@@ -103,7 +103,7 @@ void Lightning::OP::loadOperations()
 
 	operations[CALL] = []()
 	{
-		stack.push((PC + 1) - RAM);
+		stack.push(static_cast<long>((PC + 1) - RAM));
 		PC = &RAM[REG[PC->Rs1.to_ulong()]] - 1;
 	};
 
@@ -111,6 +111,16 @@ void Lightning::OP::loadOperations()
 	{
 		PC = &RAM[stack.top()] - 1;
 		stack.pop();
+	};
+
+	operations[IOUT] = []()
+	{
+		std::cout << REG[PC->Rs1.to_ulong()];
+	};
+
+	operations[COUT] = []()
+	{
+		std::cout << static_cast<char>(REG[PC->Rs1.to_ulong()]);
 	};
 
 	operations[HALT] = []()
@@ -127,7 +137,7 @@ void Lightning::OP::loadOperations()
 			PC->allocated = false;
 			PC++;
 		}
-		std::cout << "Press any key to continue...";
+		std::cout << "\n\nPress <Enter> to continue...";
 		while (!getchar());
 		std::cout << "\n";
 	};
