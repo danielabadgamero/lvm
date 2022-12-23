@@ -32,8 +32,7 @@ namespace Lightning
 			{ "open", nullptr },
 			{ "write", nullptr },
 			{ "start", nullptr },
-			{ "prg", nullptr },
-			{ "free", nullptr },
+			{ "clear", nullptr },
 		};
 
 		inline std::map<std::string, std::string> commandDescriptions{};

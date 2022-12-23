@@ -9,30 +9,6 @@
 #include "LightningCMD.h"
 #include "LightningFS.h"
 
-static void alloc(Lightning::Cell* begin, int places)
-{
-	for (int i{}; i != places; i++)
-		(begin + i)->allocated = true;
-}
-
-static void advanceAddr(int freeCells)
-{
-	bool avail{ true };
-	do
-		for (int i{}; i != freeCells; i++)
-			if ((Lightning::addr + i)->allocated)
-			{
-				avail = false;
-				Lightning::addr += i;
-				break;
-			}
-			else if (i == freeCells - 1)
-				avail = true;
-	while (!avail);
-
-	alloc(Lightning::addr, freeCells);
-}
-
 void Lightning::CMD::loadFunctions()
 {
 	commandFunctions["exit"] = []()
@@ -180,40 +156,11 @@ void Lightning::CMD::loadFunctions()
 
 	commandFunctions["start"] = []()
 	{
-		for (std::vector<FS::Dir::File>::iterator file{ FS::path.back()->files.begin() }; file != FS::path.back()->files.end(); file++)
-			if (file->name == command.args.at("name"))
-			{
-				std::vector<std::string>* vec{ &file->contentVector };
-				advanceAddr(static_cast<int>(file->contentVector.size()));
-				std::map<std::string, int> symbols{};
-				for (std::vector<std::string>::iterator i{ vec->begin() }; i != std::find(vec->begin(), vec->end(), "%%"); i++)
-				{
-					std::string name{ i->substr(0, i->find(' ')) };
-					std::string value{ i->substr(i->find(' ') + 1) };
-					addr->value = std::stoi(value);
-					symbols.emplace(name, static_cast<int>(addr - RAM));
-					addr++;
-				}
-				Cell* start{ addr };
-				for (std::vector<std::string>::iterator i{ std::find(vec->begin(), vec->end(), "%%") + 1 }; i != vec->end(); i++)
-				{
-					try
-					{
-						int n{ std::stoi(*i) };
-						addr->value = n;
-						addr++;
-					}
-					catch (std::invalid_argument)
-					{
-						addr->value = symbols.at(*i);
-						addr++;
-					}
-				}
-				addr = start;
-				mode = Mode::EXEC;
-				clearScreen();
-				break;
-			}
+	};
+
+	commandFunctions["clear"] = []()
+	{
+		clearScreen();
 	};
 
 	commandDescriptions.emplace("cd", "Change to a directory in the current path.");
@@ -230,6 +177,7 @@ void Lightning::CMD::loadFunctions()
 	commandDescriptions.emplace("start", "Execute the programme with the specified name.");
 	commandDescriptions.emplace("touch", "Create a file in the current path.");
 	commandDescriptions.emplace("write", "Write a programme's instructions to the memory.");
+	commandDescriptions.emplace("clear", "Clear the console.");
 }
 
 bool Lightning::CMD::parseCommand(std::string* input)

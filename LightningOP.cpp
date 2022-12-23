@@ -3,77 +3,138 @@
 #include <string>
 #include <iostream>
 #include <functional>
-#include <conio.h>
+#include <bitset>
 
 #include "LightningOP.h"
 #include "LightningCore.h"
 
 void Lightning::OP::loadOperations()
 {
-	operations[HALT] = []()
+	operations.resize(total_opcodes);
+
+	operations[SET] = []()
 	{
-		mode = Mode::CMD;
-		addr = RAM;
-		while (addr->allocated)
-		{
-			addr->value = 0;
-			addr->allocated = false;
-			addr++;
-		}
-		std::cout << "\n\n";
-		system("pause");
-		return RAM;
+		REG[PC->Rd.to_ulong()] = PC->imm;
 	};
 
-	operations[RWMEM] = []()
+	operations[SIE] = []()
 	{
-		(addr + operation.args[1]->value)->value = RAM[operation.args[0]->value].value;
-		return addr + 3;
+		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] == REG[PC->Rs2.to_ulong()];
 	};
 
-	operations[RMEM] = []()
+	operations[SIG] = []()
 	{
-		operation.args[1]->value = RAM[operation.args[0]->value].value;
-		return addr + 3;
+		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] > REG[PC->Rs2.to_ulong()];
+	};
+
+	operations[SIL] = []()
+	{
+		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] < REG[PC->Rs2.to_ulong()];
+	};
+
+	operations[ADD] = []()
+	{
+		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] + REG[PC->Rs2.to_ulong()];
+	};
+
+	operations[SUB] = []()
+	{
+		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] - REG[PC->Rs2.to_ulong()];
+	};
+
+	operations[MUL] = []()
+	{
+		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] * REG[PC->Rs2.to_ulong()];
+	};
+
+	operations[AND] = []()
+	{
+		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] & REG[PC->Rs2.to_ulong()];
+	};
+
+	operations[OR] = []()
+	{
+		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] | REG[PC->Rs2.to_ulong()];
+	};
+
+	operations[XOR] = []()
+	{
+		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] ^ REG[PC->Rs2.to_ulong()];
+	};
+
+	operations[NOT] = []()
+	{
+		REG[PC->Rd.to_ulong()] = ~REG[PC->Rs1.to_ulong()];
 	};
 
 	operations[WMEM] = []()
 	{
-		RAM[operation.args[0]->value].value = operation.args[1]->value;
-		return addr + 3;
+		RAM[REG[PC->Rs2.to_ulong()]].imm = REG[PC->Rs1.to_ulong()];
 	};
 
-	operations[OUT] = []()
+	operations[RMEM] = []()
 	{
-		std::cout << operation.args[0]->value << '\n';
-		return addr + 2;
+		REG[PC->Rd.to_ulong()] = RAM[REG[PC->Rs2.to_ulong()]].imm;
 	};
-}
 
-bool Lightning::OP::parseOperation()
-{
-	operation.opcode = static_cast<Opcode>(addr->value);
-	operation.args.clear();
-	switch (operation.opcode)
+	operations[JP] = []()
 	{
-	case RWMEM:
-	case RMEM:
-	case WMEM:
-		operation.args.push_back(addr + 1);
-		operation.args.push_back(addr + 2);
-		break;
-	case OUT:
-		operation.args.push_back(addr + 1);
-		break;
-	case HALT:
-		operation.args.resize(0);
-		break;
-	}
+		PC += PC->imm;
+		PC--;
+	};
 
-	return true;
+	operations[JEQZ] = []()
+	{
+		if (REG[PC->Rs1.to_ulong()] == 0)
+		{
+			PC += PC->imm;
+			PC--;
+		}
+	};
+
+	operations[JNEZ] = []()
+	{
+		if (REG[PC->Rs1.to_ulong()] != 0)
+		{
+			PC += PC->imm;
+			PC--;
+		}
+	};
+
+	operations[CALL] = []()
+	{
+		stack.push((PC + 1) - RAM);
+		PC = &RAM[REG[PC->Rs1.to_ulong()]] - 1;
+	};
+
+	operations[RET] = []()
+	{
+		PC = &RAM[stack.top()] - 1;
+		stack.pop();
+	};
+
+	operations[HALT] = []()
+	{
+		PC = RAM;
+		mode = Mode::CMD;
+		while (PC->allocated)
+		{
+			PC->imm = 0;
+			PC->opcode.reset();
+			PC->Rd.reset();
+			PC->Rs1.reset();
+			PC->Rs2.reset();
+			PC->allocated = false;
+			PC++;
+		}
+		std::cout << "Press any key to continue...";
+		while (!getchar());
+		std::cout << "\n";
+	};
 }
 
 void Lightning::OP::processOperation()
 {
-	addr = operations[operation.opcode]();
+	operations[PC->opcode.to_ulong()]();
+	PC++;
 }

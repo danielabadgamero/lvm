@@ -1,12 +1,8 @@
 #ifndef LIGHTNING_CORE
 #define LIGHTNING_CORE
 
-#include <string>
-#include <vector>
-#include <deque>
-#include <map>
-#include <functional>
 #include <stack>
+#include <bitset>
 
 namespace Lightning
 {
@@ -15,21 +11,22 @@ namespace Lightning
 		CMD,
 		TEXT,
 		EXEC,
-	} mode;
+	} mode{};
 
 	inline struct Cell
 	{
-		int value{};
+		std::bitset<5> opcode{};
+		std::bitset<3> Rd{};
+		std::bitset<3> Rs1{};
+		std::bitset<3> Rs2{};
+		long imm{};
 		bool allocated{};
-	} RAM[1 << 15];
+	} RAM[1 << 15]{};
 
-	inline struct
-	{
-		int value{};
-		bool occupied{};
-	} REG[8];
+	inline long REG[8];
+	inline std::stack<long> stack{};
 
-	inline Cell* addr{ RAM };
+	inline Cell* PC{ RAM };
 	inline bool running{ true };
 
 	void init();
