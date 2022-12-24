@@ -177,7 +177,6 @@ void Lightning::CMD::loadFunctions()
 						{
 							symbols.emplace(line, static_cast<int>(PC - RAM));
 							PC->allocated = true;
-							PC->imm = PC - RAM;
 							PC++;
 						}
 						else
