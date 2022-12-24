@@ -17,6 +17,7 @@ namespace Lightning
 		{
 			{ "alloc", nullptr },
 			{ "print", nullptr },
+			{ "println", nullptr },
 			{ "set", nullptr },
 			{ "add", nullptr },
 			{ "mul", nullptr },
