@@ -29,6 +29,8 @@ namespace Lightning
 	inline constexpr int VAL1{ 0 };
 	inline constexpr int VAL2{ 1 };
 	inline constexpr int ADDR{ 2 };
+	inline constexpr int JMP1{ 3 };
+	inline constexpr int JMP2{ 4 };
 
 	inline Cell* PC{ RAM };
 	inline bool running{ true };
