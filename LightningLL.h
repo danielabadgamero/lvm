@@ -13,11 +13,13 @@ namespace Lightning
 	namespace LL
 	{
 		inline std::vector<std::string> symbols{};
-		inline std::map <std::string, std::function<void()>> functions
+		inline std::map <std::string, std::function<void()>> keywords
 		{
 			{ "alloc", nullptr },
 			{ "print", nullptr },
 			{ "set", nullptr },
+			{ "add", nullptr },
+			{ "mul", nullptr },
 			{ "halt", nullptr },
 		};
 

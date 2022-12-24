@@ -26,8 +26,9 @@ namespace Lightning
 
 	inline long REG[8];
 	inline std::stack<long> stack{};
-	inline constexpr int ADDR{ 0 };
-	inline constexpr int VAL{ 1 };
+	inline constexpr int VAL1{ 0 };
+	inline constexpr int VAL2{ 1 };
+	inline constexpr int ADDR{ 2 };
 
 	inline Cell* PC{ RAM };
 	inline bool running{ true };

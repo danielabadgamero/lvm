@@ -37,11 +37,6 @@ void Lightning::OP::loadOperations()
 		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] + REG[PC->Rs2.to_ulong()];
 	};
 
-	operations[SUB] = []()
-	{
-		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] - REG[PC->Rs2.to_ulong()];
-	};
-
 	operations[MUL] = []()
 	{
 		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] * REG[PC->Rs2.to_ulong()];
