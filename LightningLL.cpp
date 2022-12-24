@@ -36,29 +36,11 @@ void Lightning::LL::loadFunctions()
 	{
 		if (!args.empty())
 			if (args.front() == '"' && args.back() == '"')
-			{
-				bool escape{ false };
 				for (int i{ 1 }; i != args.size() - 1; i++)
 				{
-					if (escape)
-					{
-						switch (args[i])
-						{
-						case 'n':
-							args[i] = '\n';
-							break;
-						}
-						escape = false;
-					}
-					if (args[i] == '\\' && escape == false)
-						escape = true;
-					if (!escape)
-					{
-						writeBin(OP::SET, VAL1, 0, 0, std::to_string(args[i]));
-						writeBin(OP::COUT, 0, VAL1, 0);
-					}
+					writeBin(OP::SET, VAL1, 0, 0, std::to_string(args[i]));
+					writeBin(OP::COUT, 0, VAL1, 0);
 				}
-			}
 			else
 			{
 				writeBin(OP::SET, ADDR, 0, 0, args);
@@ -77,29 +59,11 @@ void Lightning::LL::loadFunctions()
 		if (!args.empty())
 		{
 			if (args.front() == '"' && args.back() == '"')
-			{
-				bool escape{ false };
 				for (int i{ 1 }; i != args.size() - 1; i++)
 				{
-					if (escape)
-					{
-						switch (args[i])
-						{
-						case 'n':
-							args[i] = '\n';
-							break;
-						}
-						escape = false;
-					}
-					if (args[i] == '\\' && escape == false)
-						escape = true;
-					if (!escape)
-					{
-						writeBin(OP::SET, VAL1, 0, 0, std::to_string(args[i]));
-						writeBin(OP::COUT, 0, VAL1, 0);
-					}
+					writeBin(OP::SET, VAL1, 0, 0, std::to_string(args[i]));
+					writeBin(OP::COUT, 0, VAL1, 0);
 				}
-			}
 			else
 			{
 				writeBin(OP::SET, ADDR, 0, 0, args);
