@@ -4,6 +4,7 @@
 #include <stack>
 #include <bitset>
 
+#undef OUT
 
 namespace Lightning
 {
@@ -14,30 +15,26 @@ namespace Lightning
 		EXEC,
 	} mode{};
 
-	inline struct Cell
-	{
-		std::bitset<5> opcode{};
-		std::bitset<3> Rd{};
-		std::bitset<3> Rs1{};
-		std::bitset<3> Rs2{};
-		long imm{};
-		bool allocated{};
-	} RAM[1 << 15]{};
+	inline int REG[8]{};
+	inline std::stack<int> stack{};
+	inline int RAM[4096]{};
 
-	inline long REG[8];
-	inline std::stack<long> stack{};
-	inline constexpr int VAL1{ 0 };
-	inline constexpr int VAL2{ 1 };
-	inline constexpr int ADDR{ 2 };
-	inline constexpr int JMP1{ 3 };
-	inline constexpr int JMP2{ 4 };
+	constexpr int* PC{ REG };
+	constexpr int OUT{ 1 };
+	constexpr int IN1{ 2 };
+	constexpr int IN2{ 3 };
+	constexpr int ADDR1{ 4 };
+	constexpr int ADDR2{ 5 };
+	constexpr int TEST{ 6 };
+	constexpr int COUNTER{ 7 };
 
-	inline Cell* PC{ RAM };
+	constexpr int INPUT{ 512 };
+
 	inline bool running{ true };
 
 	void init();
 	void clearScreen();
-	void loadProgramme();
+	void writeBin(Lightning::OP::Opcode opcode, unsigned char Rd, unsigned char Rs1, unsigned char Rs2, short imm = 0);
 }
 
 #endif
