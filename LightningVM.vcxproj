@@ -139,10 +139,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LightningLL.h" />
-    <ClInclude Include="LightningOP.h" />
     <ClInclude Include="LightningCMD.h" />
     <ClInclude Include="LightningCore.h" />
     <ClInclude Include="LightningFS.h" />
+    <ClInclude Include="LightningOP.h" />
     <ClInclude Include="LightningTEXT.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
