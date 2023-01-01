@@ -54,8 +54,7 @@ int main()
 				}
 			break;
 		case Lightning::Mode::EXEC:
-			if (Lightning::PC->allocated)
-				Lightning::OP::processOperation();
+			Lightning::OP::processOperation();
 			break;
 		}
 	}
