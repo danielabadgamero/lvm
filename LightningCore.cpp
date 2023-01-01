@@ -33,15 +33,15 @@ void Lightning::init()
 	Lightning::OP::loadOperations();
 }
 
-void Lightning::loadProgramme()
+void Lightning::writeBin(Lightning::OP::Opcode opcode, unsigned char Rd, unsigned char Rs1, unsigned char Rs2, short imm)
 {
-	if (FS::targetFile->contentVector.front() == "LightLang v1.2")
-		FS::targetFile->contentVector.erase(FS::targetFile->contentVector.begin());
-	else
-		return;
+	using namespace Lightning;
 
-	std::vector<std::string>* bin{ &FS::path.back()->files.back().contentVector };
-	LL::compile(&FS::targetFile->contentVector, bin);
-	
-	FS::targetFile->contentVector.insert(FS::targetFile->contentVector.begin(), "LightLang v1.2");
+	RAM[*PC] = opcode << 27;
+	RAM[*PC] += Rd << 24;
+	RAM[*PC] += Rs1 << 20;
+	RAM[*PC] += Rs2 << 16;
+	RAM[*PC] += static_cast<unsigned short>(imm);
+
+	*PC += 1;
 }
