@@ -1,9 +1,6 @@
 #include <vector>
-#include <map>
-#include <string>
 #include <iostream>
-#include <functional>
-#include <bitset>
+#include <conio.h>
 
 #include "LightningOP.h"
 #include "LightningCore.h"
@@ -12,134 +9,118 @@ void Lightning::OP::loadOperations()
 {
 	operations.resize(total_opcodes);
 
+	operations[HALT] = []()
+	{
+		running = false;
+	};
+
 	operations[SET] = []()
 	{
-		REG[PC->Rd.to_ulong()] = PC->imm;
+		*instruction.Rd = instruction.imm;
 	};
 
-	operations[SIE] = []()
+	operations[SEQ] = []()
 	{
-		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] == REG[PC->Rs2.to_ulong()];
+		*instruction.Rd = *instruction.Rs1 == *instruction.Rs2;
 	};
 
-	operations[SIG] = []()
+	operations[SEQI] = []()
 	{
-		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] > REG[PC->Rs2.to_ulong()];
+		*instruction.Rd = *instruction.Rs1 == instruction.imm;
 	};
 
-	operations[SIL] = []()
+	operations[SGTI] = []()
 	{
-		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] < REG[PC->Rs2.to_ulong()];
+		*instruction.Rd = *instruction.Rs1 > instruction.imm;
 	};
 
 	operations[ADD] = []()
 	{
-		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] + REG[PC->Rs2.to_ulong()];
+		*instruction.Rd = *instruction.Rs1 + *instruction.Rs2;
+	};
+
+	operations[ADDI] = []()
+	{
+		*instruction.Rd = *instruction.Rs1 + instruction.imm;
 	};
 
 	operations[MUL] = []()
 	{
-		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] * REG[PC->Rs2.to_ulong()];
+		*instruction.Rd = *instruction.Rs1 * *instruction.Rs2;
 	};
 
-	operations[AND] = []()
+	operations[MULI] = []()
 	{
-		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] & REG[PC->Rs2.to_ulong()];
-	};
-
-	operations[OR] = []()
-	{
-		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] | REG[PC->Rs2.to_ulong()];
-	};
-
-	operations[XOR] = []()
-	{
-		REG[PC->Rd.to_ulong()] = REG[PC->Rs1.to_ulong()] ^ REG[PC->Rs2.to_ulong()];
-	};
-
-	operations[NOT] = []()
-	{
-		REG[PC->Rd.to_ulong()] = ~REG[PC->Rs1.to_ulong()];
-	};
-
-	operations[WMEM] = []()
-	{
-		RAM[REG[PC->Rs2.to_ulong()]].imm = REG[PC->Rs1.to_ulong()];
-	};
-
-	operations[RMEM] = []()
-	{
-		REG[PC->Rd.to_ulong()] = RAM[REG[PC->Rs2.to_ulong()]].imm;
-	};
-
-	operations[JP] = []()
-	{
-		PC += PC->imm;
-		PC--;
-	};
-
-	operations[JEQZ] = []()
-	{
-		if (REG[PC->Rs1.to_ulong()] == 0)
-		{
-			PC += PC->imm;
-			PC--;
-		}
-	};
-
-	operations[JNEZ] = []()
-	{
-		if (REG[PC->Rs1.to_ulong()] != 0)
-		{
-			PC += PC->imm;
-			PC--;
-		}
+		*instruction.Rd = *instruction.Rs1 * instruction.imm;
 	};
 
 	operations[CALL] = []()
 	{
-		stack.push(static_cast<long>((PC + 1) - RAM));
-		PC = &RAM[REG[PC->Rs1.to_ulong()]] - 1;
+		stack.push(*PC);
+		*PC = *instruction.Rs1 - 1;
 	};
 
 	operations[RET] = []()
 	{
-		PC = &RAM[stack.top()] - 1;
+		*PC = stack.top();
 		stack.pop();
 	};
 
-	operations[IOUT] = []()
+	operations[JP] = []()
 	{
-		std::cout << REG[PC->Rs1.to_ulong()];
+		*PC += instruction.imm - 1;
+	};
+
+	operations[JT] = []()
+	{
+		if (*instruction.Rs1 != 0)
+			*PC += instruction.imm - 1;
+	};
+
+	operations[JF] = []()
+	{
+		if (*instruction.Rs1 == 0)
+			*PC += instruction.imm - 1;
+	};
+
+	operations[RMEM] = []()
+	{
+		*instruction.Rd = RAM[*instruction.Rs1];
+	};
+
+	operations[WMEM] = []()
+	{
+		RAM[*instruction.Rs2] = *instruction.Rs1;
 	};
 
 	operations[COUT] = []()
 	{
-		std::cout << static_cast<char>(REG[PC->Rs1.to_ulong()]);
+		std::cout << static_cast<char>(*instruction.Rs1);
 	};
 
-	operations[HALT] = []()
+	operations[COUTI] = []()
 	{
-		PC = RAM;
-		mode = Mode::CMD;
-		while (PC->allocated)
-		{
-			PC->imm = 0;
-			PC->opcode.reset();
-			PC->Rd.reset();
-			PC->Rs1.reset();
-			PC->Rs2.reset();
-			PC->allocated = false;
-			PC++;
-		}
-		std::cout << "\n\nPress <Enter> to continue...";
-		while (!getchar());
-		std::cout << "\n";
+		std::cout << static_cast<char>(instruction.imm);
+	};
+
+	operations[IOUT] = []()
+	{
+		std::cout << static_cast<int>(*instruction.Rs1);
+	};
+
+	operations[IN] = []()
+	{
+		*instruction.Rd = _getch();
 	};
 }
 
 void Lightning::OP::processOperation()
 {
-	operations[PC->opcode.to_ulong()]();
-	PC++;
+	instruction.opcode = (RAM[*PC] & opcode) >> 27;
+	instruction.Rd = REG + ((RAM[*PC] & Rd) >> 24);
+	instruction.Rs1 = REG + ((RAM[*PC] & Rs1) >> 20);
+	instruction.Rs2 = REG + ((RAM[*PC] & Rs2) >> 16);
+	instruction.imm = (RAM[*PC] & imm);
+	operations[instruction.opcode]();
+	*PC += 1;
 }
