@@ -7,6 +7,7 @@
 
 #include "LightningCore.h"
 #include "LightningCMD.h"
+#include "LightningLL.h"
 #include "LightningFS.h"
 
 void Lightning::CMD::loadFunctions()
@@ -146,6 +147,9 @@ void Lightning::CMD::loadFunctions()
 			if (f->name == command.args.at("name"))
 				FS::targetFile = &(*f);
 
+		if (FS::targetFile)
+			LL::compile(&FS::targetFile->contentVector, &FS::path.back()->files.back().contentVector);
+
 		FS::targetFile = nullptr;
 	};
 
@@ -157,6 +161,7 @@ void Lightning::CMD::loadFunctions()
 		for (std::vector<FS::Dir::File>::iterator file{ FS::path.back()->files.begin() }; file != FS::path.back()->files.end(); file++)
 			if (file->name == command.args.at("name"))
 			{
+				
 			}
 	};
 
@@ -178,7 +183,7 @@ void Lightning::CMD::loadFunctions()
 	commandDescriptions.emplace("rmdir", "Remove a directory in the current path and all of its contents.");
 	commandDescriptions.emplace("start", "Execute the programme with the specified name.");
 	commandDescriptions.emplace("touch", "Create a file in the current path.");
-	commandDescriptions.emplace("write", "Write a programme's instructions to the memory.");
+	commandDescriptions.emplace("write", "Create an executable file from the specified source code.");
 	commandDescriptions.emplace("clear", "Clear the console.");
 }
 

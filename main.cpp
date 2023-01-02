@@ -23,7 +23,6 @@ int main()
 			std::getline(std::cin, input);
 			if (!input.empty())
 				if (Lightning::CMD::parseCommand(&input))
-				{
 					try
 					{
 						Lightning::CMD::processCommand();
@@ -32,7 +31,6 @@ int main()
 					{
 						std::cout << e.what() << '\n';
 					}
-				}
 			break;
 		case Lightning::Mode::TEXT:
 			Lightning::FS::printFileContent();
@@ -42,7 +40,6 @@ int main()
 			Lightning::clearScreen();
 			if (!input.empty())
 				if (Lightning::TEXT::parseCommand(&input))
-				{
 					try
 					{
 						Lightning::TEXT::processCommand();
@@ -51,7 +48,6 @@ int main()
 					{
 						std::cout << e.what() << '\n';
 					}
-				}
 			break;
 		case Lightning::Mode::EXEC:
 			Lightning::OP::processOperation();

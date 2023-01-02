@@ -2,7 +2,8 @@
 #define LIGHTNING_CORE
 
 #include <stack>
-#include <bitset>
+
+#include "LightningOP.h"
 
 #undef OUT
 
