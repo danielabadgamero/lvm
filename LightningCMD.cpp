@@ -7,7 +7,6 @@
 
 #include "LightningCore.h"
 #include "LightningCMD.h"
-#include "LightningLL.h"
 #include "LightningFS.h"
 
 void Lightning::CMD::loadFunctions()
@@ -130,39 +129,6 @@ void Lightning::CMD::loadFunctions()
 		}
 		else
 			std::cout << "File not found\n";
-	};
-
-	commandFunctions["write"] = []()
-	{
-		for (std::vector<FS::Dir::File>::iterator file{ FS::path.back()->files.begin() }; file != FS::path.back()->files.end(); file++)
-			if (file->name == "main.exe")
-			{
-				FS::path.back()->files.erase(file);
-				break;
-			}
-
-		FS::path.back()->files.push_back({ "main.exe" });
-
-		for (std::vector<FS::Dir::File>::iterator f{ FS::path.back()->files.begin() }; f != FS::path.back()->files.end(); f++)
-			if (f->name == command.args.at("name"))
-				FS::targetFile = &(*f);
-
-		if (FS::targetFile)
-			LL::compile(&FS::targetFile->contentVector, &FS::path.back()->files.back().contentVector);
-
-		FS::targetFile = nullptr;
-	};
-
-	commandFunctions["start"] = []()
-	{
-		clearScreen();
-		mode = Mode::EXEC;
-		*PC = 0;
-		for (std::vector<FS::Dir::File>::iterator file{ FS::path.back()->files.begin() }; file != FS::path.back()->files.end(); file++)
-			if (file->name == command.args.at("name"))
-			{
-				
-			}
 	};
 
 	commandFunctions["clear"] = []()

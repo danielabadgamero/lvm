@@ -30,8 +30,6 @@ namespace Lightning
 			{ "rm", nullptr },
 			{ "print", nullptr },
 			{ "open", nullptr },
-			{ "write", nullptr },
-			{ "start", nullptr },
 			{ "clear", nullptr },
 		};
 

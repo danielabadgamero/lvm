@@ -5,7 +5,6 @@
 #include "LightningTEXT.h"
 #include "LightningFS.h"
 #include "LightningOP.h"
-#include "LightningLL.h"
 
 void Lightning::clearScreen()
 {
@@ -25,7 +24,6 @@ void Lightning::init()
 	Lightning::FS::loadFilesystem();
 	Lightning::CMD::loadFunctions();
 	Lightning::TEXT::loadFunctions();
-	Lightning::LL::loadFunctions();
 	Lightning::OP::loadOperations();
 }
 
