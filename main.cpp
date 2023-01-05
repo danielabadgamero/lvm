@@ -19,7 +19,5 @@ int main()
 		Lightning::CPU.PC += 4;
 	}
 
-	Lightning::quit();
-
 	return 0;
 }

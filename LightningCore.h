@@ -66,7 +66,7 @@ namespace Lightning
 		void process();
 	} CPU{};
 
-	inline unsigned char RAM[1ull << 32]{}; // 4GB
+	inline unsigned char RAM[1 << 30]{}; // 1GB
 	inline constexpr unsigned char ROM[1 << 20]
 	{
 		//		Opcode				Rd / #			Rs1	/ #			Rs2 / #
@@ -419,7 +419,6 @@ namespace Lightning
 		(unsigned char)CPU::SDR,	0,				0,				0,
 		(unsigned char)CPU::WMEM,	0,				0,				0,
 		(unsigned char)CPU::INC,	AR,				0,				1,
-
 	};
 
 	inline bool running{ true };
