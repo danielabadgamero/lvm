@@ -59,6 +59,8 @@ void Lightning::CPU::process()
 	case SDR:
 		REG[DR] = REG[IR] & imm24;
 		break;
+	case COUTI:
+		std::cout << static_cast<char>((REG[IR] & imm24) >> 16) << static_cast<char>((REG[IR] & imm24) >> 8) << static_cast<char>(REG[IR] & imm24);
 	case COUT:
 		std::cout << static_cast<char>(REG[(REG[IR] & Rs1) >> 8]);
 		break;
@@ -99,7 +101,15 @@ void Lightning::CPU::process()
 		stack.push(Lightning::CPU.PC / 4);
 		break;
 	case POP:
-		REG[(REG[IR] & Rd) >> 16] = stack.top();
+		REG[AR] = stack.top();
+		stack.pop();
+		break;
+	case CALL:
+		stack.push(Lightning::CPU.PC / 4 + 1);
+		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8] * 4 - 4;
+		break;
+	case RET:
+		Lightning::CPU.PC = stack.top() * 4 - 4;
 		stack.pop();
 		break;
 	default:

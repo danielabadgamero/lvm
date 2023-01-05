@@ -30,7 +30,7 @@ namespace Lightning
 		inline std::vector<std::vector<unsigned char>> filesystem
 		{
 			{
-				1, 29, 'c', 'o', 'a', 'e', 29,
+				1, 29, 'c', 'o', 'r', 'e', 29,
 				CPU::SET, R0, 0, 'H',
 				CPU::COUT, 0, R0, 0,
 				CPU::SET, R0, 0, 'e',
