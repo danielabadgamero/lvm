@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <iostream>
 #include <fstream>
+#include <conio.h>
 
 #include "LightningCore.h"
 #include "LightningFS.h"
@@ -77,7 +78,7 @@ void Lightning::CPU::process()
 		REG[(REG[IR] & Rd) >> 16] += REG[IR] & imm16;
 		break;
 	case CIN:
-		REG[(REG[IR] & Rd) >> 16] = std::cin.get();
+		REG[(REG[IR] & Rd) >> 16] = _getch();
 		break;
 	case RFS:
 		REG[DR] = FS::filesystem[REG[IR] & imm8][REG[AR]];
@@ -88,8 +89,11 @@ void Lightning::CPU::process()
 	case JMP:
 		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8];
 		break;
-	case JPI:
+	case JPIF:
 		Lightning::CPU.PC += (REG[IR] & imm24) * 4 - 4;
+		break;
+	case JPIB:
+		Lightning::CPU.PC -= (REG[IR] & imm24) * 4 + 4;
 		break;
 	case JPZ:
 		Lightning::CPU.PC = ((REG[REG[IR] & Rs2] == 0) ? (REG[(REG[IR] & Rs1) >> 8] * 4) - 4 : Lightning::CPU.PC);

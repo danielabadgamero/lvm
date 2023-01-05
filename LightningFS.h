@@ -31,11 +31,14 @@ namespace Lightning
 		{
 			{
 				1, 29, 'c', 'o', 'r', 'e', 29,
-				CPU::COUTI, 'H', 'e', 'l',
-				CPU::COUTI, 'l', 'o', ',',
-				CPU::COUTI, ' ', 'w', 'o',
-				CPU::COUTI, 'r', 'l', 'd',
-				CPU::COUTI, '!', '\n', 0,
+				CPU::SET, R0, 0, 2,
+				CPU::SET, R1, 0, '\r',
+				CPU::COUTI, '\n', '>', ' ',
+				CPU::CIN, R2, 0, 0,
+				CPU::COUT, 0, R2, 0,
+				CPU::SEQ, TR, R2, R1,
+				CPU::JNZ, 0, R0, TR,
+				CPU::JPIB, 0, 0, 4,
 				29, 0, 28
 			},
 			{}

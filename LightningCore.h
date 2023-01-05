@@ -57,7 +57,8 @@ namespace Lightning
 			RFS,	//	0	0	#	Set data register to value at filesystem in address register in partition of 8-bit immediate.
 			WFS,	//	0	0	#	Set value at filesystem in address register to data register in partition of 8-bit immediate.
 			JMP,	//	0	Rs	0	Jump to address Rs.
-			JPI,	//	#	#	#	Increse PC by 24-bit immediate times 4.
+			JPIF,	//	#	#	#	Increse PC by 24-bit immediate times 4 forward.
+			JPIB,	//	#	#	#	Increse PC by 24-bit immediate times 4 backward.
 			JPZ,	//	0	Rs1	Rs2	Jump to address Rs1 if Rs2 is zero.
 			JNZ,	//	0	Rs1	Rs2	Jump to address Rs1 if Rs2 is non-zero.
 			PUSH,	//	0	0	0	Push current address to the stack.
@@ -88,7 +89,7 @@ namespace Lightning
 	inline constexpr unsigned char ROM[1 << 20] // 1MB
 	{
 		//		Opcode				Rd / #		Rs1	/ #		Rs2 / #
-		(unsigned char)CPU::JPI,	0,			0,			9,		// skip halt instruction
+		(unsigned char)CPU::JPIF,	0,			0,			9,		// skip halt instruction
 		(unsigned char)CPU::COUTI,	'N',		'o',		' ',	// print "No bootloader found\n"
 		(unsigned char)CPU::COUTI,	'b',		'o',		'o',	// print "No bootloader found\n"
 		(unsigned char)CPU::COUTI,	't',		'l',		'o',	// print "No bootloader found\n"
@@ -100,7 +101,7 @@ namespace Lightning
 		
 		(unsigned char)CPU::SET,	HT,			0,			1,		// set direction of halt instruction
 
-		(unsigned char)CPU::JPI,	0,			0,			6,		// skip function definition
+		(unsigned char)CPU::JPIF,	0,			0,			6,		// skip function definition
 		(unsigned char)CPU::RFS,	0,			0,			0,		// read first byte of FS
 		(unsigned char)CPU::SEQ,	TR,			DR,			R0,		// test if first filesystem entry is a file
 		(unsigned char)CPU::JPZ,	0,			HT,			TR,		// jump to halt if not a file
