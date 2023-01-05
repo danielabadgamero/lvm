@@ -36,7 +36,8 @@ void Lightning::init()
 	CPU.PC = 0;
 	running = true;
 
-	FS::filesystem.resize(1ull << 32);	// 4GB
+	FS::filesystem[0].resize(512);			// 512MBs for the bootloader
+	FS::filesystem[1].resize(1ull << 32);	// 4GB for the filesystem
 }
 
 void Lightning::CPU::process()

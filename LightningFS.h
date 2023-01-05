@@ -60,7 +60,8 @@ namespace Lightning
 				CPU::SET, R0, 0, '\n',
 				CPU::COUT, 0, R0, 0,
 				29, 0, 28
-			}
+			},
+			{}
 		};
 	}
 }
