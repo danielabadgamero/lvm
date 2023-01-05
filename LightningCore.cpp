@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "LightningCore.h"
+#include "LightningFS.h"
 
 void Lightning::clearScreen()
 {
@@ -34,6 +35,8 @@ void Lightning::init()
 
 	CPU.PC = 0;
 	running = true;
+
+	FS::filesystem.resize(1ull << 32);	// 4GB
 }
 
 void Lightning::CPU::process()
@@ -73,6 +76,31 @@ void Lightning::CPU::process()
 	case CIN:
 		REG[(REG[IR] & Rd) >> 16] = std::cin.get();
 		break;
+	case RFS:
+		REG[DR] = FS::filesystem[REG[AR]];
+		break;
+	case WFS:
+		FS::filesystem[REG[AR]] = static_cast<unsigned char>(REG[DR]);
+		break;
+	case JMP:
+		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8];
+		break;
+	case JPI:
+		Lightning::CPU.PC += (REG[IR] & imm24) * 4 - 4;
+		break;
+	case JPZ:
+		Lightning::CPU.PC = ((REG[REG[IR] & Rs2] == 0) ? (REG[(REG[IR] & Rs1) >> 8] * 4) - 4 : Lightning::CPU.PC);
+		break;
+	case JNZ:
+		Lightning::CPU.PC = ((REG[REG[IR] & Rs2] != 0) ? (REG[(REG[IR] & Rs1) >> 8] * 4) - 4 : Lightning::CPU.PC);
+		break;
+	case PUSH:
+		stack.push(Lightning::CPU.PC / 4);
+		break;
+	case POP:
+		REG[(REG[IR] & Rd) >> 16] = stack.top();
+		stack.pop();
+		break;
 	default:
 		REG[(REG[IR] & Rd) >> 16] = ALU.process(static_cast<int>(REG[IR] >> 24), REG[(REG[IR] & Rs1) >> 8], REG[(REG[IR] & Rs2)]);
 	}
@@ -102,6 +130,8 @@ long long Lightning::CPU::ALU::process(int opcode, long long rs1, long long rs2)
 		return ~rs1;
 	case CPY:
 		return rs1;
+	case SEQ:
+		return rs1 == rs2;
 	default:
 		return -1;
 	}
