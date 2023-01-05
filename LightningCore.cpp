@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <iostream>
+#include <fstream>
 
 #include "LightningCore.h"
 
@@ -68,6 +69,9 @@ void Lightning::CPU::process()
 		break;
 	case INC:
 		REG[(REG[IR] & Rd) >> 16] += REG[IR] & imm16;
+		break;
+	case CIN:
+		REG[(REG[IR] & Rd) >> 16] = std::cin.get();
 		break;
 	default:
 		REG[(REG[IR] & Rd) >> 16] = ALU.process(static_cast<int>(REG[IR] >> 24), REG[(REG[IR] & Rs1) >> 8], REG[(REG[IR] & Rs2)]);
