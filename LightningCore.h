@@ -53,8 +53,8 @@ namespace Lightning
 			INC,	//	Rd  #   #   Increment Rd by 16-bit immediate.
 			RMEM,	//	0	0	0	Set data register to value at memory in address register.
 			WMEM,	//	0	0	0	Set value at memory in address register to data register.
-			RFS,	//	0	0	0	Set data register to value at filesystem in address register.
-			WFS,	//	0	0	0	Set value at filesystem in address register to data register.
+			RFS,	//	0	0	#	Set data register to value at filesystem in address register in partition of 8-bit immediate.
+			WFS,	//	0	0	#	Set value at filesystem in address register to data register in partition of 8-bit immediate.
 			JMP,	//	0	Rs	0	Jump to address Rs.
 			JPI,	//	#	#	#	Increse PC by 24-bit immediate times 4.
 			JPZ,	//	0	Rs1	Rs2	Jump to address Rs1 if Rs2 is zero.

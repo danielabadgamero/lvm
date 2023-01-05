@@ -77,10 +77,10 @@ void Lightning::CPU::process()
 		REG[(REG[IR] & Rd) >> 16] = std::cin.get();
 		break;
 	case RFS:
-		REG[DR] = FS::filesystem[REG[AR]];
+		REG[DR] = FS::filesystem[REG[IR] & imm8][REG[AR]];
 		break;
 	case WFS:
-		FS::filesystem[REG[AR]] = static_cast<unsigned char>(REG[DR]);
+		FS::filesystem[REG[IR] & imm8][REG[AR]] = static_cast<unsigned char>(REG[DR]);
 		break;
 	case JMP:
 		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8];
