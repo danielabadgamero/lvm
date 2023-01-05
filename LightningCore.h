@@ -17,6 +17,8 @@ inline constexpr int R5{ 9 }; // General purpose register 5
 inline constexpr int R6{ 10 }; // General purpose register 6
 inline constexpr int R7{ 11 }; // General purpose register 7
 
+inline constexpr int ST{ 12 }; // Status register
+
 inline constexpr int Rd		{ 0b00000000'11111111'00000000'00000000 };
 inline constexpr int Rs1	{ 0b00000000'00000000'11111111'00000000 };
 inline constexpr int Rs2	{ 0b00000000'00000000'00000000'11111111 };
@@ -57,6 +59,8 @@ namespace Lightning
 			AND,	//	Compute Rs1 & Rs2 and store the result in Rd.
 			OR,		//	Compute Rs1 | Rs2 and store the result in Rd.
 			XOR,	//	Compute Rs1 ^ Rs2 and store the result in Rd.
+			LSFT,	//	Compute Rs1 << Rs2 and store the result in Rd.
+			RSFT,	//	Compute Rs1 >> Rs2 and store the result in Rd.
 			NOT,	//	Compute complement of Rs1 and store the result in Rd.
 		};
 
