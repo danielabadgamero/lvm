@@ -105,11 +105,11 @@ void Lightning::CPU::process()
 		stack.pop();
 		break;
 	case CALL:
-		stack.push(Lightning::CPU.PC / 4 + 1);
+		stack.push(Lightning::CPU.PC);
 		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8] * 4 - 4;
 		break;
 	case RET:
-		Lightning::CPU.PC = stack.top() * 4 - 4;
+		Lightning::CPU.PC = stack.top();
 		stack.pop();
 		break;
 	default:
