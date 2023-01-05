@@ -70,7 +70,7 @@ void Lightning::CPU::process()
 		REG[DR] = RAM[REG[AR]];
 		break;
 	case WMEM:
-		RAM[REG[AR]] = REG[DR];
+		RAM[REG[AR]] = static_cast<unsigned char>(REG[DR]);
 		break;
 	default:
 		REG[(REG[IR] & Rd) >> 16] = ALU.process(static_cast<int>(REG[IR] >> 24), REG[(REG[IR] & Rs1) >> 8], REG[(REG[IR] & Rs2)]);
