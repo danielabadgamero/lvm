@@ -150,6 +150,14 @@ long long Lightning::CPU::ALU::process(int opcode, long long rs1, long long rs2)
 		return rs1;
 	case SEQ:
 		return rs1 == rs2;
+	case SGT:
+		return rs1 > rs2;
+	case SLT:
+		return rs1 < rs2;
+	case LSFT:
+		return rs1 << rs2;
+	case RSFT:
+		return rs1 >> rs2;
 	default:
 		return -1;
 	}

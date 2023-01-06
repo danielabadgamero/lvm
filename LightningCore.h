@@ -81,6 +81,10 @@ namespace Lightning
 			XOR,	//	Compute Rs1 ^ Rs2 and store the result in Rd.
 			NOT,	//	Compute complement of Rs1 and store the result in Rd.
 			SEQ,	//	Compute Rs1 == Rs2 and store the result in Rd.
+			SGT,	//	Compute Rs1 > Rs2 and store the result in Rd.
+			SLT,	//	Compute Rs1 < Rs2 and store the result in Rd.
+			LSFT,	//	Compute Rs1 << Rs2 and store the result in Rd.
+			RSFT,	//	Compute Rs1 >> Rs2 and store the result in Rd.
 		};
 
 		void process();

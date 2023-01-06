@@ -22,7 +22,7 @@ namespace Lightning
 		*		1 byte: ASCII 29 (GS)
 		*		variable size and multiple of 4: index of subdirectories
 		*		1 byte: ASCII 29 (GS)
-		*		variable size and multiple of 4: index of subfolders
+		*		variable size and multiple of 4: index of subfiles
 		* 1 byte: ASCII 28 (FS)
 		* 
 		*/
@@ -55,7 +55,7 @@ namespace Lightning
 				CPU::JNZI, 0, TR, 2,	// if a directory, skip function call
 				CPU::CALL, 0, LR, 0,	// call function to go to next entry
 
-				CPU::INC, AR, 0, 2,		// jump to folder name
+				CPU::INC, AR, 0, 1,		// jump to folder name
 
 				CPU::SET, R0, 0, 's',	// check directory name "sys"
 				CPU::CALL, 0, R1, 0,	// call check function
@@ -89,24 +89,64 @@ namespace Lightning
 				CPU::OUTI, 's', 't', 'e',
 				CPU::OUTI, 'm', ' ', 'f',
 				CPU::OUTI, 'o', 'u', 'n',
-				CPU::OUTI, 'd', '.', '\n',
+				CPU::OUTI, 'd', ' ', 'a',
+				CPU::OUTI, 't', ' ', 'a',
+				CPU::OUTI, 'd', 'd', 'r',
+				CPU::OUTI, 'e', 's', 's',
+				CPU::OUTI, ':', ' ', 0,
+
+				CPU::SET, R6, 0, 8,		// for shift operations
+				CPU::SET, R3, 0, 0,		// for final address
+
+				CPU::INC, AR, 0, 6,		// jump to directory subfiles
+				CPU::RFS, 0, 0, 1,		// read first byte of address
+				CPU::ADD, R3, DR, R3,	// build final address
+
+				CPU::INC, AR, 0, 1,		// jump to next byte
+				CPU::RFS, 0, 0, 1,		// read first byte of address
+				CPU::LSFT, R3, R3, R6,	// adjust for final address
+				CPU::ADD, R3, DR, R3,	// build final address
+
+				CPU::INC, AR, 0, 1,		// jump to next byte
+				CPU::RFS, 0, 0, 1,		// read first byte of address
+				CPU::LSFT, R3, R3, R6,	// adjust for final address
+				CPU::ADD, R3, DR, R3,	// build final address
+
+				CPU::INC, AR, 0, 1,		// jump to next byte
+				CPU::RFS, 0, 0, 1,		// read first byte of address
+				CPU::LSFT, R3, R3, R6,	// adjust for final address
+				CPU::ADD, R3, DR, R3,	// build final address
+
+				CPU::CPY, R5, R3, 0,	// save for later use
+
+				CPU::SET, TR, 0, 10,	// to print as decimal
+				CPU::CPY, R4, R3, 0,	// copy the value to divide
+				CPU::SET, TR, 0, 10,	// set to divide and substract
+				CPU::DIV, R4, R4, TR,	// get left digit
+				CPU::INC, R4, 0, 48,	// ASCII value
+				CPU::OUT, 0, R4, 0,		// print first digit
+				CPU::INC, R4, 0, (unsigned char)-48,
+				CPU::MUL, TR, TR, R4,	// to substract from initial value
+				CPU::SUB, R3, R3, TR,	// get right digit
+				CPU::INC, R3, 0, 48,	// ASCII value
+				CPU::OUT, 0, R3, 0,		// and print it
+
+				CPU::OUTI, 0, 0, '\n',
+
+				CPU::CPY, AR, R5, 0,	// load the address of the kernel
+				CPU::SET, R0, 0, 1,		// check entry is a file
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
 
 				29, 0, 0, 0, 0, 28
 			},
 			{
-				1, 29, 'a', 29,
-				'h', 'e', 'l', 'l', 'o',
-				29, 0, 0, 0, 0, 28,
-				
-				0, 29, 's', 'o', 's',
-				29, 0, 0, 0, 0, 29, 29, 28,
-
-				1, 29, 'b', 29,
-				'g', 'o', 'o', 'd', 'b', 'y', 'e',
-				29, 0, 0, 0, 0, 28,
-
 				0, 29, 's', 'y', 's',
-				29, 0, 0, 0, 0, 29, 29, 28,
+				29, 0, 0, 0, 0, 29, 29,
+				0, 0, 0, 17, 28,
+				1, 29, 
 			}
 		};
 	}
