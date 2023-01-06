@@ -6,6 +6,8 @@
 #include "LightningCore.h"
 #include "LightningFS.h"
 
+#undef OUT
+
 void Lightning::clearScreen()
 {
 	COORD tl{ 0, 0 };
@@ -60,13 +62,10 @@ void Lightning::CPU::process()
 	case SDR:
 		REG[DR] = REG[IR] & imm24;
 		break;
-	case COUTI:
+	case OUTI:
 		std::cout << static_cast<char>((REG[IR] & imm24) >> 16) << static_cast<char>((REG[IR] & imm24) >> 8) << static_cast<char>(REG[IR] & imm24);
-	case COUT:
+	case OUT:
 		std::cout << static_cast<char>(REG[(REG[IR] & Rs1) >> 8]);
-		break;
-	case IOUT:
-		std::cout << REG[(REG[IR] & Rs1) >> 8];
 		break;
 	case RMEM:
 		REG[DR] = RAM[REG[AR]];
@@ -89,17 +88,20 @@ void Lightning::CPU::process()
 	case JMP:
 		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8];
 		break;
-	case JPIF:
+	case JPI:
 		Lightning::CPU.PC += (REG[IR] & imm24) * 4 - 4;
-		break;
-	case JPIB:
-		Lightning::CPU.PC -= (REG[IR] & imm24) * 4 + 4;
 		break;
 	case JPZ:
 		Lightning::CPU.PC = ((REG[REG[IR] & Rs2] == 0) ? (REG[(REG[IR] & Rs1) >> 8] * 4) - 4 : Lightning::CPU.PC);
 		break;
+	case JPZI:
+		Lightning::CPU.PC += ((REG[REG[IR] & Rs2] == 0) ? (REG[IR] & imm8) * 4 - 4 : 0);
+		break;
 	case JNZ:
 		Lightning::CPU.PC = ((REG[REG[IR] & Rs2] != 0) ? (REG[(REG[IR] & Rs1) >> 8] * 4) - 4 : Lightning::CPU.PC);
+		break;
+	case JNZI:
+		Lightning::CPU.PC += ((REG[REG[IR] & Rs2] != 0) ? (REG[IR] & imm8) * 4 - 4 : 0);
 		break;
 	case PUSH:
 		stack.push(Lightning::CPU.PC / 4);

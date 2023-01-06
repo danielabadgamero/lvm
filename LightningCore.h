@@ -3,6 +3,8 @@
 
 #include <stack>
 
+#undef OUT
+
 inline constexpr unsigned char IR{ 0 }; // Instruction register (32-bit)
 inline constexpr unsigned char AR{ 1 }; // Address register
 inline constexpr unsigned char DR{ 2 }; // Data register
@@ -19,7 +21,7 @@ inline constexpr unsigned char R7{ 11 }; // General purpose register 7
 
 inline constexpr unsigned char ST{ 12 }; // Status register
 inline constexpr unsigned char TR{ 13 }; // Test register
-inline constexpr unsigned char HT{ 14 }; // Halt register
+inline constexpr unsigned char LR{ 14 }; // Loop address register
 
 inline constexpr int Rd		{ 0b00000000'11111111'00000000'00000000 };
 inline constexpr int Rs1	{ 0b00000000'00000000'11111111'00000000 };
@@ -48,19 +50,19 @@ namespace Lightning
 			SAR,	//	#	#	#	Set address register to 24-bit immediate.
 			SDR,	//	#	#	#	Set data register to 24-bit immediate.
 			CIN,	//	Rd	0	0	Get a character from the user into Rd.
-			COUT,	//	0	Rs	0	Print the ASCII value in Rs.
-			COUTI,	//	#	#	#	Print 3 ASCII values of each 8-bit immediate.
-			IOUT,	//	0	Rs	0	Print the integer value in Rs.
+			OUT,	//	0	Rs	0	Print the ASCII value in Rs.
+			OUTI,	//	#	#	#	Print 3 ASCII values of each 8-bit immediate.
 			INC,	//	Rd  #   #   Increment Rd by 16-bit immediate.
 			RMEM,	//	0	0	0	Set data register to value at memory in address register.
 			WMEM,	//	0	0	0	Set value at memory in address register to data register.
 			RFS,	//	0	0	#	Set data register to value at filesystem in address register in partition of 8-bit immediate.
 			WFS,	//	0	0	#	Set value at filesystem in address register to data register in partition of 8-bit immediate.
 			JMP,	//	0	Rs	0	Jump to address Rs.
-			JPIF,	//	#	#	#	Increse PC by 24-bit immediate times 4 forward.
-			JPIB,	//	#	#	#	Increse PC by 24-bit immediate times 4 backward.
+			JPI,	//	#	#	#	Increse PC by 24-bit immediate times 4 forwards.
 			JPZ,	//	0	Rs1	Rs2	Jump to address Rs1 if Rs2 is zero.
+			JPZI,	//	0	Rs1	#	Increase PC by immediate times 4 forwards if Rs1 is zero.
 			JNZ,	//	0	Rs1	Rs2	Jump to address Rs1 if Rs2 is non-zero.
+			JNZI,	//	0	Rs1	#	Increase PC by immediate times 4 forwards if Rs1 is non-zero.
 			PUSH,	//	0	0	0	Push current address to the stack.
 			POP,	//	0	0	0	Pop top address of the stack and set it to address register.
 			CALL,	//	0	Rs1	0	Push the next address to the stack and jump to address in Rs1.
@@ -71,9 +73,9 @@ namespace Lightning
 			SUB,	//	Compute Rs1 - Rs2 and store the result in Rd.
 			MUL,	//	Compute Rs1 * Rs2 and store the result in Rd.
 			DIV,	//	Compute Rs1 / Rs2 and store the result in Rd.
+			MOD,	//	Compute Rs1 % Rs2 and store the result in Rd.
 			unused1,
 			unused2,
-			MOD,	//	Compute Rs1 % Rs2 and store the result in Rd.
 			AND,	//	Compute Rs1 & Rs2 and store the result in Rd.
 			OR,		//	Compute Rs1 | Rs2 and store the result in Rd.
 			XOR,	//	Compute Rs1 ^ Rs2 and store the result in Rd.
@@ -85,26 +87,26 @@ namespace Lightning
 	} CPU{};
 
 	inline std::stack<long long> stack{};
-	inline unsigned char RAM[1 << 30]{}; // 1GB
+	inline unsigned char RAM[1 << 15]{}; // 32KB
 	inline constexpr unsigned char ROM[1 << 20] // 1MB
 	{
 		//		Opcode				Rd / #		Rs1	/ #		Rs2 / #
-		(unsigned char)CPU::JPIF,	0,			0,			9,		// skip halt instruction
-		(unsigned char)CPU::COUTI,	'N',		'o',		' ',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'b',		'o',		'o',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	't',		'l',		'o',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'a',		'd',		'e',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'r',		' ',		'f',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'o',		'u',		'n',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'd',		'!',		'\n',	// print "No bootloader found\n"
+		(unsigned char)CPU::JPI,	0,			0,			9,		// skip halt instruction
+		(unsigned char)CPU::OUTI,	'N',		'o',		' ',	// print "No bootloader found\n"
+		(unsigned char)CPU::OUTI,	'b',		'o',		'o',	// print "No bootloader found\n"
+		(unsigned char)CPU::OUTI,	't',		'l',		'o',	// print "No bootloader found\n"
+		(unsigned char)CPU::OUTI,	'a',		'd',		'e',	// print "No bootloader found\n"
+		(unsigned char)CPU::OUTI,	'r',		' ',		'f',	// print "No bootloader found\n"
+		(unsigned char)CPU::OUTI,	'o',		'u',		'n',	// print "No bootloader found\n"
+		(unsigned char)CPU::OUTI,	'd',		'!',		'\n',	// print "No bootloader found\n"
 		(unsigned char)CPU::HALT,	0,			0,			0,		// halt for further use
 		
-		(unsigned char)CPU::SET,	HT,			0,			1,		// set direction of halt instruction
+		(unsigned char)CPU::SET,	LR,			0,			1,		// set direction of halt instruction
 
-		(unsigned char)CPU::JPIF,	0,			0,			6,		// skip function definition
-		(unsigned char)CPU::RFS,	0,			0,			0,		// read first byte of FS
-		(unsigned char)CPU::SEQ,	TR,			DR,			R0,		// test if first filesystem entry is a file
-		(unsigned char)CPU::JPZ,	0,			HT,			TR,		// jump to halt if not a file
+		(unsigned char)CPU::JPI,	0,			0,			6,		// skip function definition
+		(unsigned char)CPU::RFS,	0,			0,			0,		// read next byte of filesystem
+		(unsigned char)CPU::SEQ,	TR,			DR,			R0,		// test byte
+		(unsigned char)CPU::JPZ,	0,			LR,			TR,		// jump to halt
 		(unsigned char)CPU::INC,	AR,			0,			1,		// jump to next byte
 		(unsigned char)CPU::RET,	0,			0,			0,		// return
 
