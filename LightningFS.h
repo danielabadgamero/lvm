@@ -32,13 +32,13 @@ namespace Lightning
 			{
 				1, 29, 'c', 'o', 'r', 'e', 29,
 				CPU::SET, AR, 0, 0,		// address 0 of filesystem
-				CPU::SET, LR, 0, 3,		// start of loop address
+				CPU::SET, R7, 0, 1,		// restart address
+				CPU::SET, LR, 0, 4,		// start of loop address
 
-				CPU::JPI, 0, 0, 7,		// skip function definition
+				CPU::JPI, 0, 0, 6,		// skip function definition
 				CPU::SET, R0, 0, 28,	// entry separator
 				CPU::CALL, 0, R1, 0,	// call check function
-				CPU::JNZI, 0, TR, 3,	// skip recursivity if new file
-				CPU::INC, AR, 0, 1,		// next byte
+				CPU::JNZI, 0, TR, 2,	// skip recursivity if new file
 				CPU::CALL, 0, LR, 0,	// recursive call
 				CPU::RET, 0, 0, 0,		// return
 
@@ -56,24 +56,57 @@ namespace Lightning
 				CPU::CALL, 0, LR, 0,	// call function to go to next entry
 
 				CPU::INC, AR, 0, 2,		// jump to folder name
-				CPU::RFS, 0, 0, 1,
-				CPU::OUT, 0, DR, 0,
-				CPU::INC, AR, 0, 1,		// jump to next byte
-				CPU::RFS, 0, 0, 1,
-				CPU::OUT, 0, DR, 0,
-				CPU::INC, AR, 0, 1,		// jump to next byte
-				CPU::RFS, 0, 0, 1,
-				CPU::OUT, 0, DR, 0,
 
-				29, 0, 28
+				CPU::SET, R0, 0, 's',	// check directory name "sys"
+				CPU::CALL, 0, R1, 0,	// call check function
+				CPU::JNZI, 0, TR, 3,	// correct character for name
+				CPU::CALL, 0, LR, 0,	// wrong character name
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::SET, R0, 0, 'y',	// check directory name "sys"
+				CPU::CALL, 0, R1, 0,	// call check function
+				CPU::JNZI, 0, TR, 3,	// correct character for name
+				CPU::CALL, 0, LR, 0,	// wrong character name
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::SET, R0, 0, 's',	// check directory name "sys"
+				CPU::CALL, 0, R1, 0,	// call check function
+				CPU::JNZI, 0, TR, 3,	// correct character for name
+				CPU::CALL, 0, LR, 0,	// wrong character name
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::SET, R0, 0, 28,	// check directory name "sys"
+				CPU::INC, R0, 0, 1,		// adjust to 29
+				CPU::CALL, 0, R1, 0,	// call check function
+				CPU::JNZI, 0, TR, 3,	// correct character for name
+				CPU::CALL, 0, LR, 0,	// wrong character name
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::OUTI, 'O', 'p', 'e',
+				CPU::OUTI, 'r', 'a', 't',
+				CPU::OUTI, 'i', 'n', 'g',
+				CPU::OUTI, ' ', 's', 'y',
+				CPU::OUTI, 's', 't', 'e',
+				CPU::OUTI, 'm', ' ', 'f',
+				CPU::OUTI, 'o', 'u', 'n',
+				CPU::OUTI, 'd', '.', '\n',
+
+				29, 0, 0, 0, 0, 28
 			},
 			{
 				1, 29, 'a', 29,
 				'h', 'e', 'l', 'l', 'o',
-				29, 0, 28,
+				29, 0, 0, 0, 0, 28,
 				
-				0, 29, 's', 'y', 's', 29,
-				0, 29, 29, 28,
+				0, 29, 's', 'o', 's',
+				29, 0, 0, 0, 0, 29, 29, 28,
+
+				1, 29, 'b', 29,
+				'g', 'o', 'o', 'd', 'b', 'y', 'e',
+				29, 0, 0, 0, 0, 28,
+
+				0, 29, 's', 'y', 's',
+				29, 0, 0, 0, 0, 29, 29, 28,
 			}
 		};
 	}

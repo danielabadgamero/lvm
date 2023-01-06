@@ -75,7 +75,7 @@ void Lightning::CPU::process()
 		RAM[REG[AR]] = static_cast<unsigned char>(REG[DR]);
 		break;
 	case INC:
-		REG[(REG[IR] & Rd) >> 16] += REG[IR] & imm16;
+		REG[(REG[IR] & Rd) >> 16] += static_cast<char>(REG[IR] & imm16);
 		break;
 	case CIN:
 		REG[(REG[IR] & Rd) >> 16] = _getch();
@@ -87,7 +87,7 @@ void Lightning::CPU::process()
 		FS::filesystem[REG[IR] & imm8][REG[AR]] = static_cast<unsigned char>(REG[DR]);
 		break;
 	case JMP:
-		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8];
+		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8] * 4;
 		break;
 	case JPI:
 		Lightning::CPU.PC += (REG[IR] & imm24) * 4 - 4;
