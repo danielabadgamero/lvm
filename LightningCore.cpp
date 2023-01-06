@@ -1,4 +1,3 @@
-#include <windows.h>
 #include <iostream>
 #include <fstream>
 #include <conio.h>
@@ -7,19 +6,6 @@
 #include "LightningFS.h"
 
 #undef OUT
-
-void Lightning::clearScreen()
-{
-	COORD tl{ 0, 0 };
-	CONSOLE_SCREEN_BUFFER_INFO s{};
-	HANDLE console{ GetStdHandle(STD_OUTPUT_HANDLE) };
-	GetConsoleScreenBufferInfo(console, &s);
-	DWORD written{};
-	DWORD cells{ static_cast<DWORD>(s.dwSize.X * s.dwSize.Y) };
-	FillConsoleOutputCharacterW(console, ' ', cells, tl, &written);
-	FillConsoleOutputAttribute(console, s.wAttributes, cells, tl, &written);
-	SetConsoleCursorPosition(console, tl);
-}
 
 void Lightning::init()
 {
@@ -96,19 +82,19 @@ void Lightning::CPU::process()
 		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8] * 4;
 		break;
 	case JPI:
-		Lightning::CPU.PC += (REG[IR] & imm24) * 4 - 4;
+		Lightning::CPU.PC += static_cast<char>((REG[IR] & imm24) * 4 - 4);
 		break;
 	case JPZ:
 		Lightning::CPU.PC = ((REG[REG[IR] & Rs2] == 0) ? (REG[(REG[IR] & Rs1) >> 8] * 4) - 4 : Lightning::CPU.PC);
 		break;
 	case JPZI:
-		Lightning::CPU.PC += ((REG[(REG[IR] & Rs1) >> 8] == 0) ? (REG[IR] & imm8) * 4 - 4 : 0);
+		Lightning::CPU.PC += ((REG[(REG[IR] & Rs1) >> 8] == 0) ? static_cast<char>((REG[IR] & imm8) * 4 - 4) : 0);
 		break;
 	case JNZ:
 		Lightning::CPU.PC = ((REG[REG[IR] & Rs2] != 0) ? (REG[(REG[IR] & Rs1) >> 8] * 4) - 4 : Lightning::CPU.PC);
 		break;
 	case JNZI:
-		Lightning::CPU.PC += ((REG[(REG[IR] & Rs1) >> 8] != 0) ? (REG[IR] & imm8) * 4 - 4 : 0);
+		Lightning::CPU.PC += ((REG[(REG[IR] & Rs1) >> 8] != 0) ? static_cast<char>((REG[IR] & imm8) * 4 - 4) : 0);
 		break;
 	case PUSH:
 		stack.push(Lightning::CPU.PC / 4);

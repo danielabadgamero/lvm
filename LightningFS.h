@@ -31,10 +31,12 @@ namespace Lightning
 		{
 			{
 				1, 29, 'c', 'o', 'r', 'e', 29,
+				// setup
 				CPU::SET, AR, 0, 0,		// address 0 of filesystem
 				CPU::SET, R7, 0, 1,		// restart address
 				CPU::SET, LR, 0, 4,		// start of loop address
 
+				// function to point to next file or directory in filesystem
 				CPU::JPI, 0, 0, 6,		// skip function definition
 				CPU::SET, R0, 0, 28,	// entry separator
 				CPU::CALL, 0, R1, 0,	// call check function
@@ -42,6 +44,7 @@ namespace Lightning
 				CPU::CALL, 0, LR, 0,	// recursive call
 				CPU::RET, 0, 0, 0,		// return
 
+				// function to read a byte from filesystem and compare it with a parameter
 				CPU::JPI, 0, 0, 5,		// skip function definition
 				CPU::RFS, 0, 0, 1,		// read next byte of FS
 				CPU::SEQ, TR, DR, R0,	// test byte
@@ -82,6 +85,7 @@ namespace Lightning
 				CPU::CALL, 0, LR, 0,	// wrong character name
 				CPU::JMP, 0, R7, 0,		// restart
 
+				// info print: found os folder
 				CPU::COUTI, 'F', 'o', 'u',
 				CPU::COUTI, 'n', 'd', ' ',
 				CPU::COUTI, '/', 's', 'y',
@@ -184,12 +188,46 @@ namespace Lightning
 				CPU::CALL, 0, LR, 0,	// wrong character
 				CPU::JMP, 0, R7, 0,		// restart
 
+				// info print: kernel found
 				CPU::COUTI, 'F', 'o', 'u',
 				CPU::COUTI, 'n', 'd', ' ',
 				CPU::COUTI, 'k', 'r', 'n',
 				CPU::COUTI, 'l', '.', 'e',
 				CPU::COUTI, 'x', 'e', '.',
 				CPU::COUTI, '\n', 0, 0,
+
+				CPU::SET, R2, 0, 0,		// RAM address
+				CPU::CPY, R3, AR, 0,	// FS address
+				CPU::SET, R0, 0, 28,	// byte 28
+				CPU::INC, R0, 0, 1,		// adjust to 29
+
+				CPU::CPY, AR, R3, 0,	// load FS address
+				CPU::CALL, 0, R1, 0,	// read content
+				CPU::CPY, AR, R2, 0,	// load RAM address
+				CPU::JNZI, 0, TR, 5,	// exit loop if byte is 29
+				CPU::WMEM, 0, 0, 0,		// write byte
+				CPU::INC, R2, 0, 1,		// jump to next address
+				CPU::INC, R3, 0, 1,		// jump to next byte
+				CPU::JPI, 0, 0, (unsigned char)-7,
+
+				// info print: kernel written to RAM
+				CPU::COUTI, 'D', 'o', 'n',
+				CPU::COUTI, 'e', ' ', 'w',
+				CPU::COUTI, 'r', 'i', 't',
+				CPU::COUTI, 'i', 'n', 'g',
+				CPU::COUTI, ' ', 'k', 'r',
+				CPU::COUTI, 'n', 'l', '.',
+				CPU::COUTI, 'e', 'x', 'e',
+				CPU::COUTI, ' ', 't', 'o',
+				CPU::COUTI, ' ', 'm', 'e',
+				CPU::COUTI, 'm', 'o', 'r',
+				CPU::COUTI, 'y', '.', '\n',
+				
+				// self destruct sequence
+				CPU::SET, DR, 0, 0,		// byte to overwrite RAM
+				CPU::WMEM, AR, 0, 1,	// erase byte
+				CPU::INC, AR, 0, 1,		// next byte
+				CPU::JPI, 0, 0, (unsigned char)-2,
 
 				29, 0, 0, 0, 0, 28
 			},
@@ -201,7 +239,7 @@ namespace Lightning
 
 				1, 29, 'k', 'r', 'n', 'l', '.', 'e', 'x', 'e', 29,
 
-				// kernel content
+				
 
 				29, 0, 0, 0, 0, 28
 			}

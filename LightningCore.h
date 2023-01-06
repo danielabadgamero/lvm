@@ -154,7 +154,6 @@ namespace Lightning
 	inline bool running{ true };
 
 	void init();
-	void clearScreen();
 }
 
 #endif
