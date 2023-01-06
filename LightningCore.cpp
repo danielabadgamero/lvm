@@ -39,7 +39,7 @@ void Lightning::init()
 	CPU.PC = 0;
 	running = true;
 
-	FS::filesystem[0].resize(1ull << 29);			// 512MBs for the bootloader
+	FS::filesystem[0].resize(1ull << 29);	// 512MBs for the bootloader
 	FS::filesystem[1].resize(1ull << 32);	// 4GB for the filesystem
 }
 

@@ -87,8 +87,8 @@ namespace Lightning
 	} CPU{};
 
 	inline std::stack<long long> stack{};
-	inline unsigned char RAM[1 << 15]{}; // 32KB
-	inline constexpr unsigned char ROM[1 << 20] // 1MB
+	inline unsigned char RAM[1 << 20]{}; // 1MB
+	inline constexpr unsigned char ROM[1 << 15] // 32KB
 	{
 		//		Opcode				Rd / #		Rs1	/ #		Rs2 / #
 		(unsigned char)CPU::JPI,	0,			0,			9,		// skip halt instruction
