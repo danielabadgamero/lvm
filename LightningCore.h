@@ -62,8 +62,8 @@ namespace Lightning
 			INC,	//	Rd  #   #   Increment Rd by 16-bit immediate.
 			RMEM,	//	0	0	0	Set data register to value at memory in address register.
 			WMEM,	//	0	0	0	Set value at memory in address register to data register.
-			RFS,	//	0	0	#	Set data register to value at filesystem in address register in partition of 8-bit immediate.
-			WFS,	//	0	0	#	Set value at filesystem in address register to data register in partition of 8-bit immediate.
+			RFS,	//	0	0	0	Set data register to value at filesystem in address register.
+			WFS,	//	0	0	0	Set value at filesystem in address register to data register.
 			JMP,	//	0	Rs	0	Jump to address Rs.
 			JPI,	//	#	#	#	Increse PC by 24-bit immediate times 4 forwards.
 			JPZ,	//	0	Rs1	Rs2	Jump to address Rs1 if Rs2 is zero.
@@ -76,12 +76,11 @@ namespace Lightning
 			RET,	//	0	0	0	Pop top address of the stack and jump to it.
 
 			CPY,	//	Rd	Rs1	0	Set Rd to Rs1.
+			unused1,
 			ADD,	//	Compute Rs1 + Rs2 and store the result in Rd.
 			SUB,	//	Compute Rs1 - Rs2 and store the result in Rd.
 			MUL,	//	Compute Rs1 * Rs2 and store the result in Rd.
 			DIV,	//	Compute Rs1 / Rs2 and store the result in Rd.
-			unused1,
-			unused2,
 			MOD,	//	Compute Rs1 % Rs2 and store the result in Rd.
 			AND,	//	Compute Rs1 & Rs2 and store the result in Rd.
 			OR,		//	Compute Rs1 | Rs2 and store the result in Rd.
@@ -98,62 +97,10 @@ namespace Lightning
 	} CPU{};
 
 	inline std::stack<long long> stack{};
-	inline unsigned char RAM[1 << 20]{}; // 1MB
-	inline constexpr unsigned char ROM[1 << 15] // 32KB
+	inline char RAM[1 << 20]{}; // 1MB
+	inline constexpr char ROM[1 << 15] // 32KB
 	{
-		//		Opcode				Rd / #		Rs1	/ #		Rs2 / #
-		(unsigned char)CPU::JPI,	0,			0,			9,		// skip halt instruction
-		(unsigned char)CPU::COUTI,	'N',		'o',		' ',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'b',		'o',		'o',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	't',		'l',		'o',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'a',		'd',		'e',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'r',		' ',		'f',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'o',		'u',		'n',	// print "No bootloader found\n"
-		(unsigned char)CPU::COUTI,	'd',		'!',		'\n',	// print "No bootloader found\n"
-		(unsigned char)CPU::HALT,	0,			0,			0,		// halt for further use
-		
-		(unsigned char)CPU::SET,	LR,			0,			1,		// set direction of halt instruction
-
-		(unsigned char)CPU::JPI,	0,			0,			6,		// skip function definition
-		(unsigned char)CPU::RFS,	0,			0,			0,		// read next byte of filesystem
-		(unsigned char)CPU::SEQ,	TR,			DR,			R0,		// test byte
-		(unsigned char)CPU::JPZ,	0,			LR,			TR,		// jump to halt
-		(unsigned char)CPU::INC,	AR,			0,			1,		// jump to next byte
-		(unsigned char)CPU::RET,	0,			0,			0,		// return
-
-		(unsigned char)CPU::SET,	R1,			0,			11,		// address of check function
-
-		(unsigned char)CPU::SET,	R0,			0,			1,		// check if first item is a file
-		(unsigned char)CPU::CALL,	0,			R1,			0,		// call check function
-		(unsigned char)CPU::SET,	R0,			0,			29,		// check for separation character
-		(unsigned char)CPU::CALL,	0,			R1,			0,		// call check function
-		(unsigned char)CPU::SET,	R0,			0,			'c',	// check for character
-		(unsigned char)CPU::CALL,	0,			R1,			0,		// call check function
-		(unsigned char)CPU::SET,	R0,			0,			'o',	// check for character
-		(unsigned char)CPU::CALL,	0,			R1,			0,		// call check function
-		(unsigned char)CPU::SET,	R0,			0,			'r',	// check for character
-		(unsigned char)CPU::CALL,	0,			R1,			0,		// call check function
-		(unsigned char)CPU::SET,	R0,			0,			'e',	// check for character
-		(unsigned char)CPU::CALL,	0,			R1,			0,		// call check function
-		(unsigned char)CPU::SET,	R0,			0,			29,		// check for end of file
-		(unsigned char)CPU::CALL,	0,			R1,			0,		// call check function
-
-		(unsigned char)CPU::CPY,	R1,			AR,			4,		// save fs address
-		(unsigned char)CPU::SET,	R3,			0,			44,		// halt address
-		
-		(unsigned char)CPU::PUSH,	0,			0,			0,		// loop from here
-		(unsigned char)CPU::CPY,	AR,			R1,			0,		// load fs address
-		(unsigned char)CPU::RFS,	0,			0,			0,		// read next byte
-		(unsigned char)CPU::INC,	R1,			0,			1,		// jump to next byte in fs
-		(unsigned char)CPU::SEQ,	TR,			DR,			R0,		// check if end of file
-
-		(unsigned char)CPU::CPY,	AR,			R2,			0,		// load RAM address
-		(unsigned char)CPU::JNZ,	0,			R3,			TR,		// exit loop if end of file
-		(unsigned char)CPU::WMEM,	0,			0,			0,		// write into RAM
-		(unsigned char)CPU::INC,	R2,			0,			1,		// jump to next byte in RAM
-		(unsigned char)CPU::POP,	0,			0,			0,		// pop address
-		(unsigned char)CPU::JPZ,	0,			AR,			TR,		// loop if not end of file
-		(unsigned char)CPU::POP,	0,			0,			0,		// pop and exit
+		// Opcode	Rd / #	Rs1	/ #	Rs2 / #
 	};
 
 	inline bool running{ true };

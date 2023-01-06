@@ -24,9 +24,6 @@ void Lightning::init()
 
 	CPU.PC = 0;
 	running = true;
-
-	FS::filesystem[0].resize(1ull << 29);	// 512MBs for the bootloader
-	FS::filesystem[1].resize(1ull << 32);	// 4GB for the filesystem
 }
 
 void Lightning::CPU::process()
@@ -73,10 +70,10 @@ void Lightning::CPU::process()
 		REG[(REG[IR] & Rd) >> 16] = _getch();
 		break;
 	case RFS:
-		REG[DR] = FS::filesystem[REG[IR] & imm8][REG[AR]];
+		REG[DR] = FS::filesystem[REG[AR]];
 		break;
 	case WFS:
-		FS::filesystem[REG[IR] & imm8][REG[AR]] = static_cast<unsigned char>(REG[DR]);
+		FS::filesystem[REG[AR]] = static_cast<unsigned char>(REG[DR]);
 		break;
 	case JMP:
 		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8] * 4;
