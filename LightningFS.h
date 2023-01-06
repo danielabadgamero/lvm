@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "LightningCore.h"
+
 static constexpr unsigned char GET_FILE_IN_DIR{ 1 };
 
 namespace Lightning
@@ -12,33 +14,17 @@ namespace Lightning
 		/*
 		* Filesystem structure:
 		* 
-		* 1 byte: 0 for directory, 1 for file
-		* 1 byte: ASCII 29 (GS)
-		* variable size of bytes: name
-		* 1 byte: ASCII 29 (GS)
-		* if file:
-		*		variable size of bytes: file content
-		*		1 byte: ASCII 29 (GS)
-		* 4 bytes: index of parent directory. EXCEPT directory /.
-		* if directory:
-		*		1 byte: ASCII 29 (GS)
-		*		variable size and multiple of 4: index of subdirectories
-		*		1 byte: ASCII 29 (GS)
-		*		variable size and multiple of 4: index of subfiles
-		* 1 byte: ASCII 28 (FS)
+		* 
 		* 
 		*/
 
-		inline std::vector<std::vector<unsigned char>> filesystem
+		inline std::vector<std::vector<unsigned char[512]>> filesystem
 		{
 			{
-				1, 29, 'c', 'o', 'r', 'e', 29,
-				// setup
 				CPU::SET, AR, 0, 0,		// address 0 of filesystem
 				CPU::SET, R7, 0, 1,		// restart address
 				CPU::SET, LR, 0, 4,		// start of loop address
 
-				// function to point to next file or directory in filesystem
 				CPU::JPI, 0, 0, 6,		// skip function definition
 				CPU::SET, R0, 0, 28,	// entry separator
 				CPU::CALL, 0, R1, 0,	// call check function
@@ -46,7 +32,6 @@ namespace Lightning
 				CPU::CALL, 0, LR, 0,	// recursive call
 				CPU::RET, 0, 0, 0,		// return
 
-				// function to read a byte from filesystem and compare it with a parameter
 				CPU::JPI, 0, 0, 5,		// skip function definition
 				CPU::RFS, 0, 0, 1,		// read next byte of FS
 				CPU::SEQ, TR, DR, R0,	// test byte
@@ -194,13 +179,10 @@ namespace Lightning
 				CPU::INC, R3, 0, 1,		// jump to next byte
 				CPU::JPI, 0, 0, (unsigned char)-7,
 				
-				// self destruct sequence
 				CPU::SET, DR, 0, 0,		// byte to overwrite RAM
 				CPU::WMEM, AR, 0, 1,	// erase byte
 				CPU::INC, AR, 0, 1,		// next byte
 				CPU::JPI, 0, 0, (unsigned char)-2,
-
-				29, 0, 0, 0, 0, 28
 			},
 			{
 
@@ -219,6 +201,8 @@ namespace Lightning
 				29, 0, 0, 0, 0, 28
 			}
 		};
+
+		void loadFilesystem();
 	}
 }
 
