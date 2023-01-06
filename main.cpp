@@ -1,12 +1,6 @@
 #include <iostream>
-#include <string>
-#include <map>
 
 #include "LightningCore.h"
-#include "LightningCMD.h"
-#include "LightningTEXT.h"
-#include "LightningFS.h"
-#include "LightningOP.h"
 
 int main()
 {
@@ -14,45 +8,15 @@ int main()
 
 	while (Lightning::running)
 	{
-		std::string input{};
-		switch (Lightning::mode)
-		{
-		case Lightning::Mode::CMD:
-			Lightning::FS::printPath();
-			std::cout << "> ";
-			std::getline(std::cin, input);
-			if (!input.empty())
-				if (Lightning::CMD::parseCommand(&input))
-					try
-					{
-						Lightning::CMD::processCommand();
-					}
-					catch (std::exception e)
-					{
-						std::cout << e.what() << '\n';
-					}
-			break;
-		case Lightning::Mode::TEXT:
-			Lightning::FS::printFileContent();
-			Lightning::FS::printPath();
-			std::cout << "> ";
-			std::getline(std::cin, input);
-			Lightning::clearScreen();
-			if (!input.empty())
-				if (Lightning::TEXT::parseCommand(&input))
-					try
-					{
-						Lightning::TEXT::processCommand();
-					}
-					catch (std::exception e)
-					{
-						std::cout << e.what() << '\n';
-					}
-			break;
-		case Lightning::Mode::EXEC:
-			Lightning::OP::processOperation();
-			break;
-		}
+		Lightning::CPU.REG[IR] = Lightning::RAM[Lightning::CPU.PC];
+		Lightning::CPU.REG[IR] <<= 8;
+		Lightning::CPU.REG[IR] += Lightning::RAM[Lightning::CPU.PC + 1];
+		Lightning::CPU.REG[IR] <<= 8;
+		Lightning::CPU.REG[IR] += Lightning::RAM[Lightning::CPU.PC + 2];
+		Lightning::CPU.REG[IR] <<= 8;
+		Lightning::CPU.REG[IR] += Lightning::RAM[Lightning::CPU.PC + 3];
+		Lightning::CPU.process();
+		Lightning::CPU.PC += 4;
 	}
 
 	return 0;
