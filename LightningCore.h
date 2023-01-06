@@ -23,6 +23,11 @@ inline constexpr unsigned char ST{ 12 }; // Status register
 inline constexpr unsigned char TR{ 13 }; // Test register
 inline constexpr unsigned char LR{ 14 }; // Loop address register
 
+inline constexpr unsigned char P0{ 15 }; // Function parameter register
+inline constexpr unsigned char P1{ 16 }; // Function parameter register
+inline constexpr unsigned char P2{ 17 }; // Function parameter register
+inline constexpr unsigned char RT{ 18 }; // Return value register
+
 inline constexpr int Rd		{ 0b00000000'11111111'00000000'00000000 };
 inline constexpr int Rs1	{ 0b00000000'00000000'11111111'00000000 };
 inline constexpr int Rs2	{ 0b00000000'00000000'00000000'11111111 };

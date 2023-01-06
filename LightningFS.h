@@ -3,6 +3,8 @@
 
 #include <vector>
 
+static constexpr unsigned char GET_FILE_IN_DIR{ 1 };
+
 namespace Lightning
 {
 	namespace FS
@@ -84,16 +86,6 @@ namespace Lightning
 				CPU::JNZI, 0, TR, 3,	// correct character for name
 				CPU::CALL, 0, LR, 0,	// wrong character name
 				CPU::JMP, 0, R7, 0,		// restart
-
-				// info print: found os folder
-				CPU::COUTI, 'F', 'o', 'u',
-				CPU::COUTI, 'n', 'd', ' ',
-				CPU::COUTI, '/', 's', 'y',
-				CPU::COUTI, 's', ' ', 'd',
-				CPU::COUTI, 'i', 'r', 'e',
-				CPU::COUTI, 'c', 't', 'o',
-				CPU::COUTI, 'r', 'y', '.',
-				CPU::COUTI, '\n', 0, 0,
 
 				CPU::SET, R6, 0, 8,		// for shift operations
 				CPU::SET, R3, 0, 0,		// for final address
@@ -188,14 +180,6 @@ namespace Lightning
 				CPU::CALL, 0, LR, 0,	// wrong character
 				CPU::JMP, 0, R7, 0,		// restart
 
-				// info print: kernel found
-				CPU::COUTI, 'F', 'o', 'u',
-				CPU::COUTI, 'n', 'd', ' ',
-				CPU::COUTI, 'k', 'r', 'n',
-				CPU::COUTI, 'l', '.', 'e',
-				CPU::COUTI, 'x', 'e', '.',
-				CPU::COUTI, '\n', 0, 0,
-
 				CPU::SET, R2, 0, 0,		// RAM address
 				CPU::CPY, R3, AR, 0,	// FS address
 				CPU::SET, R0, 0, 28,	// byte 28
@@ -209,19 +193,6 @@ namespace Lightning
 				CPU::INC, R2, 0, 1,		// jump to next address
 				CPU::INC, R3, 0, 1,		// jump to next byte
 				CPU::JPI, 0, 0, (unsigned char)-7,
-
-				// info print: kernel written to RAM
-				CPU::COUTI, 'D', 'o', 'n',
-				CPU::COUTI, 'e', ' ', 'w',
-				CPU::COUTI, 'r', 'i', 't',
-				CPU::COUTI, 'i', 'n', 'g',
-				CPU::COUTI, ' ', 'k', 'r',
-				CPU::COUTI, 'n', 'l', '.',
-				CPU::COUTI, 'e', 'x', 'e',
-				CPU::COUTI, ' ', 't', 'o',
-				CPU::COUTI, ' ', 'm', 'e',
-				CPU::COUTI, 'm', 'o', 'r',
-				CPU::COUTI, 'y', '.', '\n',
 				
 				// self destruct sequence
 				CPU::SET, DR, 0, 0,		// byte to overwrite RAM
@@ -239,7 +210,9 @@ namespace Lightning
 
 				1, 29, 'k', 'r', 'n', 'l', '.', 'e', 'x', 'e', 29,
 
-				
+				CPU::JPI, 0, 0, 100,		// jump over routine declarations
+
+				CPU::JPI, 0, 0, 1,			// GET_FILE_IN_DIR
 
 				29, 0, 0, 0, 0, 28
 			}
