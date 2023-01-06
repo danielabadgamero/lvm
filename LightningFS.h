@@ -203,6 +203,8 @@ namespace Lightning
 				29, 0, 0, 0, 0, 28
 			},
 			{
+
+
 				0, 29, 's', 'y', 's', 29,
 				0, 0, 0, 0, 29,
 				29,
@@ -210,9 +212,9 @@ namespace Lightning
 
 				1, 29, 'k', 'r', 'n', 'l', '.', 'e', 'x', 'e', 29,
 
-				CPU::JPI, 0, 0, 100,		// jump over routine declarations
+				CPU::JPI, 0, 0, 100,		// jump over routine definitions
 
-				CPU::JPI, 0, 0, 1,			// GET_FILE_IN_DIR
+				CPU::CPY, AR, P0, 0,		// GET_FILE_IN_DIR. Params: parent_dir_index, file_name_addr, file_name_size. Returns: file_addr
 
 				29, 0, 0, 0, 0, 28
 			}
