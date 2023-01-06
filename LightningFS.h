@@ -1,40 +1,41 @@
 #ifndef LIGHTNING_FS
 #define LIGHTNING_FS
 
-#include <fstream>
-#include <filesystem>
 #include <vector>
-#include <string>
 
 namespace Lightning
 {
 	namespace FS
 	{
-		inline struct Dir
+		/*
+		* Filesystem structure:
+		* 
+		* 1 byte: 0 for directory, 1 for file
+		* 1 byte: ASCII 29 (GS)
+		* variable size of bytes: name
+		* 1 byte: ASCII 29 (GS)
+		* if file:
+		*		variable size of bytes: file content
+		*		1 byte: ASCII 29 (GS)
+		* 4 bytes: index of parent directory. EXCEPT directory /.
+		* if directory:
+		*		1 byte: ASCII 29 (GS)
+		*		variable size and multiple of 4: index of subdirectories
+		*		1 byte: ASCII 29 (GS)
+		*		variable size and multiple of 4: index of subfolders
+		* 1 byte: ASCII 28 (FS)
+		* 
+		*/
+
+		inline std::vector<std::vector<unsigned char>> filesystem
 		{
-			struct File
 			{
-				std::string name{};
-				std::vector<std::string> contentVector{};
-			};
+				1, 29, 'c', 'o', 'r', 'e', 29,
 
-			std::string name{};
-			std::vector<File> files{};
-			std::vector<Dir*> subDirs{};
-		} Filesystem{};
-
-		inline std::vector<Dir*> path{ &Filesystem };
-		inline Dir::File* targetFile{ nullptr };
-
-		inline std::ifstream fs_in{};
-		inline std::ofstream fs_out{};
-
-		void loadFilesystem();
-		void saveFilesystem();
-		void writeFilesystem(Dir*);
-		std::string getPath();
-		void printPath();
-		void printFileContent();
+				29, 0, 28
+			},
+			{}
+		};
 	}
 }
 
