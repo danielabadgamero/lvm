@@ -62,11 +62,17 @@ void Lightning::CPU::process()
 	case SDR:
 		REG[DR] = REG[IR] & imm24;
 		break;
-	case OUTI:
+	case COUTI:
 		std::cout << static_cast<char>((REG[IR] & imm24) >> 16) << static_cast<char>((REG[IR] & imm24) >> 8) << static_cast<char>(REG[IR] & imm24);
 		break;
-	case OUT:
+	case COUT:
 		std::cout << static_cast<char>(REG[(REG[IR] & Rs1) >> 8]);
+		break;
+	case IOUTI:
+		std::cout << (REG[IR] & imm24);
+		break;
+	case IOUT:
+		std::cout << (REG[(REG[IR] & Rs1) >> 8]);
 		break;
 	case RMEM:
 		REG[DR] = RAM[REG[AR]];

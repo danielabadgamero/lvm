@@ -82,18 +82,14 @@ namespace Lightning
 				CPU::CALL, 0, LR, 0,	// wrong character name
 				CPU::JMP, 0, R7, 0,		// restart
 
-				CPU::OUTI, 'O', 'p', 'e',
-				CPU::OUTI, 'r', 'a', 't',
-				CPU::OUTI, 'i', 'n', 'g',
-				CPU::OUTI, ' ', 's', 'y',
-				CPU::OUTI, 's', 't', 'e',
-				CPU::OUTI, 'm', ' ', 'f',
-				CPU::OUTI, 'o', 'u', 'n',
-				CPU::OUTI, 'd', ' ', 'a',
-				CPU::OUTI, 't', ' ', 'a',
-				CPU::OUTI, 'd', 'd', 'r',
-				CPU::OUTI, 'e', 's', 's',
-				CPU::OUTI, ':', ' ', 0,
+				CPU::COUTI, 'F', 'o', 'u',
+				CPU::COUTI, 'n', 'd', ' ',
+				CPU::COUTI, '/', 's', 'y',
+				CPU::COUTI, 's', ' ', 'd',
+				CPU::COUTI, 'i', 'r', 'e',
+				CPU::COUTI, 'c', 't', 'o',
+				CPU::COUTI, 'r', 'y', '.',
+				CPU::COUTI, '\n', 0, 0,
 
 				CPU::SET, R6, 0, 8,		// for shift operations
 				CPU::SET, R3, 0, 0,		// for final address
@@ -117,30 +113,15 @@ namespace Lightning
 				CPU::LSFT, R3, R3, R6,	// adjust for final address
 				CPU::ADD, R3, DR, R3,	// build final address
 
-				CPU::CPY, R5, R3, 0,	// save for later use
+				CPU::SET, R1, 0, 10,	// set R1 to function
+				CPU::CPY, AR, R3, 0,	// load the address of the kernel
 
-				CPU::SET, TR, 0, 10,	// to print as decimal
-				CPU::CPY, R4, R3, 0,	// copy the value to divide
-				CPU::SET, TR, 0, 10,	// set to divide and substract
-				CPU::DIV, R4, R4, TR,	// get left digit
-				CPU::INC, R4, 0, 48,	// ASCII value
-				CPU::OUT, 0, R4, 0,		// print first digit
-				CPU::INC, R4, 0, (unsigned char)-48,
-				CPU::MUL, TR, TR, R4,	// to substract from initial value
-				CPU::SUB, R3, R3, TR,	// get right digit
-				CPU::INC, R3, 0, 48,	// ASCII value
-				CPU::OUT, 0, R3, 0,		// and print it
-
-				CPU::OUTI, 0, 0, '\n',
-
-				CPU::CPY, AR, R5, 0,	// load the address of the kernel
 				CPU::SET, R0, 0, 1,		// check entry is a file
 				CPU::CALL, 0, R1, 0,	// call check character
 				CPU::JNZI, 0, TR, 3,	// correct character
 				CPU::CALL, 0, LR, 0,	// wrong character
 				CPU::JMP, 0, R7, 0,		// restart
 
-				CPU::CPY, AR, R5, 0,	// load the address of the kernel
 				CPU::SET, R0, 0, 28,	// check byte
 				CPU::INC, R0, 0, 1,		// adjust
 				CPU::CALL, 0, R1, 0,	// call check character
@@ -148,55 +129,81 @@ namespace Lightning
 				CPU::CALL, 0, LR, 0,	// wrong character
 				CPU::JMP, 0, R7, 0,		// restart
 
-				CPU::CPY, AR, R5, 0,	// load the address of the kernel
 				CPU::SET, R0, 0, 'k',	// check byte
 				CPU::CALL, 0, R1, 0,	// call check character
 				CPU::JNZI, 0, TR, 3,	// correct character
 				CPU::CALL, 0, LR, 0,	// wrong character
 				CPU::JMP, 0, R7, 0,		// restart
 
-				CPU::CPY, AR, R5, 0,	// load the address of the kernel
-				CPU::SET, R0, 0, 'e',	// check byte
-				CPU::CALL, 0, R1, 0,	// call check character
-				CPU::JNZI, 0, TR, 3,	// correct character
-				CPU::CALL, 0, LR, 0,	// wrong character
-				CPU::JMP, 0, R7, 0,		// restart
-
-				CPU::CPY, AR, R5, 0,	// load the address of the kernel
 				CPU::SET, R0, 0, 'r',	// check byte
 				CPU::CALL, 0, R1, 0,	// call check character
 				CPU::JNZI, 0, TR, 3,	// correct character
 				CPU::CALL, 0, LR, 0,	// wrong character
 				CPU::JMP, 0, R7, 0,		// restart
 
-				CPU::CPY, AR, R5, 0,	// load the address of the kernel
 				CPU::SET, R0, 0, 'n',	// check byte
 				CPU::CALL, 0, R1, 0,	// call check character
 				CPU::JNZI, 0, TR, 3,	// correct character
 				CPU::CALL, 0, LR, 0,	// wrong character
 				CPU::JMP, 0, R7, 0,		// restart
-					
-				CPU::CPY, AR, R5, 0,	// load the address of the kernel
-				CPU::SET, R0, 0, 'e',	// check byte
-				CPU::CALL, 0, R1, 0,	// call check character
-				CPU::JNZI, 0, TR, 3,	// correct character
-				CPU::CALL, 0, LR, 0,	// wrong character
-				CPU::JMP, 0, R7, 0,		// restart
-					
-				CPU::CPY, AR, R5, 0,	// load the address of the kernel
+
 				CPU::SET, R0, 0, 'l',	// check byte
 				CPU::CALL, 0, R1, 0,	// call check character
 				CPU::JNZI, 0, TR, 3,	// correct character
 				CPU::CALL, 0, LR, 0,	// wrong character
 				CPU::JMP, 0, R7, 0,		// restart
+				
+				CPU::SET, R0, 0, '.',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+				
+				CPU::SET, R0, 0, 'e',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::SET, R0, 0, 'x',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::SET, R0, 0, 'e',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::SET, R0, 0, 28,	// check byte
+				CPU::INC, R0, 0, 1,		// adjust
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::COUTI, 'F', 'o', 'u',
+				CPU::COUTI, 'n', 'd', ' ',
+				CPU::COUTI, 'k', 'r', 'n',
+				CPU::COUTI, 'l', '.', 'e',
+				CPU::COUTI, 'x', 'e', '.',
+				CPU::COUTI, '\n', 0, 0,
 
 				29, 0, 0, 0, 0, 28
 			},
 			{
-				0, 29, 's', 'y', 's',
-				29, 0, 0, 0, 0, 29, 29,
+				0, 29, 's', 'y', 's', 29,
+				0, 0, 0, 0, 29,
+				29,
 				0, 0, 0, 17, 28,
-				1, 29, 
+
+				1, 29, 'k', 'r', 'n', 'l', '.', 'e', 'x', 'e', 29,
+
+				// kernel content
+
+				29, 0, 0, 0, 0, 28
 			}
 		};
 	}

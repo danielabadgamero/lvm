@@ -50,8 +50,10 @@ namespace Lightning
 			SAR,	//	#	#	#	Set address register to 24-bit immediate.
 			SDR,	//	#	#	#	Set data register to 24-bit immediate.
 			CIN,	//	Rd	0	0	Get a character from the user into Rd.
-			OUT,	//	0	Rs	0	Print the ASCII value in Rs.
-			OUTI,	//	#	#	#	Print 3 ASCII values of each 8-bit immediate.
+			COUT,	//	0	Rs	0	Print the ASCII value in Rs.
+			COUTI,	//	#	#	#	Print 3 ASCII values of each 8-bit immediate.
+			IOUT,	//	0	Rs	0	Print integer value in Rs.
+			IOUTI,	//	#	#	#	Print 24-bit immediate.
 			INC,	//	Rd  #   #   Increment Rd by 16-bit immediate.
 			RMEM,	//	0	0	0	Set data register to value at memory in address register.
 			WMEM,	//	0	0	0	Set value at memory in address register to data register.
@@ -96,13 +98,13 @@ namespace Lightning
 	{
 		//		Opcode				Rd / #		Rs1	/ #		Rs2 / #
 		(unsigned char)CPU::JPI,	0,			0,			9,		// skip halt instruction
-		(unsigned char)CPU::OUTI,	'N',		'o',		' ',	// print "No bootloader found\n"
-		(unsigned char)CPU::OUTI,	'b',		'o',		'o',	// print "No bootloader found\n"
-		(unsigned char)CPU::OUTI,	't',		'l',		'o',	// print "No bootloader found\n"
-		(unsigned char)CPU::OUTI,	'a',		'd',		'e',	// print "No bootloader found\n"
-		(unsigned char)CPU::OUTI,	'r',		' ',		'f',	// print "No bootloader found\n"
-		(unsigned char)CPU::OUTI,	'o',		'u',		'n',	// print "No bootloader found\n"
-		(unsigned char)CPU::OUTI,	'd',		'!',		'\n',	// print "No bootloader found\n"
+		(unsigned char)CPU::COUTI,	'N',		'o',		' ',	// print "No bootloader found\n"
+		(unsigned char)CPU::COUTI,	'b',		'o',		'o',	// print "No bootloader found\n"
+		(unsigned char)CPU::COUTI,	't',		'l',		'o',	// print "No bootloader found\n"
+		(unsigned char)CPU::COUTI,	'a',		'd',		'e',	// print "No bootloader found\n"
+		(unsigned char)CPU::COUTI,	'r',		' ',		'f',	// print "No bootloader found\n"
+		(unsigned char)CPU::COUTI,	'o',		'u',		'n',	// print "No bootloader found\n"
+		(unsigned char)CPU::COUTI,	'd',		'!',		'\n',	// print "No bootloader found\n"
 		(unsigned char)CPU::HALT,	0,			0,			0,		// halt for further use
 		
 		(unsigned char)CPU::SET,	LR,			0,			1,		// set direction of halt instruction
