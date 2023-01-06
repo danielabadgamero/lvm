@@ -140,6 +140,56 @@ namespace Lightning
 				CPU::CALL, 0, LR, 0,	// wrong character
 				CPU::JMP, 0, R7, 0,		// restart
 
+				CPU::CPY, AR, R5, 0,	// load the address of the kernel
+				CPU::SET, R0, 0, 28,	// check byte
+				CPU::INC, R0, 0, 1,		// adjust
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::CPY, AR, R5, 0,	// load the address of the kernel
+				CPU::SET, R0, 0, 'k',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::CPY, AR, R5, 0,	// load the address of the kernel
+				CPU::SET, R0, 0, 'e',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::CPY, AR, R5, 0,	// load the address of the kernel
+				CPU::SET, R0, 0, 'r',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+
+				CPU::CPY, AR, R5, 0,	// load the address of the kernel
+				CPU::SET, R0, 0, 'n',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+					
+				CPU::CPY, AR, R5, 0,	// load the address of the kernel
+				CPU::SET, R0, 0, 'e',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+					
+				CPU::CPY, AR, R5, 0,	// load the address of the kernel
+				CPU::SET, R0, 0, 'l',	// check byte
+				CPU::CALL, 0, R1, 0,	// call check character
+				CPU::JNZI, 0, TR, 3,	// correct character
+				CPU::CALL, 0, LR, 0,	// wrong character
+				CPU::JMP, 0, R7, 0,		// restart
+
 				29, 0, 0, 0, 0, 28
 			},
 			{
