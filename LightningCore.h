@@ -73,9 +73,9 @@ namespace Lightning
 			SUB,	//	Compute Rs1 - Rs2 and store the result in Rd.
 			MUL,	//	Compute Rs1 * Rs2 and store the result in Rd.
 			DIV,	//	Compute Rs1 / Rs2 and store the result in Rd.
-			MOD,	//	Compute Rs1 % Rs2 and store the result in Rd.
 			unused1,
 			unused2,
+			MOD,	//	Compute Rs1 % Rs2 and store the result in Rd.
 			AND,	//	Compute Rs1 & Rs2 and store the result in Rd.
 			OR,		//	Compute Rs1 | Rs2 and store the result in Rd.
 			XOR,	//	Compute Rs1 ^ Rs2 and store the result in Rd.
@@ -142,6 +142,7 @@ namespace Lightning
 		(unsigned char)CPU::INC,	R2,			0,			1,		// jump to next byte in RAM
 		(unsigned char)CPU::POP,	0,			0,			0,		// pop address
 		(unsigned char)CPU::JPZ,	0,			AR,			TR,		// loop if not end of file
+		(unsigned char)CPU::POP,	0,			0,			0,		// pop and exit
 	};
 
 	inline bool running{ true };

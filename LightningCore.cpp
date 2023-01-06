@@ -32,14 +32,14 @@ void Lightning::init()
 		CPU.REG[IR] += ROM[CPU.PC + 2];
 		CPU.REG[IR] <<= 8;
 		CPU.REG[IR] += ROM[CPU.PC + 3];
-		CPU.process();
+ 		CPU.process();
 		CPU.PC += 4;
 	} while (CPU.REG[IR]);
 
 	CPU.PC = 0;
 	running = true;
 
-	FS::filesystem[0].resize(512);			// 512MBs for the bootloader
+	FS::filesystem[0].resize(1ull << 29);			// 512MBs for the bootloader
 	FS::filesystem[1].resize(1ull << 32);	// 4GB for the filesystem
 }
 
@@ -64,6 +64,7 @@ void Lightning::CPU::process()
 		break;
 	case OUTI:
 		std::cout << static_cast<char>((REG[IR] & imm24) >> 16) << static_cast<char>((REG[IR] & imm24) >> 8) << static_cast<char>(REG[IR] & imm24);
+		break;
 	case OUT:
 		std::cout << static_cast<char>(REG[(REG[IR] & Rs1) >> 8]);
 		break;
@@ -95,13 +96,13 @@ void Lightning::CPU::process()
 		Lightning::CPU.PC = ((REG[REG[IR] & Rs2] == 0) ? (REG[(REG[IR] & Rs1) >> 8] * 4) - 4 : Lightning::CPU.PC);
 		break;
 	case JPZI:
-		Lightning::CPU.PC += ((REG[REG[IR] & Rs2] == 0) ? (REG[IR] & imm8) * 4 - 4 : 0);
+		Lightning::CPU.PC += ((REG[(REG[IR] & Rs1) >> 8] == 0) ? (REG[IR] & imm8) * 4 - 4 : 0);
 		break;
 	case JNZ:
 		Lightning::CPU.PC = ((REG[REG[IR] & Rs2] != 0) ? (REG[(REG[IR] & Rs1) >> 8] * 4) - 4 : Lightning::CPU.PC);
 		break;
 	case JNZI:
-		Lightning::CPU.PC += ((REG[REG[IR] & Rs2] != 0) ? (REG[IR] & imm8) * 4 - 4 : 0);
+		Lightning::CPU.PC += ((REG[(REG[IR] & Rs1) >> 8] != 0) ? (REG[IR] & imm8) * 4 - 4 : 0);
 		break;
 	case PUSH:
 		stack.push(Lightning::CPU.PC / 4);
