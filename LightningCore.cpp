@@ -73,7 +73,7 @@ void Lightning::CPU::process()
 		REG[DR] = FS::filesystem[REG[AR]];
 		break;
 	case WFS:
-		FS::filesystem[REG[AR]] = static_cast<unsigned char>(REG[DR]);
+		FS::filesystem[REG[AR]] = static_cast<char>(REG[DR]);
 		break;
 	case JMP:
 		Lightning::CPU.PC = REG[(REG[IR] & Rs1) >> 8] * 4;

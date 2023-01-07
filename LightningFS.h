@@ -9,17 +9,14 @@ namespace Lightning
 	{
 		/*
 		* Filesystem structure:
-		* 1 byte: file extension / 0 for file, 1 byte: pointer to parent directory (except root)
-		* 8 bytes: 
+		* -32 bytes: file name
+		* -variable size: file content
+		* -1 byte: 26
 		* 
 		*/
 
-		inline int filesystem[1 << 29] // 2GB HDD
+		inline char filesystem[1 << 29] // 512MB HDD
 		{
-			1,					// root directory
-
-
-			1, 0,
 		};
 	}
 }
