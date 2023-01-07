@@ -107,36 +107,8 @@ namespace Lightning
 	inline char RAM[1 << 20]{}; // 1MB
 	inline constexpr char ROM[1 << 15] // 32KB
 	{
-		// Opcode	Rd / #	Rs1	/ #	Rs2 / #
-		CPU::JPI,	0,		0,		9,		// skip halt instruction
-		CPU::COUTI,	'N',	'o',	' ',	// print "No bootloader found\n"
-		CPU::COUTI,	'b',	'o',	'o',	// print "No bootloader found\n"
-		CPU::COUTI,	't',	'l',	'o',	// print "No bootloader found\n"
-		CPU::COUTI,	'a',	'd',	'e',	// print "No bootloader found\n"
-		CPU::COUTI,	'r',	' ',	'f',	// print "No bootloader found\n"
-		CPU::COUTI,	'o',	'u',	'n',	// print "No bootloader found\n"
-		CPU::COUTI,	'd',	'!',	'\n',	// print "No bootloader found\n"
-		CPU::HALT,	0,		0,		0,		// halt for further use
-		CPU::SET,	LR,		0,		1,		// set direction of halt instruction
-		
-		// function to test whether a character matches the one read in the filesystem
-		CPU::JPI,	0,		0,		6,		// skip function definition
-		CPU::RFS,	0,		0,		0,		// read next byte of filesystem
-		CPU::SEQ,	TR,		DR,		R0,		// test byte
-		CPU::JPZ,	0,		LR,		TR,		// jump to halt
-		CPU::INC,	AR,		0,		1,		// jump to next byte
-		CPU::RET,	0,		0,		0,		// return
-		CPU::SET,	R1,		0,		11,		// address of check function
-
-		// check for right structure
-		CPU::SET,	R0,		0,		0,		// is 
-		CPU::CALL,	0,		R1,		0,		// is 
-		CPU::SET,	R0,		0,		0,		// is 
-		CPU::CALL,	0,		R1,		0,		// is 
-
-		CPU::CPY,	R1,		AR,		4,		// save fs address
-		CPU::SET,	R3,		0,		44,		// halt address
-		CPU::SET,	R0,		0,		26,		// set R0 to end of file
+		CPU::INC,	R1,		0,		32,		// skip file name
+		CPU::SET,	R0,		0,		26,		// end of file character
 
 		CPU::PUSH,	0,		0,		0,		// loop from here
 		CPU::CPY,	AR,		R1,		0,		// load fs address
@@ -144,12 +116,10 @@ namespace Lightning
 		CPU::INC,	R1,		0,		1,		// jump to next byte in fs
 		CPU::SEQ,	TR,		DR,		R0,		// check if end of file
 		CPU::CPY,	AR,		R2,		0,		// load RAM address
-		CPU::JNZ,	0,		R3,		TR,		// exit loop if end of file
 		CPU::WMEM,	0,		0,		0,		// write into RAM
 		CPU::INC,	R2,		0,		1,		// jump to next byte in RAM
 		CPU::POP,	0,		0,		0,		// pop address
 		CPU::JPZ,	0,		AR,		TR,		// loop if not end of file
-		CPU::POP,	0,		0,		0,		// pop and exit
 	};
 
 	inline bool running{ true };

@@ -117,37 +117,22 @@ long long Lightning::CPU::ALU::process(int opcode, long long rs1, long long rs2)
 {
 	switch (opcode)
 	{
-	case ADD:
-		return rs1 + rs2;
-	case SUB:
-		return rs1 - rs2;
-	case MUL:
-		return rs1 * rs2;
-	case DIV:
-		return rs1 / rs2;
-	case MOD:
-		return rs1 % rs2;
-	case AND:
-		return rs1 & rs2;
-	case OR:
-		return rs1 | rs2;
-	case XOR:
-		return rs1 ^ rs2;
-	case NOT:
-		return ~rs1;
-	case CPY:
-		return rs1;
-	case SEQ:
-		return rs1 == rs2;
-	case SGT:
-		return rs1 > rs2;
-	case SLT:
-		return rs1 < rs2;
-	case LSFT:
-		return rs1 << rs2;
-	case RSFT:
-		return rs1 >> rs2;
-	default:
-		return -1;
+	case ADD:	return rs1 + rs2;
+	case SUB:	return rs1 - rs2;
+	case MUL:	return rs1 * rs2;
+	case DIV:	return rs1 / rs2;
+	case MOD:	return rs1 % rs2;
+	case AND:	return rs1 & rs2;
+	case OR:	return rs1 | rs2;
+	case XOR:	return rs1 ^ rs2;
+	case NOT:	return ~rs1;
+	case CPY:	return rs1;
+	case SEQ:	return rs1 == rs2;
+	case SGT:	return rs1 > rs2;
+	case SLT:	return rs1 < rs2;
+	case LSFT:	return rs1 << rs2;
+	case RSFT:	return rs1 >> rs2;
+
+	default:	return -1;
 	}
 }
