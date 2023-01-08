@@ -13,11 +13,11 @@ void Lightning::init()
 	{
 		CPU.REG[IR] = ROM[CPU.PC];
 		CPU.REG[IR] <<= 8;
-		CPU.REG[IR] += ROM[CPU.PC + 1];
+		CPU.REG[IR] += (unsigned char)ROM[CPU.PC + 1];
 		CPU.REG[IR] <<= 8;
-		CPU.REG[IR] += ROM[CPU.PC + 2];
+		CPU.REG[IR] += (unsigned char)ROM[CPU.PC + 2];
 		CPU.REG[IR] <<= 8;
-		CPU.REG[IR] += ROM[CPU.PC + 3];
+		CPU.REG[IR] += (unsigned char)ROM[CPU.PC + 3];
  		CPU.process();
 		CPU.PC += 4;
 	} while (CPU.REG[IR]);
@@ -50,12 +50,6 @@ void Lightning::CPU::process()
 		break;
 	case COUT:
 		std::cout << static_cast<char>(REG[(REG[IR] & Rs1) >> 8]);
-		break;
-	case IOUTI:
-		std::cout << (REG[IR] & imm24);
-		break;
-	case IOUT:
-		std::cout << (REG[(REG[IR] & Rs1) >> 8]);
 		break;
 	case RMEM:
 		REG[DR] = RAM[REG[AR]];
@@ -94,10 +88,10 @@ void Lightning::CPU::process()
 		Lightning::CPU.PC += ((REG[(REG[IR] & Rs1) >> 8] != 0) ? static_cast<char>((REG[IR] & imm8) * 4 - 4) : 0);
 		break;
 	case PUSH:
-		stack.push(Lightning::CPU.PC / 4);
+		stack.push(REG[(REG[IR] & Rs1) >> 8]);
 		break;
 	case POP:
-		REG[AR] = stack.top();
+		REG[(REG[IR] & Rd) >> 16] = stack.top();
 		stack.pop();
 		break;
 	case CALL:
