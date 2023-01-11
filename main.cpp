@@ -2,8 +2,7 @@
 
 #include "LightningCore.h"
 
-int main(int, char**)
->>>>>>> gui_2
+int main()
 {
 	Lightning::init();
 
