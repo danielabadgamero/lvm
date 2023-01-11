@@ -1,6 +1,7 @@
 #ifndef LIGHTNING_CORE
 #define LIGHTNING_CORE
 
+<<<<<<< HEAD
 #include <stack>
 
 #undef OUT
@@ -121,6 +122,22 @@ namespace Lightning
 	inline bool running{ true };
 
 	void init();
+=======
+#include <SDL.h>
+
+namespace Lightning
+{
+	inline SDL_Window* window{};
+	inline SDL_Renderer* renderer{};
+	inline SDL_Rect screen{};
+
+	inline bool running{};
+
+	void init();
+	void processEvents();
+	void draw();
+	void quit();
+>>>>>>> gui_2
 }
 
 #endif

@@ -106,11 +106,25 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
+<<<<<<< HEAD
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+=======
+      <AdditionalIncludeDirectories>D:\SDK\SDL\include;D:\SDK\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>D:\SDK\SDL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies />
+    </ProjectReference>
+>>>>>>> gui_2
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -129,12 +143,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ClCompile Include="LightningCore.cpp" />
+=======
+    <ClCompile Include="..\..\SDK\imgui\backends\imgui_impl_sdl.cpp" />
+    <ClCompile Include="..\..\SDK\imgui\backends\imgui_impl_sdlrenderer.cpp" />
+    <ClCompile Include="..\..\SDK\imgui\imgui.cpp" />
+    <ClCompile Include="..\..\SDK\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\SDK\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\SDK\imgui\imgui_filedialog.cpp" />
+    <ClCompile Include="..\..\SDK\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\SDK\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="LightningCore.cpp" />
+    <ClCompile Include="LightningFS.cpp" />
+    <ClCompile Include="LightningGUI.cpp" />
+>>>>>>> gui_2
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LightningCore.h" />
     <ClInclude Include="LightningFS.h" />
+<<<<<<< HEAD
+=======
+    <ClInclude Include="LightningGUI.h" />
+>>>>>>> gui_2
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

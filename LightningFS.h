@@ -1,12 +1,18 @@
 #ifndef LIGHTNING_FS
 #define LIGHTNING_FS
 
+<<<<<<< HEAD
 #include "LightningCore.h"
+=======
+#include <string>
+#include <vector>
+>>>>>>> gui_2
 
 namespace Lightning
 {
 	namespace FS
 	{
+<<<<<<< HEAD
 		/*
 		* Filesystem structure:
 		* -32 bytes: file name
@@ -46,6 +52,25 @@ namespace Lightning
 			CPU::RET, 0, 0, 0,
 			26,
 		};
+=======
+		inline struct Dir
+		{
+			struct File
+			{
+				Dir* parentDir{};				
+				std::string name{};
+				std::string content{};
+			};
+
+			Dir* parentDir{};
+			std::string name{};
+			std::vector<File> files{};
+			std::vector<Dir> dirs{};
+		} fs{};
+
+		void loadFilesystem();
+		void saveFilesystem();
+>>>>>>> gui_2
 	}
 }
 
