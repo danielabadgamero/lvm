@@ -1,16 +1,11 @@
-#ifndef LIGHTNING_CPU
-#define LIGHTNING_CPU
+#ifndef LIGHTNING_IO
+#define LIGHTNING_IO
 
 #include <SDL.h>
 
-namespace CPU
+namespace IO
 {
 	inline SDL_Thread* thread{};
-
-	enum Opcode
-	{
-
-	};
 
 	int cycle(void*);
 }

@@ -25,7 +25,8 @@ namespace Lightning
 
 	inline char RAM[1 << 29]{};
 
-	constexpr inline unsigned int VIDEO_TXT{ 0x1000 };
+	constexpr inline unsigned int VIDEO_TXT{ 0x00001000 };
+	constexpr inline unsigned int KEY_PRESS{ 0x00200000 };
 
 	void init();
 	void cycle();

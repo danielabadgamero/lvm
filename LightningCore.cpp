@@ -1,13 +1,16 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
+#include <SDL_image.h>
 
 #include "LightningCore.h"
 #include "LightningCPU.h"
+#include "LightningIO.h"
 
 void Lightning::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	TTF_Init();
+	IMG_Init(IMG_INIT_PNG);
 
 	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080, SDL_WINDOW_FULLSCREEN);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
@@ -17,6 +20,7 @@ void Lightning::init()
 	font = TTF_OpenFont("lucon.ttf", 20);
 
 	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", RAM);
+	IO::thread = SDL_CreateThread(IO::cycle, "IO", NULL);
 
 	for (int i{}; i != 127; i++)
 	{
@@ -25,6 +29,9 @@ void Lightning::init()
 		glyphs.push_back(texture);
 		SDL_FreeSurface(surface);
 	}
+
+	SDL_Texture* texture{ IMG_LoadTexture(renderer, "cursor.png") };
+	glyphs.push_back(texture);
 
 	SDL_ShowCursor(SDL_DISABLE);
 	running = true;
@@ -73,6 +80,7 @@ void Lightning::quit()
 		SDL_DestroyTexture(glyph);
 
 	SDL_WaitThread(CPU::thread, NULL);
+	SDL_WaitThread(IO::thread, NULL);
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
