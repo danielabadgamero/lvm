@@ -8,6 +8,8 @@ namespace Lightning
 	inline char RAM[1 << 29]{};
 
 	void init();
+	void cycle();
+	void quit();
 }
 
 #endif

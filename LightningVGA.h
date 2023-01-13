@@ -5,7 +5,7 @@ namespace Lightning
 {
 	namespace VGA
 	{
-
+		int LightningMain(void*);
 	}
 }
 
