@@ -3,14 +3,14 @@
 
 #include <SDL.h>
 
-namespace CPU
+namespace Lightning::CPU
 {
-	inline SDL_Thread* thread{};
-
 	enum Opcode
 	{
 
 	};
+
+	inline SDL_Thread* thread{};
 
 	int cycle(void*);
 }

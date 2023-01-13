@@ -19,8 +19,7 @@ void Lightning::init()
 
 	font = TTF_OpenFont("lucon.ttf", 20);
 
-	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", RAM);
-	IO::thread = SDL_CreateThread(IO::cycle, "IO", NULL);
+	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 
 	for (int i{}; i != 127; i++)
 	{
@@ -80,7 +79,6 @@ void Lightning::quit()
 		SDL_DestroyTexture(glyph);
 
 	SDL_WaitThread(CPU::thread, NULL);
-	SDL_WaitThread(IO::thread, NULL);
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);

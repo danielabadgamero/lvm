@@ -1,13 +1,15 @@
+#include <SDL.h>
+
 #include "LightningCore.h"
 #include "LightningCPU.h"
 
-int CPU::cycle(void* data)
+int Lightning::CPU::cycle(void*)
 {
-	char* RAM{ (char*)data };
+	while (!running);
 
-	while (Lightning::running)
+	while (running)
 	{
-		RAM[Lightning::VIDEO_TXT] = RAM[Lightning::KEY_PRESS];
+		RAM[VIDEO_TXT] = SDL_GetKeyName(RAM[KEY_PRESS])[0];
 	}
 
 	return 0;
