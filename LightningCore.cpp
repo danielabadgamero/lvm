@@ -11,6 +11,8 @@ void Lightning::init()
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(renderer, 0x20, 0x20, 0x40, 0xff);
 
+	SDL_GetDesktopDisplayMode(0, *screen);
+
 	VGA::thread = SDL_CreateThread(VGA::LightningMain, "VGA", nullptr);
 
 	running = true;
