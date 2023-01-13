@@ -17,8 +17,10 @@ int Lightning::VGA::LightningMain(void*)
 		for (int i{}; i != screen.w * screen.h; i++)
 		{
 			SDL_Surface* charSurface{ TTF_RenderText_Solid(font, &RAM[VIDEO_TXT + i], {0xff, 0xff, 0xff, 0xff}) };
-			SDL_Texture* charTetxure{ SDL_CreateTextureFromSurface(renderer, charSurface) };
-			SDL_Rect charPos{i % screen.w, }
+			SDL_Texture* charTexture{ SDL_CreateTextureFromSurface(renderer, charSurface) };
+			SDL_Rect charPos{ i % screen.w, static_cast<int>(i / screen.w), 25, 80 };
+
+			SDL_RenderCopy(renderer, charTexture, NULL, &charPos);
 		}
 
 		SDL_RenderPresent(renderer);
