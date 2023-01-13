@@ -4,6 +4,7 @@
 
 #include "LightningCore.h"
 #include "LightningCPU.h"
+#include "LightningIO.h"
 
 void Lightning::init()
 {
@@ -19,6 +20,7 @@ void Lightning::init()
 	font = TTF_OpenFont("lucon.ttf", 20);
 
 	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
+	IO::thread = SDL_CreateThread(IO::cycle, "IO", NULL);
 
 	for (int i{}; i != 127; i++)
 	{
@@ -31,7 +33,6 @@ void Lightning::init()
 	SDL_Texture* texture{ IMG_LoadTexture(renderer, "cursor.png") };
 	glyphs.push_back(texture);
 
-	SDL_StartTextInput();
 	SDL_ShowCursor(SDL_DISABLE);
 	running = true;
 }
@@ -44,14 +45,11 @@ void Lightning::cycle()
 		case SDL_QUIT:
 			running = false;
 			break;
-		case SDL_TEXTINPUT:
-			RAM[KEY_PRESS] = e.text.text[0];
-			break;
 		}
 
 	SDL_RenderClear(renderer);
 	
-	for (int i{}; i != (screen.w) * (screen.h / 20); i++)
+	for (int i{}; i != (screen.w / 20) * (screen.h / 20); i++)
 	{
 		SDL_Rect charPos{ i % screen.w, static_cast<int>(i / screen.w), 0, 20 };
 		
@@ -67,14 +65,13 @@ void Lightning::cycle()
 
 void Lightning::quit()
 {
-	SDL_StopTextInput();
-
 	TTF_CloseFont(font);
 
 	for (auto& glyph : glyphs)
 		SDL_DestroyTexture(glyph);
 
 	SDL_WaitThread(CPU::thread, NULL);
+	SDL_WaitThread(IO::thread, NULL);
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
