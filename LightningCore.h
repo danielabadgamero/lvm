@@ -4,6 +4,8 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
+#include <vector>
+
 namespace Lightning
 {
 	inline enum
@@ -17,6 +19,7 @@ namespace Lightning
 	inline SDL_Event e{};
 	inline SDL_DisplayMode screen{};
 	inline TTF_Font* font{};
+	inline std::vector<SDL_Texture*> glyphs{};
 
 	inline bool running{};
 

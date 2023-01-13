@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 
-namespace Lightning::CPU
+namespace CPU
 {
 	inline SDL_Thread* thread{};
 
