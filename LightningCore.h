@@ -5,6 +5,8 @@ namespace Lightning
 {
 	inline bool running{};
 
+	inline char RAM[1 << 29]{};
+
 	void init();
 }
 
