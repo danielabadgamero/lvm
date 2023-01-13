@@ -6,6 +6,12 @@
 
 namespace Lightning
 {
+	inline enum
+	{
+		TXT,
+		GPH
+	} mode{};
+
 	inline SDL_Window* window{};
 	inline SDL_Renderer* renderer{};
 	inline SDL_Event e{};
