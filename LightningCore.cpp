@@ -4,7 +4,6 @@
 
 #include "LightningCore.h"
 #include "LightningCPU.h"
-#include "LightningIO.h"
 
 void Lightning::init()
 {
@@ -32,9 +31,9 @@ void Lightning::init()
 	SDL_Texture* texture{ IMG_LoadTexture(renderer, "cursor.png") };
 	glyphs.push_back(texture);
 
+	SDL_StartTextInput();
 	SDL_ShowCursor(SDL_DISABLE);
 	running = true;
-	mode = TXT;
 }
 
 void Lightning::cycle()
@@ -45,27 +44,22 @@ void Lightning::cycle()
 		case SDL_QUIT:
 			running = false;
 			break;
+		case SDL_TEXTINPUT:
+			RAM[KEY_PRESS] = e.text.text[0];
+			break;
 		}
 
 	SDL_RenderClear(renderer);
 	
-	for (int i{}; i != screen.w * screen.h; i++)
+	for (int i{}; i != (screen.w) * (screen.h / 20); i++)
 	{
-		SDL_Rect charPos{};
-		switch (mode)
-		{
-		case TXT:
-			charPos = { i % screen.w, static_cast<int>(i / screen.w), 0, 20 };
-
-			TTF_GlyphMetrics(font, RAM[VIDEO_TXT + i], NULL, NULL, NULL, NULL, &charPos.w);
-			charPos.x *= charPos.w;
-			charPos.y *= charPos.h;
-
-			SDL_RenderCopy(renderer, glyphs.at(static_cast<uint64_t>(RAM[VIDEO_TXT + i])), NULL, &charPos);
-			break;
-		case GPH:
-			break;
-		}
+		SDL_Rect charPos{ i % screen.w, static_cast<int>(i / screen.w), 0, 20 };
+		
+		TTF_GlyphMetrics(font, RAM[VIDEO_TXT + i], NULL, NULL, NULL, NULL, &charPos.w);
+		charPos.x *= charPos.w;
+		charPos.y *= charPos.h;
+		
+		SDL_RenderCopy(renderer, glyphs.at(static_cast<uint64_t>(RAM[VIDEO_TXT + i])), NULL, &charPos);
 	}
 
 	SDL_RenderPresent(renderer);
@@ -73,6 +67,8 @@ void Lightning::cycle()
 
 void Lightning::quit()
 {
+	SDL_StopTextInput();
+
 	TTF_CloseFont(font);
 
 	for (auto& glyph : glyphs)
