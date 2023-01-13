@@ -5,10 +5,10 @@
 
 namespace Lightning
 {
-	SDL_Window* window{};
-	SDL_Renderer* renderer{};
-	SDL_Event e{};
-	SDL_DisplayMode screen{};
+	inline SDL_Window* window{};
+	inline SDL_Renderer* renderer{};
+	inline SDL_Event e{};
+	inline SDL_DisplayMode screen{};
 
 	inline bool running{};
 

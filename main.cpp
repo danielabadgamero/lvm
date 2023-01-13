@@ -6,7 +6,8 @@ int main(int, char**)
 {
 	Lightning::init();
 
-	Lightning::cycle();
+	while (Lightning::running)
+		Lightning::cycle();
 
 	Lightning::quit();
 

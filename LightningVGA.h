@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace VGA
 	{
-		SDL_Thread* thread{};
+		inline SDL_Thread* thread{};
 
 		int LightningMain(void*);
 	}
