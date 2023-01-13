@@ -16,7 +16,7 @@ void Lightning::init()
 
 	font = TTF_OpenFont("lucon.ttf", 20);
 
-	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
+	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", RAM);
 
 	for (int i{}; i != 127; i++)
 	{
