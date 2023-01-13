@@ -1,7 +1,7 @@
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include "LightningCore.h"
-#include "LightningVGA.h"
 
 void Lightning::init()
 {
@@ -10,24 +10,9 @@ void Lightning::init()
 	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080, SDL_WINDOW_FULLSCREEN);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(renderer, 0x20, 0x20, 0x40, 0xff);
-
 	SDL_GetDesktopDisplayMode(0, &screen);
 
-	RAM[VIDEO_TXT] = 'H';
-	RAM[VIDEO_TXT + 1] = 'e';
-	RAM[VIDEO_TXT + 2] = 'l';
-	RAM[VIDEO_TXT + 3] = 'l';
-	RAM[VIDEO_TXT + 4] = 'o';
-	RAM[VIDEO_TXT + 5] = ',';
-	RAM[VIDEO_TXT + 6] = ' ';
-	RAM[VIDEO_TXT + 7] = 'w';
-	RAM[VIDEO_TXT + 8] = 'o';
-	RAM[VIDEO_TXT + 9] = 'r';
-	RAM[VIDEO_TXT + 10] = 'l';
-	RAM[VIDEO_TXT + 11] = 'd';
-	RAM[VIDEO_TXT + 12] = '!';
-
-	VGA::thread = SDL_CreateThread(VGA::LightningMain, "VGA", nullptr);
+	font = TTF_OpenFont("lucon.ttf", 30);
 
 	running = true;
 }
@@ -41,11 +26,31 @@ void Lightning::cycle()
 			running = false;
 			break;
 		}
+
+	SDL_RenderClear(renderer);
+
+	for (int i{}; i != screen.w * screen.h; i++)
+	{
+		const char character[2]{ RAM[VIDEO_TXT + i], 0 };
+		SDL_Surface* charSurface{ TTF_RenderText_Solid(font, character, {0xff, 0xff, 0xff, 0xff}) };
+		SDL_Texture* charTexture{ SDL_CreateTextureFromSurface(renderer, charSurface) };
+		SDL_Rect charPos{ i % screen.w, static_cast<int>(i / screen.w) };
+		TTF_SizeText(font, character, &charPos.w, &charPos.h);
+		charPos.x *= charPos.w;
+		charPos.y *= charPos.h;
+
+		SDL_RenderCopy(renderer, charTexture, NULL, &charPos);
+
+		SDL_DestroyTexture(charTexture);
+		SDL_FreeSurface(charSurface);
+	}
+
+	SDL_RenderPresent(renderer);
 }
 
 void Lightning::quit()
 {
-	SDL_WaitThread(VGA::thread, NULL);
+	TTF_CloseFont(font);
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);

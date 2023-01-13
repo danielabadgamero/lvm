@@ -2,6 +2,7 @@
 #define LIGHTNING_CORE
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 namespace Lightning
 {
@@ -9,6 +10,7 @@ namespace Lightning
 	inline SDL_Renderer* renderer{};
 	inline SDL_Event e{};
 	inline SDL_DisplayMode screen{};
+	inline TTF_Font* font{};
 
 	inline bool running{};
 
