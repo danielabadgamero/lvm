@@ -21,7 +21,8 @@ namespace Lightning
 
 	constexpr inline unsigned int VIDEO_TXT{ 0x00001000 };
 	constexpr inline unsigned int KEY_PRESS{ 0x00200000 };
-	constexpr inline unsigned int KEY_CHAR{ 0x00200001 };
+	constexpr inline unsigned int KEY_CHAR { 0x00200004 };
+	constexpr inline unsigned int KEY_MOD  { 0x00200005 };
 
 	void init();
 	void cycle();

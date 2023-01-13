@@ -9,7 +9,7 @@ int Lightning::CPU::cycle(void*)
 
 	while (running)
 	{
-		RAM[VIDEO_TXT] = SDL_GetKeyName(RAM[KEY_PRESS])[0];
+		RAM[VIDEO_TXT] = RAM[KEY_CHAR];
 	}
 
 	return 0;
