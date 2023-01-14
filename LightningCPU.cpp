@@ -1,7 +1,7 @@
 #include "LightningCore.h"
 #include "LightningCPU.h"
 
-#define eval(n) (n > MAX_RAM ? REG[n - MAX_RAM] : n)
+#define eval(n) (n >= MAX_RAM ? REG[n - MAX_RAM] : n)
 
 int Lightning::CPU::cycle(void*)
 {
@@ -47,39 +47,51 @@ int Lightning::CPU::cycle(void*)
 			break;
 		case CMP:
 			REG[FLAGS - MAX_RAM] = (eval(RAM[PC + 1]) == eval(RAM[PC + 2]));
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) != eval(RAM[PC + 2])) << 1);
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) > eval(RAM[PC + 2])) << 2);
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) < eval(RAM[PC + 2])) << 3);
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) >= eval(RAM[PC + 2])) << 4);
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) <= eval(RAM[PC + 2])) << 5);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) != eval(RAM[PC + 2])) << 1);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) > eval(RAM[PC + 2])) << 2);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) < eval(RAM[PC + 2])) << 3);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) >= eval(RAM[PC + 2])) << 4);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) <= eval(RAM[PC + 2])) << 5);
 			PC += 3;
 			break;
 		case JEQ:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_EQ)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JNE:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_NE)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JGT:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_GT)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JLT:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_LT)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JGE:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_GE)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JLE:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_LE)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case CALL:
-			stack.push(PC + 1);
+			stack.push(PC + 2);
 			PC = RAM[PC + 1];
 			break;
 		case RET:

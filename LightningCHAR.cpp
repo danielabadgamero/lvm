@@ -3,5 +3,5 @@
 
 void Lightning::CHAR::loadFont()
 {
-	SDL_memcpy(RAM + FONT_CH + 32 * ('a' - ' '), a, 32);
+	SDL_memcpy(RAM + FONT_CH + 32 * ('a' - ' '), a, 32 * 4);
 }

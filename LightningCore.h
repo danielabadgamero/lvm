@@ -11,13 +11,13 @@ namespace Lightning
 
 	inline constexpr int MAX_RAM{ 1 << 20 };
 
-	inline constexpr int WIDTH { 600 };
-	inline constexpr int HEIGHT{ 300 };
+	inline constexpr int WIDTH { 32 };
+	inline constexpr int HEIGHT{ 32 };
 
 	inline SDL_Window* window{};
 	inline SDL_Renderer* renderer{};
 	inline SDL_Event e{};
-	inline SDL_Point screen[WIDTH * HEIGHT]{};
+	inline SDL_Point screen[WIDTH * HEIGHT / 8]{};
 
 	inline bool running{};
 
