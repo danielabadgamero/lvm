@@ -2,15 +2,29 @@
 
 #include "LightningCore.h"
 #include "LightningVGA.h"
+#include "LightningCPU.h"
 
 void Lightning::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_BORDERLESS);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	VGA::thread = SDL_CreateThread(VGA::cycle, "VGA", NULL);
+	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
+
+	RAM[0] = CPU::SET;
+	RAM[1] = CPU::R0;
+	RAM[2] = 'a';
+	RAM[3] = CPU::SET;
+	RAM[4] = CPU::R1;
+	RAM[5] = 0;
+	RAM[6] = CPU::SET;
+	RAM[7] = CPU::R2;
+	RAM[8] = 0;
+	RAM[9] = CPU::CALL;
+	RAM[10] = PRINT_CH;
 
 	SDL_ShowCursor(SDL_DISABLE);
 	running = true;
@@ -43,6 +57,7 @@ void Lightning::cycle()
 void Lightning::quit()
 {
 	SDL_WaitThread(VGA::thread, NULL);
+	SDL_WaitThread(CPU::thread, NULL);
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);

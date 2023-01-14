@@ -1,0 +1,2 @@
+#ifndef LIGHTNING_CHAR
+#define LIGHTNING_CHAR
