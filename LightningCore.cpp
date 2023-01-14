@@ -12,7 +12,7 @@ void Lightning::init()
 
 	VGA::thread = SDL_CreateThread(VGA::cycle, "VGA", NULL);
 
-	RAM[VIDEO_VGA] = 1;
+	RAM[VIDEO_VGA] = 0;
 
 	SDL_ShowCursor(SDL_DISABLE);
 	running = true;

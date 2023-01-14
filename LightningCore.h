@@ -17,8 +17,8 @@ namespace Lightning
 
 	inline bool running{};
 
-	inline char RAM[(1 << 16) - 1]{};
-	inline int REG[8]{};
+	inline char RAM[1 << 20]{};
+	inline long long REG[8]{};
 
 	void init();
 	void cycle();
