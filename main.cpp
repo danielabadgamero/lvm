@@ -2,9 +2,10 @@
 
 #include "LightningCore.h"
 
-int main(int, char**)
+int main(int, char* argv[])
 {
-	Lightning::init();
+	SDL_Point windowSize{ std::atoi(argv[1]), std::atoi(argv[2]) };
+	Lightning::init(windowSize);
 
 	while (Lightning::running)
 		Lightning::cycle();
