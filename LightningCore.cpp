@@ -26,6 +26,14 @@ void Lightning::init()
 	RAM[9] = CPU::CALL;
 	RAM[10] = PRINT_CH;
 
+	RAM[PRINT_CH + 0] = CPU::SET;
+	RAM[PRINT_CH + 1] = CPU::MAR;
+	RAM[PRINT_CH + 2] = FONT_CH;
+	RAM[PRINT_CH + 3] = CPU::SUB;
+	RAM[PRINT_CH + 4] = CPU::R0;
+	RAM[PRINT_CH + 5] = ' ';
+	RAM[PRINT_CH + 6] = CPU::MUL;
+
 	SDL_ShowCursor(SDL_DISABLE);
 	running = true;
 }

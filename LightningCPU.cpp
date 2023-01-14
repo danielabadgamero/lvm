@@ -27,20 +27,20 @@ int Lightning::CPU::cycle(void*)
 			PC += 3;
 			break;
 		case ADD:
-			eval(RAM[PC + 1]) = eval(RAM[PC + 2]) + eval(RAM[PC + 3]);
-			PC += 4;
+			eval(RAM[PC + 1]) += eval(RAM[PC + 2]);
+			PC += 3;
 			break;
 		case SUB:
-			eval(RAM[PC + 1]) = eval(RAM[PC + 2]) - eval(RAM[PC + 3]);
-			PC += 4;
+			eval(RAM[PC + 1]) -= eval(RAM[PC + 2]);
+			PC += 3;
 			break;
 		case MUL:
-			eval(RAM[PC + 1]) = eval(RAM[PC + 2]) * eval(RAM[PC + 3]);
-			PC += 4;
+			eval(RAM[PC + 1]) *= eval(RAM[PC + 2]);
+			PC += 3;
 			break;
 		case DIV:
-			eval(RAM[PC + 1]) = eval(RAM[PC + 2]) / eval(RAM[PC + 3]);
-			PC += 4;
+			eval(RAM[PC + 1]) /= eval(RAM[PC + 2]);
+			PC += 3;
 			break;
 		case JMP:
 			PC = eval(RAM[PC + 1]);

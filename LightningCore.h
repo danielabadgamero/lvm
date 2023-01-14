@@ -7,6 +7,7 @@ namespace Lightning
 {
 	inline constexpr int VIDEO{ 0x10000 };
 	inline constexpr int PRINT_CH{ 0x00200 };	// R0: character, R1: row, R2: col
+	inline constexpr int FONT_CH{ 0x01000 };
 
 	inline constexpr int MAX_RAM{ 1 << 20 };
 
