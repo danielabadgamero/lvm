@@ -4,9 +4,9 @@
 
 #include <string>
 
-int main(int, char**)
+int main(int, char** argv)
 {
-	Lightning::init();
+	Lightning::init({ std::atoi(argv[1]), std::atoi(argv[2]) });
 
 	while (Lightning::running)
 		Lightning::cycle();

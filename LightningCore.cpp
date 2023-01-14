@@ -1,14 +1,17 @@
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include "LightningCore.h"
 #include "LightningCPU.h"
 #include "LightningVGA.h"
 
-void Lightning::init()
+void Lightning::init(SDL_Point screenSize)
 {
+	windowSize = screenSize;
+
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_BORDERLESS);
+	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowSize.x, windowSize.y, SDL_WINDOW_BORDERLESS);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
 	VGA::thread = SDL_CreateThread(VGA::cycle, "VGA", NULL);
