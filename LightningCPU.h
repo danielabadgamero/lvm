@@ -13,8 +13,16 @@ namespace Lightning::CPU
 	constexpr inline unsigned long long IR{ 4 };
 	constexpr inline unsigned long long PC{ 5 };
 
-	constexpr inline unsigned long long MAR{ 6 };
-	constexpr inline unsigned long long MDR{ 7 };
+	constexpr inline unsigned long long AR{ 6 };
+	constexpr inline unsigned long long DR{ 7 };
+	constexpr inline unsigned long long AC{ 8 };
+
+	inline constexpr int Rd		{ 0b00000000'11111111'00000000'00000000 };
+	inline constexpr int Rs1	{ 0b00000000'00000000'11111111'00000000 };
+	inline constexpr int Rs2	{ 0b00000000'00000000'00000000'11111111 };
+	inline constexpr int imm8	{ 0b00000000'00000000'00000000'11111111 };
+	inline constexpr int imm16	{ 0b00000000'00000000'11111111'11111111 };
+	inline constexpr int imm24	{ 0b00000000'11111111'11111111'11111111 };
 
 	enum Opcode
 	{
