@@ -53,13 +53,6 @@ void Lightning::cycle()
 
 void Lightning::quit()
 {
-	TTF_CloseFont(font);
-
-	for (auto& glyph : glyphs)
-		SDL_DestroyTexture(glyph);
-
-	SDL_WaitThread(IO::thread, NULL);
-
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 }
