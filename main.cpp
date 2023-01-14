@@ -4,10 +4,9 @@
 
 #include <string>
 
-int main(int, char* argv[])
+int main(int, char**)
 {
-	SDL_Point windowSize{ std::atoi(argv[1]), std::atoi(argv[2]) };
-	Lightning::init(windowSize);
+	Lightning::init();
 
 	while (Lightning::running)
 		Lightning::cycle();
