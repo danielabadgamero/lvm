@@ -83,6 +83,9 @@ namespace Lightning
 	inline int8_t* r14b{ (int8_t*)&r14 };
 	inline int8_t* r15b{ (int8_t*)&r15 };
 
+	inline int64_t rip{};
+	inline int64_t rflags{};
+
 	void init(SDL_Point);
 	void cycle();
 	void quit();
