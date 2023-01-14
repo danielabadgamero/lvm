@@ -11,9 +11,9 @@ int Lightning::VGA::cycle(void*)
 	{
 		for (int i{}; i != WIDTH * HEIGHT; i++)
 			if (RAM[VIDEO_VGA + i])
-				screen[i] = { (i % WIDTH) * 5, (i / WIDTH) * 5, 5, 5 };
+				screen[i] = { (i % WIDTH), (i / WIDTH), };
 			else
-				screen[i] = { -5, -5 };
+				screen[i] = { -1, -1 };
 	}
 
 	return 0;

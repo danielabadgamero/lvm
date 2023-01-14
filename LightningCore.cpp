@@ -7,7 +7,7 @@ void Lightning::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH * 5, HEIGHT * 5, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
+	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
 	VGA::thread = SDL_CreateThread(VGA::cycle, "VGA", NULL);
@@ -35,7 +35,7 @@ void Lightning::cycle()
 	SDL_RenderClear(renderer);
 
 	SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
-	SDL_RenderFillRects(renderer, screen, WIDTH * HEIGHT);
+	SDL_RenderDrawPoints(renderer, screen, WIDTH * HEIGHT);
 
 	SDL_RenderPresent(renderer);
 }
