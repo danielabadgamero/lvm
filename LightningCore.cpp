@@ -2,6 +2,7 @@
 
 #include "LightningCore.h"
 #include "LightningCPU.h"
+#include "LightningVGA.h"
 
 void Lightning::init()
 {

@@ -5,13 +5,15 @@
 
 namespace Lightning
 {
-	inline constexpr int WIDTH { 1600 };
-	inline constexpr int HEIGHT{ 900 };
+	inline constexpr int WIDTH { 1200 };
+	inline constexpr int HEIGHT{ 675 };
+
+	inline constexpr int VIDEO{ 0x01000 };
 
 	inline SDL_Window* window{};
 	inline SDL_Renderer* renderer{};
 	inline SDL_Event e{};
-	inline SDL_Point* screen{};
+	inline SDL_Point screen[WIDTH * HEIGHT]{};
 
 	inline bool running{};
 
