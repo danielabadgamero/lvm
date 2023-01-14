@@ -3,14 +3,10 @@
   <ItemGroup>
     <ClCompile Include="LightningCore.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="LightningVGA.cpp" />
     <ClCompile Include="LightningCPU.cpp" />
-    <ClCompile Include="LightningCHAR.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LightningCore.h" />
-    <ClInclude Include="LightningVGA.h" />
     <ClInclude Include="LightningCPU.h" />
-    <ClInclude Include="LightningCHAR.h" />
   </ItemGroup>
 </Project>
