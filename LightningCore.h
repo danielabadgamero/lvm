@@ -7,8 +7,8 @@ namespace Lightning
 {
 	inline constexpr int VIDEO_VGA{ 0x00000000 };
 
-	inline constexpr int WIDTH { 600 };
-	inline constexpr int HEIGHT{ 300 };
+	inline constexpr int WIDTH { 600 / 5 };
+	inline constexpr int HEIGHT{ 300 / 5 };
 
 	inline SDL_Window* window{};
 	inline SDL_Renderer* renderer{};

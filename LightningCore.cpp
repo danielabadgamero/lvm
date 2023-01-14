@@ -7,18 +7,14 @@ void Lightning::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
+	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH * 5, HEIGHT * 5, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
 	VGA::thread = SDL_CreateThread(VGA::cycle, "VGA", NULL);
 
-	RAM[VIDEO_VGA] = 0;
-
 	SDL_ShowCursor(SDL_DISABLE);
 	running = true;
 }
-
-int index{};
 
 void Lightning::cycle()
 {
