@@ -2,6 +2,8 @@
 
 #include "LightningCore.h"
 
+#include <string>
+
 int main(int, char* argv[])
 {
 	SDL_Point windowSize{ std::atoi(argv[1]), std::atoi(argv[2]) };
