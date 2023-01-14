@@ -17,6 +17,8 @@ int Lightning::IO::cycle(void*)
 		{
 		case SDL_TEXTINPUT:
 			RAM[KEY_CHAR] = e.text.text[0];
+			if (RAM[KEY_CHAR] < 0)
+				RAM[KEY_CHAR] = 0;
 			break;
 		}
 	}
