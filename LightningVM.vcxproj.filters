@@ -3,10 +3,8 @@
   <ItemGroup>
     <ClCompile Include="LightningCore.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="LightningIO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LightningCore.h" />
-    <ClInclude Include="LightningIO.h" />
   </ItemGroup>
 </Project>

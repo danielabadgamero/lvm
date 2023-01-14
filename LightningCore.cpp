@@ -19,7 +19,6 @@ void Lightning::init()
 
 	font = TTF_OpenFont("lucon.ttf", 20);
 
-	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 	IO::thread = SDL_CreateThread(IO::cycle, "IO", NULL);
 
 	for (int i{}; i != 127; i++)
@@ -48,17 +47,6 @@ void Lightning::cycle()
 		}
 
 	SDL_RenderClear(renderer);
-	
-	for (int i{}; i != (screen.w / 20) * (screen.h / 20); i++)
-	{
-		SDL_Rect charPos{ i % screen.w, static_cast<int>(i / screen.w), 0, 20 };
-		
-		TTF_GlyphMetrics(font, RAM[VIDEO_TXT + i], NULL, NULL, NULL, NULL, &charPos.w);
-		charPos.x *= charPos.w;
-		charPos.y *= charPos.h;
-		
-		SDL_RenderCopy(renderer, glyphs.at(static_cast<uint64_t>(RAM[VIDEO_TXT + i])), NULL, &charPos);
-	}
 
 	SDL_RenderPresent(renderer);
 }
@@ -70,7 +58,6 @@ void Lightning::quit()
 	for (auto& glyph : glyphs)
 		SDL_DestroyTexture(glyph);
 
-	SDL_WaitThread(CPU::thread, NULL);
 	SDL_WaitThread(IO::thread, NULL);
 
 	SDL_DestroyWindow(window);

@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /fs
 /LightningVM.vcxproj
 /.gitignore
+/LightningVM.vcxproj.filters
+/.gitignore
