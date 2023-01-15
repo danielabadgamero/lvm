@@ -31,7 +31,7 @@ void Lightning::init(SDL_Point screenSize)
 
 	glyphs[127] = IMG_LoadTexture(renderer, "cursor.png");
 
-	cursorPos = VIDEO;
+	cursorPos = INPUT;
 
 	TTF_CloseFont(font);
 	SDL_ShowCursor(SDL_DISABLE);
@@ -51,7 +51,7 @@ void Lightning::cycle()
 				break;
 			case SDL_SCANCODE_BACKSPACE:
 				RAM[cursorPos] = 0;
-				if (cursorPos > VIDEO)
+				if (cursorPos > INPUT)
 					cursorPos--;
 				break;
 			case SDL_SCANCODE_LSHIFT:

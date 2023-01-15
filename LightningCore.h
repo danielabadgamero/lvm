@@ -6,6 +6,7 @@
 namespace Lightning
 {
 	inline constexpr int VIDEO{ 0x01000 };
+	inline constexpr int INPUT{ 0x0f000 };
 
 	inline SDL_Window* window{};
 	inline SDL_Renderer* renderer{};

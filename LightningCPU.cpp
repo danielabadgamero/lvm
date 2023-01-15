@@ -9,19 +9,20 @@ int Lightning::CPU::cycle(void*)
 {
 	while (!running);
 
-	RAM[0] = JMP;
-	RAM[1] = 0;
-	RAM[2] = SET;
-	RAM[3] = MAR;
-	RAM[4] = VIDEO;
-	RAM[5] = WMEM;
-	RAM[6] = MAR;
-	RAM[7] = 'a';
-	RAM[8] = ADD;
-	RAM[9] = MAR;
-	RAM[10] = 1;
-	RAM[11] = JMP;
-	RAM[12] = 5;
+	RAM[0] = SET;
+	RAM[1] = MAR;
+	RAM[2] = VIDEO;
+	RAM[3] = WMEM;
+	RAM[4] = MAR;
+	RAM[5] = 'a';
+	RAM[6] = ADD;
+	RAM[7] = MAR;
+	RAM[8] = 1;
+	RAM[9] = CMP;
+	RAM[10] = MAR;
+	RAM[11] = VIDEO + (windowSize.x / advance) * (windowSize.y / height);
+	RAM[12] = JLT;
+	RAM[13] = 3;
 
 	while (running)
 	{
@@ -63,11 +64,11 @@ int Lightning::CPU::cycle(void*)
 			break;
 		case CMP:
 			REG[FLAGS - MAX_RAM] = (eval(RAM[PC + 1]) == eval(RAM[PC + 2]));
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) != eval(RAM[PC + 2])) << 1);
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) > eval(RAM[PC + 2])) << 2);
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) < eval(RAM[PC + 2])) << 3);
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) >= eval(RAM[PC + 2])) << 4);
-			REG[FLAGS - MAX_RAM] = ((eval(RAM[PC + 1]) <= eval(RAM[PC + 2])) << 5);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) != eval(RAM[PC + 2])) << 1);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) > eval(RAM[PC + 2])) << 2);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) < eval(RAM[PC + 2])) << 3);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) >= eval(RAM[PC + 2])) << 4);
+			REG[FLAGS - MAX_RAM] += ((eval(RAM[PC + 1]) <= eval(RAM[PC + 2])) << 5);
 			PC += 3;
 			break;
 		case JEQ:
