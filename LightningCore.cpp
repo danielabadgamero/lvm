@@ -51,7 +51,7 @@ void Lightning::cycle()
 				break;
 			case SDL_SCANCODE_BACKSPACE:
 				RAM[cursorPos] = 0;
-				if (cursorPos > 0)
+				if (cursorPos > VIDEO)
 					cursorPos--;
 				break;
 			case SDL_SCANCODE_LSHIFT:
@@ -63,7 +63,7 @@ void Lightning::cycle()
 				break;
 			default:
 				RAM[cursorPos] = static_cast<char>(e.key.keysym.sym);
-				if (SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT))
+				if (SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT) && RAM[cursorPos] >= 'a' && RAM[cursorPos] <= 'z')
 					RAM[cursorPos] -= 0x20;
 				cursorPos++;
 				break;

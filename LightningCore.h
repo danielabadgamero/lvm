@@ -18,7 +18,8 @@ namespace Lightning
 
 	inline bool running{};
 
-	inline char RAM[1 << 20]{};
+	inline int RAM[1 << 20]{};
+	inline constexpr int MAX_RAM{ 1 << 20 };
 
 	void init(SDL_Point);
 	void cycle();
