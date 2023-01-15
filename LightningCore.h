@@ -14,7 +14,7 @@ namespace Lightning
 	inline SDL_Point windowSize{};
 	inline SDL_Texture* glyphs[128]{};
 	inline int advance{};
-	inline constexpr int height{ 15 };
+	inline constexpr int height{ 16 };
 	inline int cursorPos{};
 
 	inline bool running{};

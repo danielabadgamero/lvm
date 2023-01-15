@@ -11,18 +11,29 @@ int Lightning::CPU::cycle(void*)
 
 	RAM[0] = SET;
 	RAM[1] = MAR;
-	RAM[2] = VIDEO;
-	RAM[3] = WMEM;
-	RAM[4] = MAR;
-	RAM[5] = 'a';
-	RAM[6] = ADD;
-	RAM[7] = MAR;
-	RAM[8] = 1;
+	RAM[2] = INPUT;
+	RAM[3] = SET;
+	RAM[4] = R0;
+	RAM[5] = VIDEO;
+	RAM[6] = RMEM;
+	RAM[7] = MDR;
+	RAM[8] = MAR;
 	RAM[9] = CMP;
-	RAM[10] = MAR;
-	RAM[11] = VIDEO + (windowSize.x / advance) * (windowSize.y / height);
-	RAM[12] = JLT;
-	RAM[13] = 3;
+	RAM[10] = MDR;
+	RAM[11] = 0;
+	RAM[12] = WMEM;
+	RAM[13] = R0;
+	RAM[14] = MDR;
+	RAM[15] = JEQ;
+	RAM[16] = 0;
+	RAM[17] = ADD;
+	RAM[18] = MAR;
+	RAM[19] = 1;
+	RAM[20] = ADD;
+	RAM[21] = R0;
+	RAM[22] = 1;
+	RAM[23] = JMP;
+	RAM[24] = 6;
 
 	while (running)
 	{
@@ -74,26 +85,38 @@ int Lightning::CPU::cycle(void*)
 		case JEQ:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_EQ)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JNE:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_NE)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JGT:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_GT)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JLT:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_LT)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JGE:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_GE)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case JLE:
 			if (REG[FLAGS - MAX_RAM] & FLAGS_LE)
 				PC = eval(RAM[PC + 1]);
+			else
+				PC += 2;
 			break;
 		case CALL:
 			stack.push(PC + 1);
