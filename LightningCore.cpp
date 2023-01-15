@@ -63,8 +63,9 @@ void Lightning::cycle()
 				break;
 			default:
 				RAM[cursorPos] = static_cast<char>(e.key.keysym.sym);
-				if (SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT) && RAM[cursorPos] >= 'a' && RAM[cursorPos] <= 'z')
-					RAM[cursorPos] -= 0x20;
+				if (SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT))
+					if (RAM[cursorPos] >= 'a' && RAM[cursorPos] <= 'z')
+						RAM[cursorPos] -= 0x20;
 				cursorPos++;
 				break;
 			}
