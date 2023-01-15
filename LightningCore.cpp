@@ -60,6 +60,7 @@ void Lightning::cycle()
 			case SDL_SCANCODE_RCTRL:
 			case SDL_SCANCODE_LALT:
 			case SDL_SCANCODE_RALT:
+			case SDL_SCANCODE_DELETE:
 				break;
 			default:
 				RAM[cursorPos] = static_cast<char>(e.key.keysym.sym);
@@ -74,7 +75,7 @@ void Lightning::cycle()
 
 	RAM[cursorPos] = 127;
 
-	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
+	SDL_SetRenderDrawColor(renderer, 0x14, 0x14, 0x28, 0xff);
 	SDL_RenderClear(renderer);
 
 	for (int i{}; i != (windowSize.x / advance) * (windowSize.y / height); i++)
