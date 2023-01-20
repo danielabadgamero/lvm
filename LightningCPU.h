@@ -13,10 +13,8 @@ namespace Lightning::CPU
 		r2,
 		r3,
 		r4,
-
 		ar,
 		dr,
-
 		ir,
 		pc
 	};
