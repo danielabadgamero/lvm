@@ -9,6 +9,11 @@ namespace Lightning
 	inline SDL_Renderer* renderer{};
 	inline SDL_Event e{};
 	inline SDL_Point windowSize{};
+	inline SDL_Texture* screen{};
+	inline Uint8* pixels{};
+
+	inline int pixelSize{};
+	inline int pitch{};
 
 	inline bool running{};
 

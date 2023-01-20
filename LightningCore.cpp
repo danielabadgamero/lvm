@@ -1,15 +1,23 @@
 #include <SDL.h>
 
 #include "LightningCore.h"
+#include "LightningCPU.h"
 
 void Lightning::init(SDL_Point screenSize)
 {
 	windowSize = screenSize;
-
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowSize.x, windowSize.y, SDL_WINDOW_BORDERLESS);
-	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_CENTERED, windowSize.x, windowSize.y, SDL_WINDOW_BORDERLESS);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+
+	pixelSize = windowSize.x * windowSize.y * 3;
+	pitch = pixelSize / windowSize.y;
+	
+	screen = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, windowSize.x, windowSize.y);
+	pixels = new Uint8[pixelSize]{};
+
+	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 
 	SDL_ShowCursor(SDL_DISABLE);
 	running = true;
@@ -32,17 +40,21 @@ void Lightning::cycle()
 			running = false;
 			break;
 		}
+	
+	SDL_Log("%d", SDL_GetTicks());
 
-	SDL_SetRenderDrawColor(renderer, 0x14, 0x14, 0x28, 0xff);
-	SDL_RenderClear(renderer);
-
-
+	SDL_UpdateTexture(screen, NULL, pixels, pitch);
+	SDL_RenderCopy(renderer, screen, NULL, NULL);
 
 	SDL_RenderPresent(renderer);
 }
 
 void Lightning::quit()
 {
+	SDL_WaitThread(CPU::thread, NULL);
+
+	SDL_DestroyTexture(screen);
+
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 }
