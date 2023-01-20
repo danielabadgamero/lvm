@@ -1,6 +1,7 @@
 #include <SDL.h>
 
 #include "LightningCore.h"
+#include "LightningCPU.h"
 
 #include <string>
 

@@ -3,9 +3,12 @@
 
 int Lightning::CPU::cycle(void*)
 {
-	while (!running);
+	while (~bistables.running)
+	{
 
-	while (running)
+	}
+
+	while (~bistables.running)
 	{
 	}
 

@@ -21,7 +21,6 @@ void Lightning::init(SDL_Point screenSize)
 	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 
 	SDL_ShowCursor(SDL_DISABLE);
-	running = true;
 }
 
 void Lightning::cycle()
