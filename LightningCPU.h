@@ -24,16 +24,17 @@ namespace Lightning::CPU
 	inline int stack[1 << 16]{}; // 64 KB
 	inline int sb{};
 
-	struct
+	union
 	{
-		int running : 1{};
-		int equal : 1{};
-		int not_equal : 1{};
-		int greater : 1{};
-		int greater_equal : 1{};
-		int less : 1{};
-		int less_equal : 1{};
-		int padding : 1{};
+		int running : 1;
+		int equal : 1;
+		int not_equal : 1;
+		int greater : 1;
+		int greater_equal : 1;
+		int less : 1;
+		int less_equal : 1;
+		int padding : 1;
+		char bistables{};
 	} bistables{};
 
 	int cycle(void*);

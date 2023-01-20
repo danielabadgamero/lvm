@@ -13,6 +13,7 @@ namespace Lightning
 	inline char RAM[1 << 24]{};	// 16MB
 	inline constexpr char ROM[1 << 12]	// 4KB
 	{
+		0b00000000,
 	};
 
 	void init(SDL_Point);

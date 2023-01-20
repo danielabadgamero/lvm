@@ -55,7 +55,8 @@ static void decode()
 		bistable.less_equal = (r1 <= r2);
 		break;
 	case 0x07:	// MOVE reg - reg - cond
-		
+		if (bistable.bistables & cond)
+			r1 = r2;
 		break;
 	case 0x08:
 		break;
