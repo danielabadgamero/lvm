@@ -29,6 +29,13 @@ namespace Lightning::CPU
 	struct
 	{
 		char running : 1{};
+		char equal : 1{};
+		char not_equal : 1{};
+		char equal : 1{};
+		char greater : 1{};
+		char greater_equal : 1{};
+		char less : 1{};
+		char less_equal : 1{};
 	} bistables{};
 
 	int cycle(void*);

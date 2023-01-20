@@ -1,9 +1,14 @@
 #include "LightningCore.h"
 #include "LightningCPU.h"
 
-static void decode()
+namespace Format
 {
 
+}
+
+static void decode()
+{
+	
 }
 
 int Lightning::CPU::cycle(void*)
