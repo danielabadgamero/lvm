@@ -32,12 +32,12 @@ void Lightning::cycle()
 			switch (e.key.keysym.scancode)
 			{
 			case SDL_SCANCODE_ESCAPE:
-				running = false;
+				CPU::bistables[CPU::running] = 0;
 				break;
 			}
 			break;
 		case SDL_QUIT:
-			running = false;
+			CPU::bistables[CPU::running] = 0;
 			break;
 		}
 	
