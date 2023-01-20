@@ -10,8 +10,8 @@ namespace Lightning
 	inline SDL_Event e{};
 	inline SDL_Point windowSize{};
 
-	inline int RAM[1 << 20]{};	// 1 MB
-	inline int ROM[1 << 12]{};	// 4 KB
+	inline char RAM[1 << 24]{};	// 16MB
+	inline char ROM[1 << 12]{};	// 4KB
 
 	void init(SDL_Point);
 	void cycle();

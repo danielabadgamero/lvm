@@ -7,15 +7,21 @@ namespace Lightning::CPU
 {
 	inline SDL_Thread* thread;
 
-	enum Opcode
+	enum Reg
 	{
-		HALT,	// HALT
-		MOV,	// MOV	000 11111111
+		r1,
+		r2,
+		r3,
+		r4,
+
+		ar,
+		dr,
+
+		ir,
+		pc
 	};
 
-	inline int pc{};
-
-	inline int reg[4]{};
+	inline int reg[8]{};
 
 	inline int stack[1 << 16]{}; // 64 KB
 	inline int sb{};
