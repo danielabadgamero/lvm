@@ -3,6 +3,7 @@
 #include "LightningCore.h"
 #include "LightningCPU.h"
 #include "LightningMonitor.h"
+#include "LightningDisk.h"
 
 void Lightning::init(SDL_Point screenSize)
 {
@@ -19,6 +20,7 @@ void Lightning::init(SDL_Point screenSize)
 	Monitor::pixels = new Uint8[Monitor::pixelSize]{};
 
 	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
+	Disk::thread = SDL_CreateThread(Disk::cycle, "Disk", NULL);
 
 	SDL_ShowCursor(SDL_DISABLE);
 }
@@ -47,6 +49,7 @@ void Lightning::cycle()
 void Lightning::quit()
 {
 	SDL_WaitThread(CPU::thread, NULL);
+	SDL_WaitThread(Disk::thread, NULL);
 
 	SDL_DestroyTexture(Monitor::screen);
 

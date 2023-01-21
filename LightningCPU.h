@@ -40,11 +40,12 @@ namespace Lightning::CPU
 	enum Peripheral
 	{
 		monitor,
+		disk,
 
 		total_peripherals
 	};
 
-	inline int peripherals[total_peripherals][2]{};
+	inline int peripherals[total_peripherals][3]{};
 
 	inline std::bitset<7> bistables{};
 
