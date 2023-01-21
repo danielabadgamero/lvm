@@ -61,7 +61,7 @@ namespace Lightning::CPU
 	inline int stack[1 << 16]{}; // 64 KB
 	inline int sb{};
 
-	inline int peripherals[total_peripherals][3]{};
+	inline int peripherals[total_peripherals][8]{};
 
 	inline std::bitset<7> bistables{};
 
