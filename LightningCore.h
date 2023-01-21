@@ -17,7 +17,7 @@ namespace Lightning
 	inline constexpr unsigned char ROM[1 << 12]	// 4KB
 	{
 		CPU::MOVI, CPU::r1, 0, 0,
-		CPU::SWI, CPU::r1, 0, CPU::MOVI,
+		CPU::SWI, CPU::r1, 0, CPU::OUT,
 		CPU::ADDI, CPU::r1, 0, 1,
 		CPU::SWI, CPU::r1, 0, CPU::pc,
 		CPU::ADDI, CPU::r1, 0, 1,

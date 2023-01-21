@@ -10,8 +10,6 @@
 
 void Lightning::CPU::decode()
 {
-	reg[ir] = (RAM[reg[pc]] << 24) + (RAM[reg[pc] + 1] << 16) + (RAM[reg[pc] + 2] << 8) + RAM[reg[pc] + 3];
-	reg[pc] += 4;
 	switch (opcode)
 	{
 	case HALT:
@@ -45,17 +43,31 @@ void Lightning::CPU::decode()
 	case ADDI:
 		reg[rd] += imm16;
 		break;
+	case IN:
+		reg[rd] = peripherals[rs1][rs2];
+		break;
+	case OUT:
+		peripherals[rd][rs1] = reg[rs2];
+		break;
 	}
 }
 
 int Lightning::CPU::cycle(void*)
 {
-	for (int i{}; i != 2; i++)
+	while (~bistables[running])
 	{
-		while (bistables[running] || i)
-			decode();
+		reg[ir] = (ROM[reg[pc]] << 24) + (ROM[reg[pc] + 1] << 16) + (ROM[reg[pc] + 2] << 8) + ROM[reg[pc] + 3];
+		reg[pc] += 4;
+		decode();
+	}
+	
+	reg[pc] = 0;
 
-		reg[pc] = 0;
+	while (bistables[running])
+	{
+		reg[ir] = (RAM[reg[pc]] << 24) + (RAM[reg[pc] + 1] << 16) + (RAM[reg[pc] + 2] << 8) + RAM[reg[pc] + 3];
+		reg[pc] += 4;
+		decode();
 	}
 
 	return 0;
