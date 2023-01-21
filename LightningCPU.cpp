@@ -35,19 +35,19 @@ static void decode()
 		r1 = Lightning::RAM[r2];
 		break;
 	case 0x03:	// MOVE mem - reg
-		Lightning::RAM[r1] = r2;
+		Lightning::RAM[r1] = static_cast<char>(r2);
 		break;
 	case 0x04:	// MOVE reg - imm24
 		r1 = imm24;
 		break;
 	case 0x05:	// MOVE mem - imm24
-		Lightning::RAM[r1] = imm24;
+		Lightning::RAM[r1] = static_cast<char>(imm24);
 		break;
 	case 0x06:	// MOVE reg - RAM[imm24]
 		r1 = Lightning::RAM[imm24];
 		break;
 	case 0x07:	// MOVE RAM[imm24] - reg
-		Lightning::RAM[imm24] = r1;
+		Lightning::RAM[imm24] = static_cast<char>(r1);
 		break;
 	case 0x08:	// ADD reg - reg
 		r1 += r2;
@@ -79,9 +79,17 @@ static void decode()
 	case 0x11:	// OUT reg - addr - reg
 		Lightning::CPU::peripherals[r2][cond] = r1;
 		break;
-	case 0x12:
+	case 0x12:	// CMP reg - reg
+		bistable(equal) = r1 == r2;
+		bistable(not_equal) = r1 != r2;
+		bistable(greater) = r1 > r2;
+		bistable(greater_equal) = r1 >= r2;
+		bistable(less) = r1 < r2;
+		bistable(less_equal) = r1 <= r2;
 		break;
-	case 0x13:
+	case 0x13:	// MOV reg - reg - cond
+		if (Lightning::CPU::bistables[cond])
+			r1 = r2;
 		break;
 	case 0x14:
 		break;

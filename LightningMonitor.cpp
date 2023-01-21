@@ -5,7 +5,7 @@
 
 void Lightning::Monitor::refresh()
 {
-	VRAM[rAddr] = rData;
+	VRAM[*rAddr] = static_cast<char>(*rData);
 
 	SDL_memcpy(pixels, VRAM, static_cast<size_t>(windowSize.x) * windowSize.y * 3);
 

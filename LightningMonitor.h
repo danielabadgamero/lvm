@@ -1,6 +1,10 @@
 #ifndef LIGHTNING_MONITOR
 #define LIGHTNING_MONITOR
 
+#include <SDL.h>
+
+#include "LightningCPU.h"
+
 namespace Lightning::Monitor
 {
 	inline SDL_Texture* screen{};
@@ -9,8 +13,8 @@ namespace Lightning::Monitor
 	inline int pixelSize{};
 	inline int pitch{};
 
-	inline int rAddr{};
-	inline int rData{};
+	inline int* rAddr{ &CPU::peripherals[CPU::monitor][0] };
+	inline int* rData{ &CPU::peripherals[CPU::monitor][1] };
 
 	inline char VRAM[1 << 24]{};
 
