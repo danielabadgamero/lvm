@@ -21,6 +21,8 @@ namespace Lightning::CPU
 		SWI,	//	rd	0	#
 		ADD,	//	rd	rs	0
 		ADDI,	//	rd	#	#
+		LSHIFT,	//	rd	#	#
+		RSHIFT,	//	rd	#	#
 		IN,		//	rd	p	r
 		OUT,	//	p	r	rs
 		OUTI,	//	p	r	#

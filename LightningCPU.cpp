@@ -43,6 +43,12 @@ void Lightning::CPU::decode()
 	case ADDI:
 		reg[rd] += imm16;
 		break;
+	case LSHIFT:
+		reg[rd] <<= imm16;
+		break;
+	case RSHIFT:
+		reg[rd] >>= imm16;
+		break;
 	case IN:
 		reg[rd] = peripherals[rs1][rs2];
 		break;
