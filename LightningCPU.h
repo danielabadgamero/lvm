@@ -9,6 +9,20 @@ namespace Lightning::CPU
 {
 	inline SDL_Thread* thread;
 
+	enum Opcode
+	{	// 1		2	3	4
+		HALT,
+		MOVR,	//	rd	rs	0
+		MOVI,	//	rd	#	#
+		MVRC,	//	rd	rs1	b
+		LWR,	//	rd	rs	0
+		LWI,	//	rd	#	#
+		SWR,	//	rd	rs	0
+		SWI,	//	rd	0	#
+		ADD,	//	rd	rs	0
+		ADDI,	//	rd	#	#
+	};
+
 	enum Reg
 	{
 		r1,
@@ -20,11 +34,6 @@ namespace Lightning::CPU
 		ir,
 		pc
 	};
-
-	inline int reg[8]{};
-
-	inline int stack[1 << 16]{}; // 64 KB
-	inline int sb{};
 
 	enum Bistable
 	{
@@ -45,11 +54,17 @@ namespace Lightning::CPU
 		total_peripherals
 	};
 
+	inline int reg[8]{};
+
+	inline int stack[1 << 16]{}; // 64 KB
+	inline int sb{};
+
 	inline int peripherals[total_peripherals][3]{};
 
 	inline std::bitset<7> bistables{};
 
 	int cycle(void*);
+	void decode();
 }
 
 #endif
