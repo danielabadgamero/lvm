@@ -15,6 +15,7 @@ namespace Lightning::Monitor
 
 	inline int* rAddr{ &CPU::peripherals[CPU::monitor][0] };
 	inline int* rData{ &CPU::peripherals[CPU::monitor][1] };
+	inline int* rStatus{ &CPU::peripherals[CPU::monitor][2] };
 
 	inline unsigned char VRAM[1 << 24]{};
 

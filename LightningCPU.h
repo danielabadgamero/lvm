@@ -23,6 +23,7 @@ namespace Lightning::CPU
 		ADDI,	//	rd	#	#
 		IN,		//	rd	p	r
 		OUT,	//	p	r	rs
+		OUTI,	//	p	r	#
 		CMP,	//	0	rs	rs
 		CMPI,	//	rs	#	#
 	};

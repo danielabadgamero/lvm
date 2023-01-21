@@ -49,6 +49,9 @@ void Lightning::CPU::decode()
 	case OUT:
 		peripherals[rd][rs1] = reg[rs2];
 		break;
+	case OUTI:
+		peripherals[rd][rs1] = rs2;
+		break;
 	case CMP:
 		bistables[CPU::equal] = reg[rs1] == reg[rs2];
 		bistables[CPU::not_equal] = reg[rs1] != reg[rs2];
