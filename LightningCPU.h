@@ -37,6 +37,15 @@ namespace Lightning::CPU
 		less_equal,
 	};
 
+	enum Peripheral
+	{
+		monitor,
+
+		total_peripherals
+	};
+
+	inline int peripherals[total_peripherals][2]{};
+
 	inline std::bitset<7> bistables{};
 
 	int cycle(void*);

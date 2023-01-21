@@ -5,6 +5,10 @@
 
 void Lightning::Monitor::refresh()
 {
+	VRAM[rAddr] = rData;
+
+	SDL_memcpy(pixels, VRAM, static_cast<size_t>(windowSize.x) * windowSize.y * 3);
+
 	SDL_UpdateTexture(screen, NULL, pixels, pitch);
 	SDL_RenderCopy(renderer, screen, NULL, NULL);
 

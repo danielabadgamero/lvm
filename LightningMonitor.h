@@ -9,6 +9,11 @@ namespace Lightning::Monitor
 	inline int pixelSize{};
 	inline int pitch{};
 
+	inline int rAddr{};
+	inline int rData{};
+
+	inline char VRAM[1 << 24]{};
+
 	void refresh();
 }
 

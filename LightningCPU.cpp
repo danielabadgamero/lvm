@@ -32,55 +32,52 @@ static void decode()
 		r1 = r2;
 		break;
 	case 0x02:	// MOVE reg - mem
-		r1 = (Lightning::RAM[r2] << 24) + (Lightning::RAM[r2 + 1] << 16) + (Lightning::RAM[r2 + 2] << 8) + Lightning::RAM[r2 + 3];
+		r1 = Lightning::RAM[r2];
 		break;
 	case 0x03:	// MOVE mem - reg
-		Lightning::RAM[r1] = static_cast<char>(r2 >> 24);
-		Lightning::RAM[r1 + 1] = static_cast<char>(r2 >> 16);
-		Lightning::RAM[r1 + 2] = static_cast<char>(r2 >> 8);
-		Lightning::RAM[r1 + 3] = static_cast<char>(r2);
+		Lightning::RAM[r1] = r2;
 		break;
-	case 0x04:	// PUSH reg
-		stack[sb] = r1;
-		sb++;
-		break;
-	case 0x05:	// POP reg
-		sb--;
-		r1 = stack[sb];
-		stack[sb] = 0;
-		break;
-	case 0x06:	// CMP reg - reg
-		bistable(equal) = (r1 == r2);
-		bistable(not_equal) = (r1 != r2);
-		bistable(greater) = (r1 > r2);
-		bistable(greater_equal) = (r1 >= r2);
-		bistable(less) = (r1 < r2);
-		bistable(less_equal) = (r1 <= r2);
-		break;
-	case 0x07:	// MOVE reg - reg - cond
-		if (Lightning::CPU::bistables[cond])
-			r1 = r2;
-		break;
-	case 0x08:	// MOVE reg - imm24
+	case 0x04:	// MOVE reg - imm24
 		r1 = imm24;
 		break;
-	case 0x09:
+	case 0x05:	// MOVE mem - imm24
+		Lightning::RAM[r1] = imm24;
 		break;
-	case 0x0A:
+	case 0x06:	// MOVE reg - RAM[imm24]
+		r1 = Lightning::RAM[imm24];
 		break;
-	case 0x0B:
+	case 0x07:	// MOVE RAM[imm24] - reg
+		Lightning::RAM[imm24] = r1;
 		break;
-	case 0x0C:
+	case 0x08:	// ADD reg - reg
+		r1 += r2;
 		break;
-	case 0x0D:
+	case 0x09:	// ADD reg - imm24
+		r1 += imm24;
 		break;
-	case 0x0E:
+	case 0x0A:	// SUB reg - reg
+		r1 -= r2;
 		break;
-	case 0x0F:
+	case 0x0B:	// SUB reg - imm24
+		r1 -= imm24;
 		break;
-	case 0x10:
+	case 0x0C:	// MUL reg - reg
+		r1 *= r2;
 		break;
-	case 0x11:
+	case 0x0D:	// MUL reg - imm24
+		r1 *= imm24;
+		break;
+	case 0x0E:	// DIV reg - reg
+		r1 /= r2;
+		break;
+	case 0x0F:	// DIV reg - imm24
+		r1 /= imm24;
+		break;
+	case 0x10:	// IN reg - addr - reg
+		r1 = Lightning::CPU::peripherals[r2][cond];
+		break;
+	case 0x11:	// OUT reg - addr - reg
+		Lightning::CPU::peripherals[r2][cond] = r1;
 		break;
 	case 0x12:
 		break;
@@ -121,6 +118,8 @@ int Lightning::CPU::cycle(void*)
 		reg[pc] += 4;
 		decode();
 	}
+
+	reg[pc] = 0;
 
 	while (bistables[running])
 	{

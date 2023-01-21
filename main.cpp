@@ -9,6 +9,8 @@ int main(int, char** argv)
 {
 	Lightning::init({ std::atoi(argv[1]), std::atoi(argv[2]) });
 
+	while (~Lightning::CPU::bistables[Lightning::CPU::running]);
+
 	while (Lightning::CPU::bistables[Lightning::CPU::running])
 		Lightning::cycle();
 

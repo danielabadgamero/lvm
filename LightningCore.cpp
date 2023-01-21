@@ -40,7 +40,8 @@ void Lightning::cycle()
 			CPU::bistables[CPU::running] = 0;
 			break;
 		}
-	
+
+	Monitor::refresh();
 }
 
 void Lightning::quit()
