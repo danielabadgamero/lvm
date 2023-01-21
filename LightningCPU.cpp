@@ -49,6 +49,22 @@ void Lightning::CPU::decode()
 	case OUT:
 		peripherals[rd][rs1] = reg[rs2];
 		break;
+	case CMP:
+		bistables[CPU::equal] = reg[rs1] == reg[rs2];
+		bistables[CPU::not_equal] = reg[rs1] != reg[rs2];
+		bistables[CPU::greater] = reg[rs1] > reg[rs2];
+		bistables[CPU::greater_equal] = reg[rs1] >= reg[rs2];
+		bistables[CPU::less] = reg[rs1] < reg[rs2];
+		bistables[CPU::less_equal] = reg[rs1] <= reg[rs2];
+		break;
+	case CMPI:
+		bistables[CPU::equal] = reg[rd] == imm16;
+		bistables[CPU::not_equal] = reg[rd] != imm16;
+		bistables[CPU::greater] = reg[rd] > imm16;
+		bistables[CPU::greater_equal] = reg[rd] >= imm16;
+		bistables[CPU::less] = reg[rd] < imm16;
+		bistables[CPU::less_equal] = reg[rd] <= imm16;
+		break;
 	}
 }
 
@@ -56,7 +72,7 @@ int Lightning::CPU::cycle(void*)
 {
 	while (~bistables[running])
 	{
-		reg[ir] = (ROM[reg[pc]] << 24) + (ROM[reg[pc] + 1] << 16) + (ROM[reg[pc] + 2] << 8) + ROM[reg[pc] + 3];
+		reg[ir] = (static_cast<Uint8>(ROM[reg[pc]]) << 24) + (static_cast<Uint8>(ROM[reg[pc] + 1]) << 16) + (static_cast<Uint8>(ROM[reg[pc] + 2]) << 8) + static_cast<Uint8>(ROM[reg[pc] + 3]);
 		reg[pc] += 4;
 		decode();
 	}
@@ -65,7 +81,7 @@ int Lightning::CPU::cycle(void*)
 
 	while (bistables[running])
 	{
-		reg[ir] = (RAM[reg[pc]] << 24) + (RAM[reg[pc] + 1] << 16) + (RAM[reg[pc] + 2] << 8) + RAM[reg[pc] + 3];
+		reg[ir] = (static_cast<Uint8>(RAM[reg[pc]]) << 24) + (static_cast<Uint8>(RAM[reg[pc] + 1]) << 16) + (static_cast<Uint8>(RAM[reg[pc] + 2]) << 8) + static_cast<Uint8>(RAM[reg[pc] + 3]);
 		reg[pc] += 4;
 		decode();
 	}

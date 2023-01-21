@@ -12,18 +12,16 @@ namespace Lightning
 	inline SDL_Event e{};
 	inline SDL_Point windowSize{};
 
-
 	inline char RAM[1 << 24]{};	// 16MB
 	inline constexpr unsigned char ROM[1 << 12]	// 4KB
 	{
-		CPU::MOVI, CPU::r1, 0, 255,
-		CPU::OUT, CPU::monitor, 0, CPU::r1,
+		CPU::MOVI, CPU::r1, 0, 1,
+		CPU::OUT, CPU::disk, 2, CPU::r1,
 
-		CPU::MOVI, CPU::r1, 0, 0,
-		CPU::SWI, CPU::r1, 0, CPU::MOVI,
-		CPU::ADDI, CPU::r1, 0, 1,
-		CPU::SWI, CPU::r1, 0, CPU::pc,
-		CPU::ADDI, CPU::r1, 0, 1,
+		CPU::MOVR, CPU::r1, CPU::pc, 0,
+		CPU::IN, CPU::r2, CPU::disk, 2,
+		CPU::CMPI, CPU::r2, 0, 1,
+		CPU::MVRC, CPU::pc, CPU::r1, CPU::equal,
 	};
 
 	void init(SDL_Point);

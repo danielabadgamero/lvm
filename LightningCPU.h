@@ -23,6 +23,8 @@ namespace Lightning::CPU
 		ADDI,	//	rd	#	#
 		IN,		//	rd	p	r
 		OUT,	//	p	r	rs
+		CMP,	//	0	rs	rs
+		CMPI,	//	rs	#	#
 	};
 
 	enum Reg
