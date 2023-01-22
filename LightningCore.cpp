@@ -15,11 +15,11 @@ void Lightning::init(SDL_Point screenSize)
 	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_CENTERED, windowSize.x, windowSize.y, SDL_WINDOW_BORDERLESS);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
-	Monitor::pixelSize = windowSize.x * windowSize.y * 3;
-	Monitor::pitch = Monitor::pixelSize / windowSize.y;
+	*Monitor::rSize = windowSize.x * windowSize.y * 3;
+	Monitor::pitch = *Monitor::rSize / windowSize.y;
 
 	Monitor::screen = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, windowSize.x, windowSize.y);
-	Monitor::pixels = new Uint8[Monitor::pixelSize]{};
+	Monitor::pixels = new Uint8[*Monitor::rSize]{};
 
 	Disk::thread = SDL_CreateThread(Disk::cycle, "Disk", NULL);
 	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);

@@ -10,14 +10,9 @@ namespace Lightning::Monitor
 	inline SDL_Texture* screen{};
 	inline Uint8* pixels{};
 
-	inline int pixelSize{};
 	inline int pitch{};
 
-	inline int* rAddr{ &CPU::peripherals[CPU::monitor][0] };
-	inline int* rData{ &CPU::peripherals[CPU::monitor][1] };
-	inline int* rStatus{ &CPU::peripherals[CPU::monitor][2] };
-
-	inline unsigned char VRAM[1 << 24]{};
+	inline int* rSize{ &CPU::peripherals[CPU::monitor][0] };
 
 	void refresh();
 }

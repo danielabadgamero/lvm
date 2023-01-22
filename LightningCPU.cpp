@@ -6,6 +6,7 @@
 #define rs1 ((reg[ir] & 0x0000ff00) >> 8)
 #define rs2 (reg[ir] & 0x000000ff)
 #define imm16 (reg[ir] & 0x0000ffff)
+#define imm24 (reg[ir] & 0x00ffffff)
 
 
 void Lightning::CPU::decode()
@@ -73,6 +74,35 @@ void Lightning::CPU::decode()
 		bistables[CPU::greater_equal] = reg[rd] >= imm16;
 		bistables[CPU::less] = reg[rd] < imm16;
 		bistables[CPU::less_equal] = reg[rd] <= imm16;
+		break;
+	case PSHR:
+		stack[sb] = reg[rd];
+		sb++;
+		break;
+	case PSHI:
+		stack[sb] = imm24;
+		sb++;
+		break;
+	case POP:
+		if (sb > 0)
+		{
+			sb--;
+			reg[rd] = stack[sb];
+			stack[sb] = 0;
+		}
+		break;
+	case CALL:
+		stack[sb] = reg[pc];
+		reg[pc] = imm24;
+		sb++;
+		break;
+	case RET:
+		if (sb > 0)
+		{
+			sb--;
+			reg[pc] = stack[sb];
+			stack[sb] = 0;
+		}
 		break;
 	}
 }

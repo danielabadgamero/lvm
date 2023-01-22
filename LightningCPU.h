@@ -28,6 +28,11 @@ namespace Lightning::CPU
 		OUTI,	//	p	r	#
 		CMP,	//	0	rs	rs
 		CMPI,	//	rs	#	#
+		PSHR,	//	rs	0	0
+		PSHI,	//	#	#	#
+		POP,	//	rd	0	0
+		CALL,	//	#	#	#
+		RET,	//	0	0	0
 	};
 
 	enum Reg
