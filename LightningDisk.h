@@ -61,6 +61,13 @@ namespace Lightning::Disk
 		CPU::PSHI, 0, 0x03, 0xc0,		// X - Coordinate
 		CPU::CALL, 0, (DRAW_PIXEL & 0x00ff00) >> 8, DRAW_PIXEL & 0x0000ff,
 
+		CPU::PSHI, 0x00, 0x00, 0xff,	// Color
+		CPU::PSHI, 0, 0x02, 0x1c,		// Y - Coordinate start
+		CPU::PSHI, 0, 0x03, 0xc0,		// X - Coordinate start
+		CPU::PSHI, 0, 0x02, 0x1c,		// Y - Coordinate end
+		CPU::PSHI, 0, 0x03, 0xc0,		// X - Coordinate end
+		CPU::CALL, 0, (DRAW_LINE & 0x00ff00) >> 8, DRAW_LINE & 0x0000ff,
+
 		CPU::RET, 0, 0, 0,
 	};
 
@@ -101,6 +108,12 @@ namespace Lightning::Disk
 	inline unsigned char draw_line[512]
 	{
 		CPU::POP, CPU::ar, 0, 0,
+
+		CPU::POP, CPU::op3, 0, 0,	// x - end
+		CPU::POP, CPU::op4, 0, 0,	// y - end
+		CPU::POP, CPU::op1, 0, 0,	// x - start
+		CPU::POP, CPU::op2, 0, 0,	// y - start
+		CPU::POP, CPU::r4, 0, 0,	// color
 
 
 

@@ -22,6 +22,8 @@ namespace Lightning::CPU
 		SWI,	//	rd	0	#
 		ADD,	//	rd	rs	0
 		ADDI,	//	rd	#	#
+		SUB,	//	rd	rs	0
+		SUBI,	//	rd	#	#
 		MUL,	//	rd	rs	0
 		MULI,	//	rd	#	#
 		LSHIFT,	//	rd	#	#
@@ -47,7 +49,11 @@ namespace Lightning::CPU
 		ar,
 		dr,
 		ir,
-		pc
+		pc,
+		op1,
+		op2,
+		op3,
+		op4,
 	};
 
 	enum Bistable
@@ -69,7 +75,7 @@ namespace Lightning::CPU
 		total_peripherals
 	};
 
-	inline int reg[8]{};
+	inline int reg[16]{};
 
 	inline int stack[1 << 16]{}; // 64 KB
 	inline int sb{};
