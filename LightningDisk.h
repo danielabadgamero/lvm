@@ -56,7 +56,11 @@ namespace Lightning::Disk
 
 	inline unsigned char kernel[512]
 	{
+		CPU::PSHI, (VIDEO & 0xff0000) >> 16, (VIDEO & 0x00ff00) >> 8, VIDEO & 0x0000ff,
+		CPU::POP, CPU::r1, 0, 0,
+		CPU::SWI, CPU::r1, 0, 0xff,
 
+		CPU::RET, 0, 0, 0,
 	};
 
 	inline unsigned char draw_pixel[512]

@@ -14,8 +14,8 @@ namespace Lightning
 
 	inline constexpr int VIDEO{ 0x100000 };
 	inline constexpr int KERNEL{ 0x001000 };
-	inline constexpr int DRAW_PIXEL{ 0x001400 };
-	inline constexpr int DRAW_LINE{ 0x002100 };
+	inline constexpr int DRAW_PIXEL{ 0x001200 };
+	inline constexpr int DRAW_LINE{ 0x001400 };
 	inline char RAM[1 << 24]{};	// 16MB
 	inline constexpr unsigned char ROM[1 << 12]	// 4KB
 	{
