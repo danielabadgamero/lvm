@@ -7,7 +7,7 @@ void Lightning::Monitor::refresh()
 {
 	SDL_memcpy(pixels, RAM + VIDEO, *rSize);
 
-	SDL_UpdateTexture(screen, NULL, pixels, pitch);
+	SDL_UpdateTexture(screen, NULL, pixels, *rPitch);
 	SDL_RenderCopy(renderer, screen, NULL, NULL);
 
 	SDL_RenderPresent(renderer);

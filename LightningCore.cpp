@@ -16,7 +16,7 @@ void Lightning::init(SDL_Point screenSize)
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
 	*Monitor::rSize = windowSize.x * windowSize.y * 3;
-	Monitor::pitch = *Monitor::rSize / windowSize.y;
+	*Monitor::rPitch = *Monitor::rSize / windowSize.y;
 
 	Monitor::screen = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, windowSize.x, windowSize.y);
 	Monitor::pixels = new Uint8[*Monitor::rSize]{};
