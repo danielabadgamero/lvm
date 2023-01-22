@@ -22,9 +22,13 @@ void Lightning::CPU::decode()
 	case MOVI:
 		reg[rd] = imm16;
 		break;
-	case MVRC:
+	case MVCR:
 		if (bistables[rs2])
 			reg[rd] = reg[rs1];
+		break;
+	case MVCI:
+		if (bistables[rs2])
+			reg[rd] = rs1;
 		break;
 	case LWR:
 		reg[rd] = RAM[reg[rs1]];

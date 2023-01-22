@@ -14,7 +14,7 @@ namespace Lightning
 
 	inline constexpr int VIDEO{ 0x100000 };
 	inline constexpr int KERNEL{ 0x001000 };
-	inline constexpr int DRAW_PIXEL{ 0x002000 };
+	inline constexpr int DRAW_PIXEL{ 0x001400 };
 	inline constexpr int DRAW_LINE{ 0x002100 };
 	inline char RAM[1 << 24]{};	// 16MB
 	inline constexpr unsigned char ROM[1 << 12]	// 4KB
@@ -24,7 +24,7 @@ namespace Lightning
 		CPU::MOVR, CPU::r1, CPU::pc, 0,
 		CPU::IN, CPU::r2, CPU::disk, 2,
 		CPU::CMPI, CPU::r2, 0, 1,
-		CPU::MVRC, CPU::pc, CPU::r1, CPU::equal,
+		CPU::MVCR, CPU::pc, CPU::r1, CPU::equal,
 	};
 
 	void init(SDL_Point);

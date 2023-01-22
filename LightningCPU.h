@@ -14,7 +14,8 @@ namespace Lightning::CPU
 		HALT,
 		MOVR,	//	rd	rs	0
 		MOVI,	//	rd	#	#
-		MVRC,	//	rd	rs1	b
+		MVCR,	//	rd	rs1	b
+		MVCI,	//	rd	#	b
 		LWR,	//	rd	rs	0
 		LWI,	//	rd	#	#
 		SWR,	//	rd	rs	0
