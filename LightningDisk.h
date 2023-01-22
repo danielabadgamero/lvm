@@ -56,10 +56,9 @@ namespace Lightning::Disk
 
 	inline unsigned char kernel[512]
 	{
-		CPU::PSHI, 0, 0x03, 0xc0,
-		CPU::PSHI, 0, 0x02, 0x1c,
-		CPU::PSHI, 0x20, 0x20, 0x40,
-
+		CPU::PSHI, 0xff, 0x00, 0x00,	// Color
+		CPU::PSHI, 0, 0x00, 0x00,		// Y - Coordinate
+		CPU::PSHI, 0, 0x00, 0x00,		// X - Coordinate
 		CPU::CALL, 0, (DRAW_PIXEL & 0x00ff00) >> 8, DRAW_PIXEL & 0x0000ff,
 
 		CPU::RET, 0, 0, 0,
@@ -69,7 +68,32 @@ namespace Lightning::Disk
 	{
 		CPU::POP, CPU::ar, 0, 0,
 
-		CPU::PSHI, (VIDEO & 0xff0000) >> 16, (DRAW_PIXEL & 0x00ff00) >> 8, DRAW_PIXEL & 0x0000ff,
+		CPU::PSHI, (VIDEO & 0xff0000) >> 16, (VIDEO & 0x00ff00) >> 8, VIDEO & 0x0000ff,
+		CPU::POP, CPU::r1, 0, 0,
+		CPU::POP, CPU::r3, 0, 0,
+		CPU::ADD, CPU::r1, CPU::r3, 0,
+		CPU::POP, CPU::r3, 0, 0,
+		CPU::IN, CPU::r4, CPU::monitor, 1,
+		CPU::MUL, CPU::r3, CPU::r4, 0,
+		CPU::MULI, CPU::r3, 0, 3,
+		CPU::ADD, CPU::r1, CPU::r3, 0,
+
+		CPU::POP, CPU::r2, 0, 0,
+		CPU::PSHR, CPU::r2, 0, 0,
+		CPU::RSHIFT, CPU::r2, 0, 16,
+		CPU::SWR, CPU::r1, CPU::r2, 0,
+		CPU::ADDI, CPU::r1, 0, 1,
+
+		CPU::POP, CPU::r2, 0, 0,
+		CPU::PSHR, CPU::r2, 0, 0,
+		CPU::RSHIFT, CPU::r2, 0, 8,
+		CPU::SWR, CPU::r1, CPU::r2, 0,
+		CPU::ADDI, CPU::r1, 0, 1,
+
+		CPU::POP, CPU::r2, 0, 0,
+		CPU::SWR, CPU::r1, CPU::r2, 0,
+
+		CPU::PSHR, CPU::ar, 0, 0,
 
 		CPU::RET,
 	};

@@ -48,6 +48,12 @@ void Lightning::CPU::decode()
 	case ADDI:
 		reg[rd] += imm16;
 		break;
+	case MUL:
+		reg[rd] *= reg[rs1];
+		break;
+	case MULI:
+		reg[rd] *= imm16;
+		break;
 	case LSHIFT:
 		reg[rd] <<= imm16;
 		break;
