@@ -57,8 +57,8 @@ namespace Lightning::Disk
 	inline unsigned char kernel[512]
 	{
 		CPU::PSHI, 0xff, 0x00, 0x00,	// Color
-		CPU::PSHI, 0, 0x02, 0x1c,		// Y - Coordinate
-		CPU::PSHI, 0, 0x03, 0xc0,		// X - Coordinate
+		CPU::PSHI, 0, 0x00, 0x00,		// Y - Coordinate
+		CPU::PSHI, 0, 0x00, 0x00,		// X - Coordinate
 		CPU::CALL, 0, (DRAW_PIXEL & 0x00ff00) >> 8, DRAW_PIXEL & 0x0000ff,
 
 		CPU::PSHI, 0x00, 0x00, 0xff,	// Color
