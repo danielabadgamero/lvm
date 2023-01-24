@@ -5,9 +5,9 @@
 #include "LightningMonitor.h"
 #include "LightningDisk.h"
 
-void Lightning::init(SDL_Point screenSize)
+void Lightning::init()
 {
-	windowSize = screenSize;
+	windowSize = { 960, 640 };
 	SDL_Init(SDL_INIT_EVERYTHING);
 
 	Disk::init();
@@ -36,12 +36,12 @@ void Lightning::cycle()
 			switch (e.key.keysym.scancode)
 			{
 			case SDL_SCANCODE_ESCAPE:
-				CPU::bistables[CPU::running] = 0;
+				CPU::condReg ^= CPU::running;
 				break;
 			}
 			break;
 		case SDL_QUIT:
-			CPU::bistables[CPU::running] = 0;
+			CPU::condReg ^= CPU::running;
 			break;
 		}
 

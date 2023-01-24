@@ -5,14 +5,11 @@
 void Lightning::Disk::init()
 {
 	SDL_memcpy(HDD[0], boot, 512);
-	SDL_memcpy(HDD[1], kernel, 512);
-	SDL_memcpy(HDD[2], draw_pixel, 512);
-	SDL_memcpy(HDD[3], draw_line, 512);
 }
 
 int Lightning::Disk::cycle(void*)
 {
-	while (~CPU::bistables[CPU::running])
+	while (~(CPU::condReg & CPU::running))
 	{
 		if (*rRead)
 		{
@@ -26,7 +23,7 @@ int Lightning::Disk::cycle(void*)
 		}
 	}
 
-	while (CPU::bistables[CPU::running])
+	while (CPU::condReg & CPU::running)
 	{
 		if (*rRead)
 		{

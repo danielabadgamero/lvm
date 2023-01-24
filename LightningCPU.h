@@ -9,35 +9,14 @@ namespace Lightning::CPU
 {
 	inline SDL_Thread* thread;
 
+	/*
+	* Instruction format:
+	* 
+	*/
+
 	enum Opcode
-	{	// 1		2	3	4
-		HALT,
-		MOVR,	//	rd	rs	0
-		MOVI,	//	rd	#	#
-		MVCR,	//	rd	rs1	b
-		MVCI,	//	rd	#	b
-		LWR,	//	rd	rs	0
-		LWI,	//	rd	#	#
-		SWR,	//	rd	rs	0
-		SWI,	//	rd	0	#
-		ADD,	//	rd	rs	0
-		ADDI,	//	rd	#	#
-		SUB,	//	rd	rs	0
-		SUBI,	//	rd	#	#
-		MUL,	//	rd	rs	0
-		MULI,	//	rd	#	#
-		LSHIFT,	//	rd	#	#
-		RSHIFT,	//	rd	#	#
-		IN,		//	rd	p	r
-		OUT,	//	p	r	rs
-		OUTI,	//	p	r	#
-		CMP,	//	0	rs	rs
-		CMPI,	//	rs	#	#
-		PSHR,	//	rs	0	0
-		PSHI,	//	#	#	#
-		POP,	//	rd	0	0
-		CALL,	//	#	#	#
-		RET,	//	0	0	0
+	{
+
 	};
 
 	enum Reg
@@ -46,25 +25,23 @@ namespace Lightning::CPU
 		r2,
 		r3,
 		r4,
+		r5,
 		ar,
 		dr,
-		ir,
 		pc,
-		op1,
-		op2,
-		op3,
-		op4,
 	};
 
-	enum Bistable
+	enum CondFlags
 	{
-		running,
-		equal,
-		not_equal,
-		greater,
-		greater_equal,
-		less,
-		less_equal,
+		running = 1 << 0,
+		equal = 1 << 1,
+		not_equal = 1 << 2,
+		greater = 1 << 3,
+		greater_equal = 1 << 4,
+		less = 1 << 5,
+		less_equal = 1 << 6,
+		zero = 1 << 7,
+		not_zero = 1 << 8,
 	};
 
 	enum Peripheral
@@ -75,14 +52,14 @@ namespace Lightning::CPU
 		total_peripherals
 	};
 
-	inline int reg[16]{};
+	inline int reg[8]{};
+	inline int condReg{};
+	inline unsigned short instruction{};
 
 	inline int stack[1 << 16]{}; // 64 KB
 	inline int sb{};
 
 	inline int peripherals[total_peripherals][8]{};
-
-	inline std::bitset<7> bistables{};
 
 	int cycle(void*);
 	void decode();

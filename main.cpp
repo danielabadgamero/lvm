@@ -5,13 +5,14 @@
 
 #include <string>
 
-int main(int, char** argv)
+int main(int, char**)
 {
-	Lightning::init({ std::atoi(argv[1]), std::atoi(argv[2]) });
+	Lightning::init();
 
-	while (~Lightning::CPU::bistables[Lightning::CPU::running]);
+	while (~Lightning::CPU::condReg & Lightning::CPU::running)
+		Lightning::cycle();
 
-	while (Lightning::CPU::bistables[Lightning::CPU::running])
+	while (Lightning::CPU::condReg & Lightning::CPU::running)
 		Lightning::cycle();
 
 	Lightning::quit();
