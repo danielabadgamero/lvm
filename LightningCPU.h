@@ -46,7 +46,7 @@ namespace Lightning::CPU
 		POP,	// <rd> <___> <______>: Pop the top element of the stack and set register rd to it.
 		CALL,	// <__> <0/1> <rs/imm>: Push pc to the stack and set it to the value in rs (0) or to pc + imm (1).
 		RET,	// <__> <___> <______>: Pop the top element from the stack and set pc to it.
-		MOVC,	// <rd>
+		MOVC,	// <rd> <0/1> <rs/imm> <cond>: Store value in register rs (0) or immediate (1) in register rd if condition register is 1.
 	};
 
 	enum Reg
