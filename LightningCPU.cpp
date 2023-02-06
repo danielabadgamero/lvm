@@ -11,6 +11,8 @@ void Lightning::CPU::decode()
 {
 	switch (opcode)
 	{
+	case HLT:
+		break;
 	case MOV:
 		break;
 	case ADD:
@@ -30,6 +32,16 @@ void Lightning::CPU::decode()
 	case LW:
 		break;
 	case SW:
+		break;
+	case PUSH:
+		break;
+	case POP:
+		break;
+	case CALL:
+		break;
+	case RET:
+		break;
+	case MOVC:
 		break;
 	}
 }

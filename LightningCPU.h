@@ -32,6 +32,7 @@ namespace Lightning::CPU
 
 	enum Opcode
 	{
+		HLT,	// halt.
 		MOV,	// <rd> <0/1> <rs/imm>: Store value in register rs (0) or immediate (1) in register rd.
 		ADD,	// <rd> <0/1> <rs/imm>: Store addition of register rs (0) or immediate (1) and register rd.
 		SUB,	// <rd> <0/1> <rs/imm>: Store substraction of register rs (0) or immediate (1) and register rd.
