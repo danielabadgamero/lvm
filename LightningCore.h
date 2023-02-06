@@ -12,6 +12,14 @@ namespace Lightning
 	inline SDL_Event e{};
 	inline SDL_Point windowSize{};
 
+	/*
+	* Memory map:
+	* 
+	* 
+	*/
+
+	inline constexpr int VIDEO{ 0x100000 };
+
 	inline char RAM[1 << 24]{};	// 16MB
 	inline constexpr unsigned char ROM[1 << 12]	// 4KB
 	{
