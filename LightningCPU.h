@@ -39,8 +39,6 @@ namespace Lightning::CPU
 		AND,	// <rd> <0/1> <rs/imm>: Store bitwise and of register rs (0) or immediate (1) and register rd.
 		OR,		// <rd> <0/1> <rs/imm>: Store bitwise or of register rs (0) or immediate (1) and register rd.
 		SHIFT,	// <rd> <0/1> <rs/imm>: Store bitwise shift of register rd by register rs (0) or immediate (1).
-		LW,		// <rd> <0/1> <rs/imm>: Store in register rd the value in memory at pc + imm (1) or at rs (0).
-		SW,		// <rd> <0/1> <rs/imm>: Store in memory at address rd value in rs (0) or immediate (0).
 		PUSH,	// <__> <0/1> <rs/imm>: Push the value in rs (0) or immediate (1) to the stack.
 		POP,	// <rd> <___> <______>: Pop the top element of the stack and set register rd to it.
 		CALL,	// <__> <0/1> <rs/imm>: Push pc to the stack and set it to the value in rs (0) or to pc + imm (1).
