@@ -63,7 +63,7 @@ int Lightning::CPU::cycle(void*)
 {
 	while (running)
 	{
-		instruction = RAM[reg[pc]];
+		instruction = ROM[reg[pc]];
 		reg[pc]++;
 		decode();
 	}

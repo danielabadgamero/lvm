@@ -19,7 +19,7 @@ void Lightning::init()
 	*Monitor::rPitch = *Monitor::rSize / windowSize.y;
 
 	Monitor::screen = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, windowSize.x, windowSize.y);
-	Monitor::pixels = new Uint8[*Monitor::rSize]{};
+	Monitor::pixels = new Uint16[*Monitor::rSize]{};
 
 	Disk::thread = SDL_CreateThread(Disk::cycle, "Disk", NULL);
 	CPU::thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);

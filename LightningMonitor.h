@@ -8,7 +8,7 @@
 namespace Lightning::Monitor
 {
 	inline SDL_Texture* screen{};
-	inline Uint8* pixels{};
+	inline Uint16* pixels{};
 
 	inline int* rSize{ &peripherals[monitor][0] };
 	inline int* rPitch{ &peripherals[monitor][1] };
