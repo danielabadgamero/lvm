@@ -64,15 +64,14 @@ namespace Lightning::CPU
 
 	enum CondFlags
 	{
-		running = 1 << 0,
-		equal = 1 << 1,
-		not_equal = 1 << 2,
-		greater = 1 << 3,
-		greater_equal = 1 << 4,
-		less = 1 << 5,
-		less_equal = 1 << 6,
-		zero = 1 << 7,
-		not_zero = 1 << 8,
+		equal = 1 << 0,
+		not_equal = 1 << 1,
+		greater = 1 << 2,
+		greater_equal = 1 << 3,
+		less = 1 << 4,
+		less_equal = 1 << 5,
+		zero = 1 << 6,
+		not_zero = 1 << 7,
 	};
 
 	enum Peripheral

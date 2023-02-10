@@ -23,7 +23,7 @@ namespace Lightning
 	inline char RAM[1 << 24]{};	// 16MB
 	inline constexpr unsigned char ROM[1 << 12]	// 4KB
 	{
-
+		0b00000000, 0b00000000,
 	};
 
 	void init();

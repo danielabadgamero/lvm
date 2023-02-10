@@ -9,21 +9,7 @@ void Lightning::Disk::init()
 
 int Lightning::Disk::cycle(void*)
 {
-	while (~(CPU::condReg & CPU::running))
-	{
-		if (*rRead)
-		{
-			SDL_memcpy(&RAM[*rAddr], HDD[*rSec], 512);
-			*rRead = false;
-		}
-		if (*rWrite)
-		{
-			SDL_memcpy(HDD[*rSec], &RAM[*rAddr], 512);
-			*rWrite = false;
-		}
-	}
-
-	while (CPU::condReg & CPU::running)
+	while (true)
 	{
 		if (*rRead)
 		{
