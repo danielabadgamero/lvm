@@ -3,6 +3,8 @@
 
 #include <SDL.h>
 
+#include <stack>
+
 namespace Lightning::CPU
 {
 	inline SDL_Thread* thread;
@@ -73,6 +75,7 @@ namespace Lightning::CPU
 	inline int reg[8]{};
 	inline int condReg{};
 	inline unsigned short instruction{};
+	inline std::stack<int> stack{};
 
 	int cycle(void*);
 	void decode();

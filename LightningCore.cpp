@@ -64,7 +64,7 @@ void Lightning::cycle()
 		CPU::reg[CPU::dr] = RAM[CPU::reg[CPU::ar]];
 		break;
 	case 3:
-		RAM[CPU::reg[CPU::ar]] = CPU::reg[CPU::dr];
+		RAM[CPU::reg[CPU::ar]] = static_cast<short>(CPU::reg[CPU::dr]);
 		break;
 	default:
 		CPU::reg[CPU::dr] = peripherals[CPU::reg[CPU::cr - 4]][CPU::ar];
