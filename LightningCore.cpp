@@ -36,14 +36,39 @@ void Lightning::cycle()
 			switch (e.key.keysym.scancode)
 			{
 			case SDL_SCANCODE_ESCAPE:
-				CPU::condReg ^= CPU::running;
+				running = false;
 				break;
 			}
 			break;
 		case SDL_QUIT:
-			CPU::condReg ^= CPU::running;
+			running = false;
 			break;
 		}
+
+	/*
+	* Control register (cr) values:
+	* 
+	* 0: nothing
+	* 1: read ROM
+	* 2: read RAM
+	* 3: write RAM
+	* 
+	*/
+
+	switch (CPU::reg[CPU::cr])
+	{
+	case 1:
+		CPU::reg[CPU::dr] = ROM[CPU::reg[CPU::ar]];
+		break;
+	case 2:
+		CPU::reg[CPU::dr] = RAM[CPU::reg[CPU::ar]];
+		break;
+	case 3:
+		RAM[CPU::reg[CPU::ar]] = CPU::reg[CPU::dr];
+		break;
+	default:
+		CPU::reg[CPU::dr] = peripherals[CPU::reg[CPU::cr - 4]][CPU::ar];
+	}
 
 	Monitor::refresh();
 }

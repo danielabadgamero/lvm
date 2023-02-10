@@ -9,7 +9,7 @@ void Lightning::Disk::init()
 
 int Lightning::Disk::cycle(void*)
 {
-	while (true)
+	while (running)
 	{
 		if (*rRead)
 		{

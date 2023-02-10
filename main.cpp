@@ -9,7 +9,7 @@ int main(int, char**)
 {
 	Lightning::init();
 
-	while (true)
+	while (Lightning::running)
 		Lightning::cycle();
 
 	Lightning::quit();

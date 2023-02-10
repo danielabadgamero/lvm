@@ -1,8 +1,6 @@
 #ifndef LIGHTNING_CPU
 #define LIGHTNING_CPU
 
-#include <bitset>
-
 #include <SDL.h>
 
 namespace Lightning::CPU
@@ -56,7 +54,7 @@ namespace Lightning::CPU
 		r2,
 		r3,
 		r4,
-		r5,
+		cr,
 		ar,
 		dr,
 		pc,
@@ -74,22 +72,9 @@ namespace Lightning::CPU
 		not_zero = 1 << 7,
 	};
 
-	enum Peripheral
-	{
-		monitor,
-		disk,
-
-		total_peripherals
-	};
-
 	inline int reg[8]{};
 	inline int condReg{};
 	inline unsigned short instruction{};
-
-	inline int stack[1 << 16]{}; // 64 KB
-	inline int sb{};
-
-	inline int peripherals[total_peripherals][8]{};
 
 	int cycle(void*);
 	void decode();

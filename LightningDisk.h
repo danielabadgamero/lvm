@@ -3,7 +3,7 @@
 
 #include <SDL.h>
 
-#include "LightningCPU.h"
+#include "LightningCore.h"
 
 namespace Lightning::Disk
 {
@@ -15,10 +15,10 @@ namespace Lightning::Disk
 	{
 	};
 
-	inline int* rSec{ &CPU::peripherals[CPU::disk][0] };
-	inline int* rAddr{ &CPU::peripherals[CPU::disk][1] };
-	inline int* rRead{ &CPU::peripherals[CPU::disk][2] };
-	inline int* rWrite{ &CPU::peripherals[CPU::disk][3] };
+	inline int* rSec{ &peripherals[disk][0] };
+	inline int* rAddr{ &peripherals[disk][1] };
+	inline int* rRead{ &peripherals[disk][2] };
+	inline int* rWrite{ &peripherals[disk][3] };
 
 	void init();
 	int cycle(void*);
