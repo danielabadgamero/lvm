@@ -16,6 +16,22 @@ namespace Lightning
 	{
 	};
 
+	inline struct
+	{
+		int data : 32{};
+	} dataBus{};
+
+	inline struct
+	{
+		int address : 32{};
+	} addressBus{};
+
+	inline struct
+	{
+		char chipSelectRAM : 1{};
+		char chipSelectROM : 1{};
+	} controlBus{};
+
 	void init();
 	void cycle();
 	void quit();
