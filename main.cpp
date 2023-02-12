@@ -2,8 +2,6 @@
 
 #include "LightningCore.h"
 
-#include <string>
-
 int main(int, char**)
 {
 	Lightning::init();

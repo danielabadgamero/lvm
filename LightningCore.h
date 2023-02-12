@@ -8,10 +8,10 @@ namespace Lightning
 	inline SDL_Window* window{};
 	inline SDL_Renderer* renderer{};
 	inline SDL_Event e{};
-	inline SDL_Point windowSize{};
+	inline SDL_DisplayMode screen{};
 	inline bool running{};
 
-	inline short RAM[1 << 24]{};	// 16MB
+	inline short RAM[1 << 16]{};	// 16MB
 	inline constexpr unsigned short ROM[1 << 12]	// 4KB
 	{
 	};
@@ -31,6 +31,11 @@ namespace Lightning
 		char chipSelectRAM : 1{};
 		char chipSelectROM : 1{};
 	} controlBus{};
+
+	namespace Threads
+	{
+		inline SDL_Thread* CPU{};
+	}
 
 	void init();
 	void cycle();

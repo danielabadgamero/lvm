@@ -1,16 +1,20 @@
 #include <SDL.h>
 
+#include "LightningCPU.h"
 #include "LightningCore.h"
 
 void Lightning::init()
 {
-	windowSize = { 960, 640 };
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_CENTERED, windowSize.x, windowSize.y, SDL_WINDOW_BORDERLESS);
+	SDL_GetCurrentDisplayMode(0, &screen);
+
+	window = SDL_CreateWindow("Lightning VM", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_CENTERED, screen.w, screen.h, SDL_WINDOW_FULLSCREEN);
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
 	SDL_ShowCursor(SDL_DISABLE);
+
+	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 
 	running = true;
 }
