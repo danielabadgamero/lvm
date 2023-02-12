@@ -11,25 +11,28 @@ namespace Lightning
 	inline SDL_DisplayMode screen{};
 	inline bool running{};
 
-	inline short RAM[1 << 16]{};	// 16MB
-	inline constexpr unsigned short ROM[1 << 12]	// 4KB
+	inline char RAM[1 << 16]{};	// 64KB
+	inline constexpr unsigned char ROM[1 << 12]	// 4KB
 	{
 	};
 
 	inline struct
 	{
-		int data : 32{};
+		short data : 16{};
 	} dataBus{};
 
 	inline struct
 	{
-		int address : 32{};
+		short address : 16{};
 	} addressBus{};
 
 	inline struct
 	{
 		char chipSelectRAM : 1{};
 		char chipSelectROM : 1{};
+		char read : 1{};
+		char write : 1{};
+		char byteSize : 1{};
 	} controlBus{};
 
 	namespace Threads

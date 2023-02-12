@@ -9,6 +9,20 @@ namespace Lightning::CPU
 		MOV,
 	};
 
+	enum Reg
+	{
+		ax,
+		bx,
+		cx,
+		dx,
+		mdr,
+		mar,
+		bp,
+		sp,
+		ip,
+		pc,
+	};
+
 	inline union
 	{
 		struct
