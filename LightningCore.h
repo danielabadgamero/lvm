@@ -3,6 +3,8 @@
 
 #include <SDL.h>
 
+#include <bitset>
+
 inline SDL_Window* window{};
 inline SDL_Renderer* renderer{};
 inline SDL_Event e{};
@@ -22,13 +24,15 @@ namespace Lightning::Core
 		unsigned int data{};
 		unsigned int address{};
 
-		union
-		{
-			unsigned int chipSelect : 1;	// 0 for ROM, 1 for RAM
-			unsigned int read : 1;
-			unsigned int write : 1;
-		} control{};
+		std::bitset<3> control{};
 	} systemBus{};
+
+	enum
+	{
+		chipSelect,
+		read,
+		write,
+	};
 
 	namespace Threads
 	{

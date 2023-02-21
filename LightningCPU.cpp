@@ -6,8 +6,8 @@ void Lightning::CPU::decode()
 	switch (ir.opcode)
 	{
 	case HALT:
-		if (Core::systemBus.control.chipSelect == 0)
-			Core::systemBus.control.chipSelect = 1;
+		if (Core::systemBus.control[Core::chipSelect] == 0)
+			Core::systemBus.control[Core::chipSelect] = 1;
 		else
 			Core::running = false;
 		break;
@@ -17,8 +17,8 @@ void Lightning::CPU::decode()
 		else
 		{
 			Core::systemBus.address = ir.op2;
-			Core::systemBus.control.read = 1;
-			while (Core::systemBus.control.read);
+			Core::systemBus.control[Core::read] = 1;
+			while (Core::systemBus.control[Core::read]);
 			reg[ir.reg] = Core::systemBus.data;
 		}
 		break;
@@ -28,8 +28,8 @@ void Lightning::CPU::decode()
 		else
 		{
 			Core::systemBus.address = reg[ir.op2];
-			Core::systemBus.control.read = 1;
-			while (Core::systemBus.control.read);
+			Core::systemBus.control[Core::read] = 1;
+			while (Core::systemBus.control[Core::read]);
 			reg[ir.reg] = Core::systemBus.data;
 		}
 		break;
@@ -43,8 +43,8 @@ int Lightning::CPU::cycle(void*)
 	while (Core::running)
 	{
 		Core::systemBus.address = pc;
-		Core::systemBus.control.read = 1;
-		while (Core::systemBus.control.read);
+		Core::systemBus.control[Core::read] = 1;
+		while (Core::systemBus.control[Core::read]);
 		ir.instruction = Core::systemBus.data;
 		pc++;
 		decode();

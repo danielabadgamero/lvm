@@ -26,27 +26,26 @@ int Lightning::Core::cycle(void*)
 
 	while (running)
 	{
-		if (systemBus.control.chipSelect == 1)
+		if (systemBus.control[chipSelect] == 1)
 		{
-			if (systemBus.control.read)
+			if (systemBus.control[read] == 1)
 			{
 				systemBus.data = RAM[systemBus.address];
-				systemBus.control.read = 0;
+				systemBus.control[read] = 0;
 			}
-			else if (systemBus.control.write)
+			else if (systemBus.control[write] == 1)
 			{
 				RAM[systemBus.address] = systemBus.data;
-				systemBus.control.write = 0;
+				systemBus.control[write] = 0;
 			}
 		}
-		else
+		else if (systemBus.control[read])
 		{
-			if (systemBus.control.read)
-			{
-				systemBus.data = ROM[systemBus.address];
-				systemBus.control.read = 0;
-			}
+			SDL_Log("here");
+			systemBus.data = ROM[systemBus.address];
+			systemBus.control[read] = 0;
 		}
+		SDL_Log("%d", systemBus.control[read]);
 	}
 
 	return 0;
