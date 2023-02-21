@@ -3,7 +3,7 @@
 #include "LightningCPU.h"
 #include "LightningCore.h"
 
-void Lightning::init()
+void Lightning::Core::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 
@@ -14,54 +14,49 @@ void Lightning::init()
 
 	SDL_ShowCursor(SDL_DISABLE);
 
+	Threads::Core = SDL_CreateThread(cycle, "Core", NULL);
 	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 
 	running = true;
 }
 
-void Lightning::cycle()
-{
-	while (SDL_PollEvent(&e))
-		switch (e.type)
+int Lightning::Core::cycle(void*)
+{	
+	while (!running);
+
+	while (running)
+	{
+		if (systemBus.control.chipSelect == 1)
 		{
-		case SDL_KEYDOWN:
-			switch (e.key.keysym.scancode)
+			if (systemBus.control.read)
 			{
-			case SDL_SCANCODE_ESCAPE:
-				running = false;
-				break;
+				systemBus.data = RAM[systemBus.address];
+				systemBus.control.read = 0;
 			}
-			break;
-		case SDL_QUIT:
-			running = false;
-			break;
+			else if (systemBus.control.write)
+			{
+				RAM[systemBus.address] = systemBus.data;
+				systemBus.control.write = 0;
+			}
 		}
-	
-	if (systemBus.control.chipSelect == 1)
-	{
-		if (systemBus.control.read)
+		else
 		{
-			systemBus.data = RAM[systemBus.address];
-			systemBus.control.read = 0;
-		}
-		else if (systemBus.control.write)
-		{
-			RAM[systemBus.address] = systemBus.data;
-			systemBus.control.write = 0;
+			if (systemBus.control.read)
+			{
+				systemBus.data = ROM[systemBus.address];
+				systemBus.control.read = 0;
+			}
 		}
 	}
-	else
-	{
-		if (systemBus.control.read)
-		{
-			systemBus.data = ROM[systemBus.address];
-			systemBus.control.read = 0;
-		}
-	}
+
+	return 0;
 }
 
-void Lightning::quit()
+void Lightning::Core::quit()
 {
+	SDL_WaitThread(Threads::Core, NULL);
+	SDL_WaitThread(Threads::CPU, NULL);
+
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 }

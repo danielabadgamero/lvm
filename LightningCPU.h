@@ -10,11 +10,11 @@ namespace Lightning::CPU
 		MOVR,
 	};
 
-	int reg[4]{};
-
-	unsigned int pc{};
-	unsigned int mdr{};
-	unsigned int mar{};
+	inline int reg[4]{};
+	
+	inline unsigned int pc{};
+	inline unsigned int mdr{};
+	inline unsigned int mar{};
 
 	inline union
 	{

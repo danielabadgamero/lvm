@@ -3,12 +3,13 @@
 
 #include <SDL.h>
 
-namespace Lightning
+inline SDL_Window* window{};
+inline SDL_Renderer* renderer{};
+inline SDL_Event e{};
+inline SDL_DisplayMode screen{};
+
+namespace Lightning::Core
 {
-	inline SDL_Window* window{};
-	inline SDL_Renderer* renderer{};
-	inline SDL_Event e{};
-	inline SDL_DisplayMode screen{};
 	inline bool running{};
 
 	inline unsigned int RAM[1 << 24]{};	// 64MB, 16MB virtual
@@ -31,11 +32,12 @@ namespace Lightning
 
 	namespace Threads
 	{
+		inline SDL_Thread* Core{};
 		inline SDL_Thread* CPU{};
 	}
 
 	void init();
-	void cycle();
+	int cycle(void*);
 	void quit();
 }
 
