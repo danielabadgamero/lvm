@@ -5,36 +5,28 @@ namespace Lightning::CPU
 {
 	enum Opcode
 	{
-		HLT,
-		MOV,
+		HALT,
+		MOVI,
+		MOVR,
 	};
 
-	enum Reg
-	{
-		ax,
-		bx,
-		cx,
-		dx,
-		mdr,
-		mar,
-		bp,
-		sp,
-		ip,
-		pc,
-	};
+	int reg[4]{};
+
+	unsigned int pc{};
+	unsigned int mdr{};
+	unsigned int mar{};
 
 	inline union
 	{
-		struct
-		{
-			char opcode : 6;	// 64 possible opcodes
-			char dMode : 1;		// reg (4 bits) or address (16 bits)
-			char sMode : 1;		// reg (4 bits) or address (16 bits)
-		} fields;
+		unsigned int opcode : 5;	// 32 different opcodes
+		unsigned int addrMode : 1;	// opcode-specific addressing mode modifier
+		unsigned int reg : 2;		// 4 general purpose registers
+		unsigned int op2 : 24;		// second operand. Interpretation depends on adrMode
 
-		char bytes{};
-	} instruction{};
+		unsigned int instruction{};
+	} ir{};
 
+	void decode();
 	int cycle(void*);
 }
 

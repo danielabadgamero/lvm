@@ -36,44 +36,26 @@ void Lightning::cycle()
 			running = false;
 			break;
 		}
-
-	if (controlBus.chipSelectRAM)
+	
+	if (systemBus.control.chipSelect == 1)
 	{
-		if (controlBus.read)
+		if (systemBus.control.read)
 		{
-			dataBus.data = RAM[addressBus.address];
-			if (controlBus.byteSize)
-			{
-				dataBus.data <<= 8;
-				dataBus.data += RAM[addressBus.address + 1];
-			}
-			controlBus.read = 0;
+			systemBus.data = RAM[systemBus.address];
+			systemBus.control.read = 0;
 		}
-		else if (controlBus.write)
+		else if (systemBus.control.write)
 		{
-			if (controlBus.byteSize)
-			{
-				RAM[addressBus.address] = static_cast<unsigned char>(dataBus.data >> 8);
-				RAM[addressBus.address + 1] = static_cast<unsigned char>(dataBus.data);
-			}
-			else
-			{
-				RAM[addressBus.address] = static_cast<unsigned char>(dataBus.data);
-			}
-			controlBus.write = 0;
+			RAM[systemBus.address] = systemBus.data;
+			systemBus.control.write = 0;
 		}
 	}
-	else if (controlBus.chipSelectROM)
+	else
 	{
-		if (controlBus.read)
+		if (systemBus.control.read)
 		{
-			dataBus.data = ROM[addressBus.address];
-			if (controlBus.byteSize)
-			{
-				dataBus.data <<= 8;
-				dataBus.data += RAM[addressBus.address + 1];
-			}
-			controlBus.read = 0;
+			systemBus.data = ROM[systemBus.address];
+			systemBus.control.read = 0;
 		}
 	}
 }
