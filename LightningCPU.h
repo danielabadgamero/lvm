@@ -5,11 +5,12 @@ namespace Lightning::CPU
 {
 	enum Opcode
 	{
-	//	opcode		Description (0)						Description (1)
+		//			Description (0)						Description (1)
 		HALT,	//	Finish execution					Switch to chip in op2
 		MOV,	//	Load reg op2 to rDest				Load imm to rDest
 		LD,		//	Load reg addr op2 to rDest			Load addr op2 to rDest
 		ST,		//	Store reg op2 in addr rDest			Store imm op2 in addr rDest
+		JMP,	//	Set pc to reg op2					Set pc to imm op2
 	};
 
 	inline int reg[4]{};

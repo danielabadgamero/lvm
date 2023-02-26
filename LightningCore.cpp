@@ -17,6 +17,11 @@ void Lightning::Core::init()
 	Threads::Core = SDL_CreateThread(cycle, "Core", &systemBus);
 	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", &systemBus);
 
+	monitor = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen.w, screen.h);
+	pixelsSize = screen.w * screen.h * 3;
+	pixelsPitch = screen.w * 3;
+	pixels = new Uint8[pixelsSize]{};
+
 	running = true;
 }
 

@@ -23,6 +23,12 @@ int main(int, char**)
 				Lightning::Core::running = false;
 				break;
 			}
+
+		SDL_memcpy(pixels, Lightning::Core::RAM + VIDEO, pixelsSize);
+		SDL_UpdateTexture(monitor, NULL, pixels, pixelsPitch);
+		SDL_RenderCopy(renderer, monitor, NULL, NULL);
+
+		SDL_RenderPresent(renderer);
 	}
 
 	Lightning::Core::quit();

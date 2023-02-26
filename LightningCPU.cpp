@@ -17,10 +17,17 @@ static void readMemory(int address, int* dest)
 
 static void writeMemory(int address, int data)
 {
+	bool ROM{};
+	if (Lightning::Core::systemBus.control[Lightning::Core::chipSelect] == 0)
+		ROM = true;
 	Lightning::Core::systemBus.address = address;
 	Lightning::Core::systemBus.data = data;
 	Lightning::Core::systemBus.control[Lightning::Core::write] = 1;
+	if (ROM)
+		Lightning::Core::systemBus.control[Lightning::Core::chipSelect] = 1;
 	while (Lightning::Core::systemBus.control[Lightning::Core::write]);
+	if (ROM)
+		Lightning::Core::systemBus.control[Lightning::Core::chipSelect] = 0;
 }
 
 void Lightning::CPU::decode()
@@ -51,6 +58,11 @@ void Lightning::CPU::decode()
 		else
 			writeMemory(rDest, imm);
 		break;
+	case JMP:
+		if (aMode == 0)
+			pc = rSource;
+		else
+			pc = imm;
 	}
 }
 
