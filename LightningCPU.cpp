@@ -1,8 +1,6 @@
 #include "LightningCore.h"
 #include "LightningCPU.h"
 
-#include <iostream>
-
 #define opcode ir.bitfields.opcode
 #define rDest reg[ir.bitfields.reg]
 #define rSource reg[ir.bitfields.op2]
@@ -62,10 +60,7 @@ int Lightning::CPU::cycle(void*)
 
 	while (Core::running)
 	{
-		Core::systemBus.address = pc;
-		Core::systemBus.control[Core::read] = 1;
-		while (Core::systemBus.control[Core::read]);
-		ir.instruction = Core::systemBus.data;
+		readMemory(pc, (int*)&ir.instruction);
 		pc++;
 		decode();
 	}
