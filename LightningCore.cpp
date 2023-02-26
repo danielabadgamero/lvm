@@ -14,8 +14,8 @@ void Lightning::Core::init()
 
 	SDL_ShowCursor(SDL_DISABLE);
 
-	Threads::Core = SDL_CreateThread(cycle, "Core", NULL);
-	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", NULL);
+	Threads::Core = SDL_CreateThread(cycle, "Core", &systemBus);
+	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", &systemBus);
 
 	running = true;
 }
@@ -41,11 +41,9 @@ int Lightning::Core::cycle(void*)
 		}
 		else if (systemBus.control[read])
 		{
-			SDL_Log("here");
 			systemBus.data = ROM[systemBus.address];
 			systemBus.control[read] = 0;
 		}
-		SDL_Log("%d", systemBus.control[read]);
 	}
 
 	return 0;

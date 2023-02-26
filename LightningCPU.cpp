@@ -1,37 +1,57 @@
 #include "LightningCore.h"
 #include "LightningCPU.h"
 
+#include <iostream>
+
+#define opcode ir.bitfields.opcode
+#define rDest reg[ir.bitfields.reg]
+#define rSource reg[ir.bitfields.op2]
+#define imm ir.bitfields.op2
+#define aMode ir.bitfields.addrMode
+
+static void readMemory(int address, int* dest)
+{
+	Lightning::Core::systemBus.address = address;
+	Lightning::Core::systemBus.control[Lightning::Core::read] = 1;
+	while (Lightning::Core::systemBus.control[Lightning::Core::read]);
+	*dest = Lightning::Core::systemBus.data;
+}
+
+static void writeMemory(int address, int data)
+{
+	Lightning::Core::systemBus.address = address;
+	Lightning::Core::systemBus.data = data;
+	Lightning::Core::systemBus.control[Lightning::Core::write] = 1;
+	while (Lightning::Core::systemBus.control[Lightning::Core::write]);
+}
+
 void Lightning::CPU::decode()
 {
-	switch (ir.opcode)
+	switch (opcode)
 	{
 	case HALT:
-		if (Core::systemBus.control[Core::chipSelect] == 0)
-			Core::systemBus.control[Core::chipSelect] = 1;
-		else
+		if (aMode == 0)
 			Core::running = false;
-		break;
-	case MOVI:
-		if (ir.addrMode == 0)
-			reg[ir.reg] = ir.op2;
 		else
-		{
-			Core::systemBus.address = ir.op2;
-			Core::systemBus.control[Core::read] = 1;
-			while (Core::systemBus.control[Core::read]);
-			reg[ir.reg] = Core::systemBus.data;
-		}
+			Core::systemBus.control[Core::chipSelect] = imm;
 		break;
-	case MOVR:
-		if (ir.addrMode == 0)
-			reg[ir.reg] = reg[ir.op2];
+	case MOV:
+		if (aMode == 0)
+			rDest = rSource;
 		else
-		{
-			Core::systemBus.address = reg[ir.op2];
-			Core::systemBus.control[Core::read] = 1;
-			while (Core::systemBus.control[Core::read]);
-			reg[ir.reg] = Core::systemBus.data;
-		}
+			rDest = imm;
+		break;
+	case LD:
+		if (aMode == 0)
+			readMemory(rSource, &rDest);
+		else
+			readMemory(imm, &rDest);
+		break;
+	case ST:
+		if (aMode == 0)
+			writeMemory(rDest, rSource);
+		else
+			writeMemory(rDest, imm);
 		break;
 	}
 }

@@ -14,18 +14,20 @@ namespace Lightning::Core
 {
 	inline bool running{};
 
-	inline unsigned int RAM[1 << 24]{};	// 64MB, 16MB virtual
-	inline constexpr unsigned int ROM[1 << 12]	// 16KB, 4KB virtual
+	inline unsigned int RAM[1 << 24]{};	// 16MB virtual
+	inline constexpr unsigned int ROM[1 << 12]	// 4KB virtual
 	{
 	};
 
-	inline struct
+	struct Bus
 	{
 		unsigned int data{};
 		unsigned int address{};
 
 		std::bitset<3> control{};
-	} systemBus{};
+	};
+
+	inline Bus systemBus{};
 
 	enum
 	{
