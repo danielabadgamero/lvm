@@ -26,23 +26,31 @@ int Lightning::Core::cycle(void*)
 
 	while (running)
 	{
+		if (systemBus.control[chipSelect] == 0)
+		{
+			if (systemBus.control[read])
+			{
+				systemBus.data = ROM[systemBus.address];
+				systemBus.control[read] = 0;
+			}
+			if (systemBus.control[write])
+			{
+				// Attempting to write to ROM
+				// not allowed
+			}
+		}
 		if (systemBus.control[chipSelect] == 1)
 		{
-			if (systemBus.control[read] == 1)
+			if (systemBus.control[read])
 			{
 				systemBus.data = RAM[systemBus.address];
 				systemBus.control[read] = 0;
 			}
-			else if (systemBus.control[write] == 1)
+			if (systemBus.control[write])
 			{
 				RAM[systemBus.address] = systemBus.data;
 				systemBus.control[write] = 0;
 			}
-		}
-		else if (systemBus.control[read])
-		{
-			systemBus.data = ROM[systemBus.address];
-			systemBus.control[read] = 0;
 		}
 	}
 
