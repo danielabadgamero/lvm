@@ -8,12 +8,12 @@ namespace Lightning::CPU
 	enum Opcode
 	{
 		//			Description (addrMode = 0)			Description (addrMode = 1)
-		
+
 		//	Data management
 		MOV,	//	Load reg op2 to rDest				Load imm to rDest
 		LD,		//	Load reg addr op2 to rDest			Load addr op2 to rDest
 		ST,		//	Store reg op2 in addr rDest			Store imm op2 in addr rDest
-		
+
 		//	Flow control
 		//	value in rDest changes behaviour of pc change:
 		//	rDest	Desc
@@ -24,7 +24,8 @@ namespace Lightning::CPU
 		HALT,	//	Finish execution					Switch to chip in op2
 		CMP,	//	Eval rDest and reg op2 to flags		Eval rDest and imm op2 to flags
 		JMP,	//	Set pc to reg op2					Set pc to imm op2
-		JMPC,	//	Set pc to reg op2 if flag rDest		Set pc to imm op2 if flag rDest
+		JEQ,	//	Set pc to reg op2 if equal flag		Set pc to imm op2 if equal flag
+		JEZ,	//	Set pc to reg op2 if zero flag		Set pc to imm op2 if zero flag
 
 		//	Arithmeitc
 		ADD,	//	Add reg op2 to rDest				Add imm op2 to rDest
@@ -34,6 +35,15 @@ namespace Lightning::CPU
 		MOD,	//	Modulo of rDest by reg op2			Modulo of rDest by imm op2
 		RSFT,	//	Shift rDest to the right by reg op2	Shift rDest to the right by imm op2
 		LSFT,	//	Shift rDest to the left by reg op2	Shift rDest to the left by imm op2
+
+		//	Logic
+		AND,	//	Bitwise AND of rDest and reg op2	Bitwise AND of rDest and imm op2
+		OR,		//	Bitwise OR of rDest and reg op2		Bitwise OR of rDest and imm op2
+		XOR,	//	Bitwise XOR of rDest and reg op2	Bitwise XOR of rDest and imm op2
+		NAND,	//	Bitwise NAND of rDest and reg op2	Bitwise NAND of rDest and imm op2
+		NOR,	//	Bitwise NOR of rDest and reg op2	Bitwise NOR of rDest and imm op2
+		XNOR,	//	Bitwise XNOR of rDest and reg op2	Bitwise XNOR of rDest and imm op2
+		NOT,	//	Bitwise neg. of reg op2 in rDest	Bitwise neg. of imm op2 in rDest
 	};
 
 	inline int reg[4]{};
@@ -44,7 +54,6 @@ namespace Lightning::CPU
 	enum CompFlags
 	{
 		equal,
-		zero,
 		greater,
 		greater_equal,
 		less,
