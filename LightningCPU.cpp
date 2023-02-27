@@ -9,25 +9,15 @@
 
 static void readMemory(int address, int* dest)
 {
-	Lightning::Core::systemBus.address = address;
-	Lightning::Core::systemBus.control[Lightning::Core::read] = 1;
-	while (Lightning::Core::systemBus.control[Lightning::Core::read]);
-	*dest = Lightning::Core::systemBus.data;
+	if (Lightning::Core::chipSelected)
+		*dest = Lightning::Core::RAM[address];
+	else
+		*dest = Lightning::Core::ROM[address];
 }
 
 static void writeMemory(int address, int data)
 {
-	bool ROM{};
-	if (Lightning::Core::systemBus.control[Lightning::Core::chipSelect] == 0)
-		ROM = true;
-	Lightning::Core::systemBus.address = address;
-	Lightning::Core::systemBus.data = data;
-	Lightning::Core::systemBus.control[Lightning::Core::write] = 1;
-	if (ROM)
-		Lightning::Core::systemBus.control[Lightning::Core::chipSelect] = 1;
-	while (Lightning::Core::systemBus.control[Lightning::Core::write]);
-	if (ROM)
-		Lightning::Core::systemBus.control[Lightning::Core::chipSelect] = 0;
+	Lightning::Core::RAM[address] = (unsigned char)data;
 }
 
 void Lightning::CPU::decode()
@@ -38,7 +28,7 @@ void Lightning::CPU::decode()
 		if (aMode == 0)
 			Core::running = false;
 		else
-			Core::systemBus.control[Core::chipSelect] = imm;
+			Core::chipSelected = imm;
 		break;
 	case MOV:
 		if (aMode == 0)
@@ -63,6 +53,13 @@ void Lightning::CPU::decode()
 			pc = rSource;
 		else
 			pc = imm;
+		break;
+	case ADD:
+		if (aMode == 0)
+			rDest += rSource;
+		else
+			rDest += imm;
+		break;
 	}
 }
 
@@ -72,8 +69,14 @@ int Lightning::CPU::cycle(void*)
 
 	while (Core::running)
 	{
-		readMemory(pc, (int*)&ir.instruction);
-		pc++;
+		int instruction{};
+		for (int i{}; i != 4; i++)
+		{
+			readMemory(pc, &instruction);
+			ir.instruction <<= 8;
+			ir.instruction += instruction;
+			pc++;
+		}
 		decode();
 	}
 

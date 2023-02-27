@@ -21,40 +21,24 @@ inline constexpr int VIDEO		{ 0xA11000 };
 namespace Lightning::Core
 {
 	inline bool running{};
+	inline bool chipSelected{}; // 0 for ROM, 1 for RAM
 
-	inline unsigned int RAM[1 << 24]{};	// 16MB virtual
-	inline constexpr unsigned int ROM[1 << 12]	// 4KB virtual
+	inline unsigned char RAM[1 << 24]{};	// 16MB virtual
+	inline constexpr unsigned char ROM[1 << 12]	// 4KB virtual
 	{
-		0b00001'1'00'10100001'00010000'00000001,
-		0b00011'1'00'00000000'00000000'11111111,
-		0b00100'1'00'00000000'00000000'00000010,
-	};
-
-	struct Bus
-	{
-		unsigned int data{};
-		unsigned int address{};
-
-		std::bitset<3> control{};
-	};
-
-	inline Bus systemBus{};
-
-	enum
-	{
-		chipSelect,
-		read,
-		write,
+		0b00000'1'00, 0xA1, 0x10, 0x00,
+		0b00010'1'00, 0x00, 0x00, 0xFF,
+		0b00111'1'00, 0x00, 0x00, 0x01,
+		0b00101'1'00, 0x00, 0x00, 0x04,
 	};
 
 	namespace Threads
 	{
-		inline SDL_Thread* Core{};
 		inline SDL_Thread* CPU{};
 	}
 
 	void init();
-	int cycle(void*);
+	int cycle();
 	void quit();
 }
 

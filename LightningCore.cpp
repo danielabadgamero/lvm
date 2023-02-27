@@ -14,8 +14,7 @@ void Lightning::Core::init()
 
 	SDL_ShowCursor(SDL_DISABLE);
 
-	Threads::Core = SDL_CreateThread(cycle, "Core", &systemBus);
-	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", &systemBus);
+	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 
 	monitor = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen.w, screen.h);
 	pixelsSize = screen.w * screen.h * 3;
@@ -25,46 +24,35 @@ void Lightning::Core::init()
 	running = true;
 }
 
-int Lightning::Core::cycle(void*)
-{	
-	while (!running);
+int Lightning::Core::cycle()
+{
+	while (SDL_PollEvent(&e))
+		switch (e.type)
+		{
+		case SDL_KEYDOWN:
+			switch (e.key.keysym.scancode)
+			{
+			case SDL_SCANCODE_ESCAPE:
+				running = false;
+				break;
+			}
+			break;
+		case SDL_QUIT:
+			running = false;
+			break;
+		}
 
-	while (running)
-	{
-		if (systemBus.control[chipSelect] == 0)
-		{
-			if (systemBus.control[read])
-			{
-				systemBus.data = ROM[systemBus.address];
-				systemBus.control[read] = 0;
-			}
-			if (systemBus.control[write])
-			{
-				// Attempting to write to ROM
-				// not allowed
-			}
-		}
-		if (systemBus.control[chipSelect] == 1)
-		{
-			if (systemBus.control[read])
-			{
-				systemBus.data = RAM[systemBus.address];
-				systemBus.control[read] = 0;
-			}
-			if (systemBus.control[write])
-			{
-				RAM[systemBus.address] = systemBus.data;
-				systemBus.control[write] = 0;
-			}
-		}
-	}
+	SDL_memcpy(pixels, RAM + VIDEO, pixelsSize);
+	SDL_UpdateTexture(monitor, NULL, pixels, pixelsPitch);
+	SDL_RenderCopy(renderer, monitor, NULL, NULL);
+
+	SDL_RenderPresent(renderer);
 
 	return 0;
 }
 
 void Lightning::Core::quit()
 {
-	SDL_WaitThread(Threads::Core, NULL);
 	SDL_WaitThread(Threads::CPU, NULL);
 
 	SDL_DestroyWindow(window);
