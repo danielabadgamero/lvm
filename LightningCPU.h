@@ -2,6 +2,7 @@
 #define LIGHTNING_CPU
 
 #include <bitset>
+#include <stack>
 
 namespace Lightning::CPU
 {
@@ -13,6 +14,8 @@ namespace Lightning::CPU
 		MOV,	//	Load reg op2 to rDest				Load imm to rDest
 		LD,		//	Load reg addr op2 to rDest			Load addr op2 to rDest
 		ST,		//	Store reg op2 in addr rDest			Store imm op2 in addr rDest
+		PUSH,	//	Push reg op2 to stack				Push imm op2 to stack
+		POP,	//	Pop top of stack into rDest			Pop top of stack into rDest
 
 		//	Flow control
 		//	value in rDest changes behaviour of pc change:
@@ -25,7 +28,14 @@ namespace Lightning::CPU
 		CMP,	//	Eval rDest and reg op2 to flags		Eval rDest and imm op2 to flags
 		JMP,	//	Set pc to reg op2					Set pc to imm op2
 		JEQ,	//	Set pc to reg op2 if equal flag		Set pc to imm op2 if equal flag
-		JEZ,	//	Set pc to reg op2 if zero flag		Set pc to imm op2 if zero flag
+		JNE,	//	Set pc to reg op2 if not equal flag	Set pc to imm op2 if not equal flag
+		JGT,	//	Set pc to reg op2 if greater flag	Set pc to imm op2 if greater flag
+		JGE,	//	Set pc to reg op2 if grt eq flag	Set pc to imm op2 if grt eq flag
+		JLT,	//	Set pc to reg op2 if less flag		Set pc to imm op2 if less flag
+		JLE,	//	Set pc to reg op2 if less eq flag	Set pc to imm op2 if less eq flag
+		CALL,	//	Push pc to stack and set to reg op2	Push pc to stack and set to imm op2
+		RET,	//	Pop top of stack and jump to it		Pop top of stack and jump to it
+		INT,	//	Call from interrupt table. Arguments in stack, guaranteed to remain unchanged
 
 		//	Arithmeitc
 		ADD,	//	Add reg op2 to rDest				Add imm op2 to rDest
@@ -47,13 +57,14 @@ namespace Lightning::CPU
 	};
 
 	inline int reg[4]{};
-	
+
 	inline unsigned int pc{};
 	inline unsigned int pb{};
-
+	
 	enum CompFlags
 	{
 		equal,
+		not_equal,
 		greater,
 		greater_equal,
 		less,
@@ -76,6 +87,8 @@ namespace Lightning::CPU
 
 		unsigned int instruction{};
 	} ir{};
+
+	std::stack<int> stack{};
 
 	void decode();
 	int cycle(void*);

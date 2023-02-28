@@ -24,12 +24,6 @@ void Lightning::CPU::decode()
 {
 	switch (opcode)
 	{
-	case HALT:
-		if (aMode == 0)
-			Core::running = false;
-		else
-			Core::chipSelected = imm;
-		break;
 	case MOV:
 		if (aMode == 0)
 			rDest = rSource;
@@ -48,11 +42,54 @@ void Lightning::CPU::decode()
 		else
 			writeMemory(rDest, imm);
 		break;
+	case PUSH:
+		if (aMode == 0)
+			stack.push(rSource);
+		else
+			stack.push(imm);
+		break;
+	case POP:
+		rDest = stack.top();
+		stack.pop();
+		break;
+	case HALT:
+		if (aMode == 0)
+			Core::running = false;
+		else
+			Core::chipSelected = imm;
+		break;
+	case CMP:
+		if (aMode == 0)
+		{
+			compFlags[equal] = rDest == rSource;
+			compFlags[greater] = rDest > rSource;
+			compFlags[greater_equal] = rDest >= rSource;
+			compFlags[less] = rDest < rSource;
+			compFlags[less_equal] = rDest <= rSource;
+		}
+		else
+		{
+			compFlags[equal] = rDest == imm;
+			compFlags[greater] = rDest > imm;
+			compFlags[greater_equal] = rDest >= imm;
+			compFlags[less] = rDest < imm;
+			compFlags[less_equal] = rDest <= imm;
+		}
+		break;
 	case JMP:
 		if (aMode == 0)
 			pc = rSource;
 		else
 			pc = imm;
+		break;
+	case JEQ:
+		if (compFlags[equal])
+		{
+			if (aMode == 0)
+				pc = rSource;
+			else
+				pc = imm;
+		}
 		break;
 	case ADD:
 		if (aMode == 0)
