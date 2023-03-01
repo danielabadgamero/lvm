@@ -24,6 +24,7 @@ void Lightning::CPU::decode()
 {
 	switch (opcode)
 	{
+		//	Data management
 	case MOV:
 		if (aMode == 0)
 			rDest = rSource;
@@ -52,6 +53,12 @@ void Lightning::CPU::decode()
 		rDest = stack.top();
 		stack.pop();
 		break;
+	case RDSK:
+		break;
+	case WDSK:
+		break;
+		
+		//	Flow control
 	case HALT:
 		if (aMode == 0)
 			Core::running = false;
@@ -91,17 +98,157 @@ void Lightning::CPU::decode()
 				pc = imm;
 		}
 		break;
+	case JNE:
+		if (compFlags[not_equal])
+		{
+			if (aMode == 0)
+				pc = rSource;
+			else
+				pc = imm;
+		}
+		break;
+	case JGT:
+		if (compFlags[greater])
+		{
+			if (aMode == 0)
+				pc = rSource;
+			else
+				pc = imm;
+		}
+		break;
+	case JGE:
+		if (compFlags[greater_equal])
+		{
+			if (aMode == 0)
+				pc = rSource;
+			else
+				pc = imm;
+		}
+		break;
+	case JLT:
+		if (compFlags[less])
+		{
+			if (aMode == 0)
+				pc = rSource;
+			else
+				pc = imm;
+		}
+		break;
+	case JLE:
+		if (compFlags[less_equal])
+		{
+			if (aMode == 0)
+				pc = rSource;
+			else
+				pc = imm;
+		}
+		break;
+	case CALL:
+		stack.push(pc);
+		if (aMode == 0)
+			pc = rSource;
+		else
+			pc = imm;
+		break;
+	case RET:
+		pc = stack.top();
+		stack.pop();
+		break;
+	case INT:
+		interruptTable[imm]();
+		break;
+
+		//	Arithmetic
 	case ADD:
 		if (aMode == 0)
 			rDest += rSource;
 		else
 			rDest += imm;
 		break;
+	case SUB:
+		if (aMode == 0)
+			rDest -= rSource;
+		else
+			rDest -= imm;
+		break;
+	case MUL:
+		if (aMode == 0)
+			rDest *= rSource;
+		else
+			rDest *= imm;
+		break;
+	case DIV:
+		if (aMode == 0)
+			rDest /= rSource;
+		else
+			rDest /= imm;
+		break;
+	case MOD:
+		if (aMode == 0)
+			rDest %= rSource;
+		else
+			rDest %= imm;
+		break;
+	case SHFT:
+		if (aMode == 0)
+			rDest >>= rSource;
+		else
+			rDest >>= imm;
+		break;
+
+		//	Logic
+	case AND:
+		if (aMode == 0)
+			rDest &= rSource;
+		else
+			rDest &= imm;
+		break;
+	case NAND:
+		if (aMode == 0)
+			rDest = ~(rSource & rDest);
+		else
+			rDest = ~(imm & rDest);
+		break;
+	case OR:
+		if (aMode == 0)
+			rDest |= rSource;
+		else
+			rDest |= imm;
+		break;
+	case XOR:
+		if (aMode == 0)
+			rDest ^= rSource;
+		else
+			rDest ^= imm;
+		break;
+	case NOR:
+		if (aMode == 0)
+			rDest = ~(rSource | rDest);
+		else
+			rDest = ~(imm | rDest);
+		break;
+	case XNOR:
+		if (aMode == 0)
+			rDest = ~(rSource ^ rDest);
+		else
+			rDest = ~(imm ^ rDest);
+		break;
+	case NOT:
+		if (aMode == 0)
+			rDest = ~rSource;
+		else
+			rDest = ~imm;
+		break;
 	}
 }
 
 int Lightning::CPU::cycle(void*)
 {
+	interruptTable[print_char] = []()
+	{
+		SDL_Log("Hello!");
+	};
+
 	while (!Core::running);
 
 	while (Core::running)

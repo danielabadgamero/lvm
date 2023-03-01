@@ -4,6 +4,8 @@
 #include <bitset>
 #include <stack>
 
+typedef void (*interrupt)();
+
 namespace Lightning::CPU
 {
 	enum Opcode
@@ -16,6 +18,8 @@ namespace Lightning::CPU
 		ST,		//	Store reg op2 in addr rDest			Store imm op2 in addr rDest
 		PUSH,	//	Push reg op2 to stack				Push imm op2 to stack
 		POP,	//	Pop top of stack into rDest			Pop top of stack into rDest
+		RDSK,	//	Read from disk
+		WDSK,	//	Write to disk
 
 		//	Flow control
 		//	value in rDest changes behaviour of pc change:
@@ -37,20 +41,19 @@ namespace Lightning::CPU
 		RET,	//	Pop top of stack and jump to it		Pop top of stack and jump to it
 		INT,	//	Call from interrupt table. Arguments in stack, guaranteed to remain unchanged
 
-		//	Arithmeitc
+		//	Arithmetic
 		ADD,	//	Add reg op2 to rDest				Add imm op2 to rDest
 		SUB,	//	Substract reg op2 from rDest		Substract imm op2 from rDest
 		MUL,	//	Multiply reg op2 times rDest		Multiply imm op2 times rDest
 		DIV,	//	Divide reg op2 by rDest				Divide imm op2 by rDest
 		MOD,	//	Modulo of rDest by reg op2			Modulo of rDest by imm op2
-		RSFT,	//	Shift rDest to the right by reg op2	Shift rDest to the right by imm op2
-		LSFT,	//	Shift rDest to the left by reg op2	Shift rDest to the left by imm op2
+		SHFT,	//	Shift rDest to the right by reg op2	Shift rDest to the right by imm op2
 
 		//	Logic
 		AND,	//	Bitwise AND of rDest and reg op2	Bitwise AND of rDest and imm op2
+		NAND,	//	Bitwise NAND of rDest and reg op2	Bitwise NAND of rDest and imm op2
 		OR,		//	Bitwise OR of rDest and reg op2		Bitwise OR of rDest and imm op2
 		XOR,	//	Bitwise XOR of rDest and reg op2	Bitwise XOR of rDest and imm op2
-		NAND,	//	Bitwise NAND of rDest and reg op2	Bitwise NAND of rDest and imm op2
 		NOR,	//	Bitwise NOR of rDest and reg op2	Bitwise NOR of rDest and imm op2
 		XNOR,	//	Bitwise XNOR of rDest and reg op2	Bitwise XNOR of rDest and imm op2
 		NOT,	//	Bitwise neg. of reg op2 in rDest	Bitwise neg. of imm op2 in rDest
@@ -72,6 +75,16 @@ namespace Lightning::CPU
 
 		total_flags
 	};
+
+	enum Interrupts
+	{
+		// int name		stack: top-down
+		print_char,		//	y-coord / x-coord / char
+
+		total_interrupts
+	};
+
+	interrupt interruptTable[total_interrupts];
 
 	inline std::bitset<total_flags> compFlags{};
 
