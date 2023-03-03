@@ -477,7 +477,29 @@ int Lightning::CPU::cycle(void*)
 {
 	interruptTable[print_char] = []()
 	{
-		SDL_Log("Hello!");
+		int y{ stack.top() };
+		stack.pop();
+		int x{ stack.top() };
+		stack.pop();
+		char c{ static_cast<char>(stack.top()) };
+		stack.pop();
+
+		for (int i{}; i != 32; i++)
+		{
+			for (int j{}; j != 3; j++)
+			{
+				for (int k{}; k != 8; k++)
+				{
+					Core::RAM[VIDEO + (y + i) * pixelsPitch + x * 3 + j * 24 + k * 3] = ((Core::font[c * 120 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+					Core::RAM[VIDEO + (y + i) * pixelsPitch + x * 3 + j * 24 + k * 3 + 1] = ((Core::font[c * 120 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+					Core::RAM[VIDEO + (y + i) * pixelsPitch + x * 3 + j * 24 + k * 3 + 2] = ((Core::font[c * 120 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+				}
+			}
+		}
+
+		stack.push(c);
+		stack.push(x);
+		stack.push(y);
 	};
 
 	while (!Core::running);

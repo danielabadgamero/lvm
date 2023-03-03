@@ -42,10 +42,12 @@ int Lightning::Core::cycle()
 			break;
 		}
 
+	SDL_RenderClear(renderer);
+
 	SDL_memcpy(pixels, RAM + VIDEO, pixelsSize);
 	SDL_UpdateTexture(monitor, NULL, pixels, pixelsPitch);
 	SDL_RenderCopy(renderer, monitor, NULL, NULL);
-
+	
 	SDL_RenderPresent(renderer);
 
 	return 0;
