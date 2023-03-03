@@ -17,7 +17,7 @@ namespace Lightning::CPU
 		LD,		//	Load reg addr op2 to rDest			Load addr op2 to rDest
 		ST,		//	Store reg op2 in addr rDest			Store imm op2 in addr rDest
 		PUSH,	//	Push reg op2 to stack				Push imm op2 to stack
-		POP,	//	Pop top of stack into rDest			Pop top of stack into rDest
+		POP,	//	Pop top of stack					Pop top of stack into rDest
 		RDSK,	//	Read from disk
 		WDSK,	//	Write to disk
 
