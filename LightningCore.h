@@ -26,10 +26,8 @@ namespace Lightning::Core
 	inline unsigned char RAM[1 << 24]{};	// 16MB virtual
 	inline constexpr unsigned char ROM[1 << 12]	// 4KB virtual
 	{
-		0b00000'1'00, 0xA1, 0x10, 0x00,
-		0b00010'1'00, 0x00, 0x00, 0xFF,
-		0b00111'1'00, 0x00, 0x00, 0x01,
-		0b00101'1'00, 0x00, 0x00, 0x04,
+		0b10010'0'00, 0x00, 0x00, 0x00,
+		0b01001'1'01, 0x00, 0x00, 0x00,
 	};
 
 	namespace Threads

@@ -84,7 +84,7 @@ namespace Lightning::CPU
 		total_interrupts
 	};
 
-	interrupt interruptTable[total_interrupts];
+	inline interrupt interruptTable[total_interrupts];
 
 	inline std::bitset<total_flags> compFlags{};
 
@@ -101,7 +101,7 @@ namespace Lightning::CPU
 		unsigned int instruction{};
 	} ir{};
 
-	std::stack<int> stack{};
+	inline std::stack<int> stack{};
 
 	void decode();
 	int cycle(void*);
