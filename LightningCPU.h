@@ -76,10 +76,16 @@ namespace Lightning::CPU
 		total_flags
 	};
 
+	inline struct
+	{
+		int x{};
+		int y{};
+	} cursor;
+
 	enum Interrupts
 	{
-		// int name		stack: top-down
-		print_char,		//	y-coord / x-coord / char
+		// int name			args
+		print_char,		//	ax: char
 
 		total_interrupts
 	};

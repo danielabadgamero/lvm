@@ -478,12 +478,7 @@ int Lightning::CPU::cycle(void*)
 {
 	interruptTable[print_char] = []()
 	{
-		int y{ stack.top() };
-		stack.pop();
-		int x{ stack.top() };
-		stack.pop();
-		char c{ static_cast<char>(stack.top()) };
-		stack.pop();
+		char c{ static_cast<char>(reg[0]) };
 
 		for (int i{}; i != 32; i++)
 		{
@@ -491,16 +486,20 @@ int Lightning::CPU::cycle(void*)
 			{
 				for (int k{}; k != 8; k++)
 				{
-					Core::RAM[VIDEO + (y + i) * pixelsPitch + x * 3 + j * 24 + k * 3] = ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-					Core::RAM[VIDEO + (y + i) * pixelsPitch + x * 3 + j * 24 + k * 3 + 1] = ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-					Core::RAM[VIDEO + (y + i) * pixelsPitch + x * 3 + j * 24 + k * 3 + 2] = ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3] = ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3 + 1] = ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3 + 2] = ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
 				}
 			}
 		}
 
-		stack.push(c);
-		stack.push(x);
-		stack.push(y);
+		if (cursor.x >= 1896)
+		{
+			cursor.y += 32;
+			cursor.x = 0;
+		}
+		else
+			cursor.x += 24;
 	};
 
 	while (!Core::running);
