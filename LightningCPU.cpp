@@ -486,9 +486,9 @@ int Lightning::CPU::cycle(void*)
 			{
 				for (int k{}; k != 8; k++)
 				{
-					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3] = ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3 + 1] = ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3 + 2] = ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3] ^= ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3 + 1] ^= ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3 + 2] ^= ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
 				}
 			}
 		}

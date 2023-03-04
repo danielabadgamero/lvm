@@ -7,9 +7,7 @@ int main(int, char**)
 	Lightning::Core::init();
 
 	while (Lightning::Core::running)
-	{
 		Lightning::Core::cycle();
-	}
 
 	Lightning::Core::quit();
 
