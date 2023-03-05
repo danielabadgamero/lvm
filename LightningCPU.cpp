@@ -54,6 +54,10 @@ void Lightning::CPU::decode()
 			rDest = stack.top();
 		stack.pop();
 		break;
+	case IN:
+		break;
+	case OUT:
+		break;
 		
 		//	Flow control
 	case HALT:

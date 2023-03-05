@@ -18,6 +18,8 @@ namespace Lightning::CPU
 		ST,		//	Store reg op2 in addr rDest			Store imm op2 in addr rDest
 		PUSH,	//	Push reg op2 to stack				Push imm op2 to stack
 		POP,	//	Pop top of stack					Pop top of stack into rDest
+		IN,		//	TBD: communication with peripherals.
+		OUT,	//	TBD: communication with peripherals.
 
 		//	Flow control
 		//	value in rDest changes behaviour of pc change:
