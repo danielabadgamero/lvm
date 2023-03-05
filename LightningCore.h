@@ -23,17 +23,69 @@ namespace Lightning::Core
 	inline bool running{};
 	inline bool chipSelected{}; // 0 for ROM, 1 for RAM
 
-	inline unsigned char RAM[1 << 24]{};	// 8MB
-	inline constexpr unsigned char ROM[1 << 12]	// 4KB
+	inline unsigned char RAM[1 << 24]{}; // 8MB
+	inline constexpr unsigned char ROM[1 << 12] // 4KB
 	{
-		0b00000'1'00, 0x00, 0x00, 0x00,
+		0b00000'1'01, 0x00, 0x00, 0x0c,
+		0b10000'1'00, 0x00, 0x00, 0xd4,
 
-		0b10010'0'00, 0x00, 0x00, 0x00,
-		0b10011'1'00, 0x00, 0x00, 0x01,
-		0b01000'1'00, 0x00, 0x00, 0x7f,
-		0b01111'1'01, 0xff, 0xff, 0xf4,
+		0b01001'1'01, 0x00, 0x00, 0x00,	// Infinite loop
 
-		0b01001'1'01, 0x00, 0x00, 0x00,
+		// Strings: 176 bytes
+		'B', 'I', 'O', 'S', ':', ' ', '\0', // 7 bytes
+		'E', 'x', 'e', 'c', 'u', 't', 'i', 'n', 'g', ' ', 'P', 'O', 'S', 'T', '\0', // 15 bytes
+		'P', 'O', 'S', 'T', ' ', 'c', 'o', 'm', 'p', 'l', 'e', 't', 'e', '\0', // 14 bytes
+		' ', 'O', 'K', '\0', // 4 bytes
+		' ', 'F', 'a', 'i', 'l', '\0', // 6 bytes
+		'M', 'O', 'V', '\0', // 4 bytes
+		'L', 'D', '\0', // 3 bytes
+		'S', 'T', '\0', // 3 bytes
+		'P', 'U', 'S', 'H', '\0', // 5 bytes
+		'P', 'O', 'P', '\0', // 4 bytes
+		'I', 'N', '\0', // 3 bytes
+		'O', 'U', 'T', '\0', // 4 bytes
+		'H', 'A', 'L', 'T', '\0', // 5 bytes
+		'C', 'M', 'P', '\0', // 4 bytes
+		'J', 'M', 'P', '\0', // 4 bytes
+		'J', 'E', 'Q', '\0', // 4 bytes
+		'J', 'N', 'E', '\0', // 4 bytes
+		'J', 'G', 'T', '\0', // 4 bytes
+		'J', 'G', 'E', '\0', // 4 bytes
+		'J', 'L', 'T', '\0', // 4 bytes
+		'J', 'L', 'E', '\0', // 4 bytes
+		'C', 'A', 'L', 'L', '\0', // 5 bytes
+		'R', 'E', 'T', '\0', // 4 bytes
+		'I', 'N', 'T', '\0', // 4 bytes
+		'A', 'D', 'D', '\0', // 4 bytes
+		'S', 'U', 'B', '\0', // 4 bytes
+		'M', 'U', 'L', '\0', // 4 bytes
+		'D', 'I', 'V', '\0', // 4 bytes
+		'M', 'O', 'D', '\0', // 4 bytes
+		'S', 'H', 'F', 'T', '\0', // 5 bytes
+		'A', 'N', 'D', '\0', // 4 bytes
+		'N', 'A', 'N', 'D', '\0', // 5 bytes
+		'O', 'R', '\0', // 3 bytes
+		'X', 'O', 'R', '\0', // 4 bytes
+		'N', 'O', 'R', '\0', // 4 bytes
+		'X', 'N', 'O', 'R', '\0', // 5 bytes
+		'N', 'O', 'T', '\0', // 4 bytes
+
+		// Print ASCII table: 24 bytes
+		0b00000'1'00, 0x00, 0x00, 0x00,	// first character
+		0b10010'0'00, 0x00, 0x00, 0x00,	// print_char interrupt
+		0b10011'1'00, 0x00, 0x00, 0x01,	// next character
+		0b01000'1'00, 0x00, 0x00, 0x7f,	// check if last character
+		0b01111'1'01, 0xff, 0xff, 0xf4,	// jump back to loop if less than 128
+		0b10001'0'00, 0x00, 0x00, 0x00,	// return
+
+		// Print string: 28 bytes
+		0b00001'0'00, 0x00, 0x00, 0x01,	// load character to ax from address in bx
+		0b01000'1'00, 0x00, 0x00, 0x00,	// compare bx to 0
+		0b01010'1'01, 0x00, 0x00, 0x0c,	// jump to return
+		0b10010'0'00, 0x00, 0x00, 0x00,	// print the character
+		0b10011'1'01, 0x00, 0x00, 0x01,	// next character
+		0b01001'1'01, 0xff, 0xff, 0xec,	// jump back to loop
+		0b10001'0'00, 0x00, 0x00, 0x00,	// return
 	};
 	inline char disk[1 << 20][512]{};	// 512MB
 

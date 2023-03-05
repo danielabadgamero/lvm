@@ -94,6 +94,7 @@ namespace Lightning::CPU
 	{
 		// int name			args
 		print_char,		//	ax: char
+		new_line,		//	-
 		read_disk,		//	ax: sector_start, bx: num_sectors, cx: mem_addr
 		write_disk,		//	ax: mem_start, bx: num_sectors, cx: sector_addr
 

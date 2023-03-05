@@ -502,6 +502,12 @@ int Lightning::CPU::cycle(void*)
 			cursor.x += 24;
 	};
 
+	interruptTable[new_line] = []()
+	{
+		cursor.y += 32;
+		cursor.x = 0;
+	};
+
 	interruptTable[read_disk] = []()
 	{
 		for (int i{}; i != reg[bx]; i++)
