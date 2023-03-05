@@ -3,6 +3,9 @@
 #include "LightningCPU.h"
 #include "LightningCore.h"
 
+#include <fstream>
+#include <filesystem>
+
 void Lightning::Core::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
@@ -20,6 +23,17 @@ void Lightning::Core::init()
 	pixelsSize = screen.w * screen.h * 3;
 	pixelsPitch = screen.w * 3;
 	pixels = new Uint8[pixelsSize]{};
+
+	if (std::filesystem::exists("fs"))
+	{
+		std::ifstream fs_in{ "fs", std::ios::binary };
+		int sector{};
+		while (!fs_in.eof())
+		{
+			fs_in.read(disk[sector], 512);
+			sector++;
+		}
+	}
 
 	running = true;
 }
@@ -55,6 +69,13 @@ int Lightning::Core::cycle()
 
 void Lightning::Core::quit()
 {
+	if (std::filesystem::exists("fs"))
+		std::remove("fs");
+
+	std::ofstream fs_out{ "fs", std::ios::binary };
+	for (int i{}; i != (1 << 20); i++)
+		fs_out.write(disk[i], 512);
+
 	SDL_WaitThread(Threads::CPU, NULL);
 
 	SDL_DestroyWindow(window);

@@ -76,6 +76,14 @@ namespace Lightning::CPU
 		total_flags
 	};
 
+	enum Reg
+	{
+		ax,
+		bx,
+		cx,
+		dx,
+	};
+
 	inline struct
 	{
 		int x{};

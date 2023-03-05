@@ -478,7 +478,7 @@ int Lightning::CPU::cycle(void*)
 {
 	interruptTable[print_char] = []()
 	{
-		char c{ static_cast<char>(reg[0]) };
+		char c{ static_cast<char>(reg[ax]) };
 
 		for (int i{}; i != 32; i++)
 		{
@@ -500,6 +500,18 @@ int Lightning::CPU::cycle(void*)
 		}
 		else
 			cursor.x += 24;
+	};
+
+	interruptTable[read_disk] = []()
+	{
+		for (int i{}; i != reg[bx]; i++)
+			SDL_memcpy(&Core::RAM[reg[cx] + i * 512], Core::disk[reg[ax] + i], 512);
+	};
+
+	interruptTable[write_disk] = []()
+	{
+		for (int i{}; i != reg[bx]; i++)
+			SDL_memcpy(Core::disk[reg[cx] + i], &Core::RAM[reg[ax] + i * 512], 512);
 	};
 
 	while (!Core::running);

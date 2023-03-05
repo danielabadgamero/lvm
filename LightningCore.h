@@ -23,8 +23,8 @@ namespace Lightning::Core
 	inline bool running{};
 	inline bool chipSelected{}; // 0 for ROM, 1 for RAM
 
-	inline unsigned char RAM[1 << 24]{};	// 16MB virtual
-	inline constexpr unsigned char ROM[1 << 12]	// 4KB virtual
+	inline unsigned char RAM[1 << 24]{};	// 16MB
+	inline constexpr unsigned char ROM[1 << 12]	// 4KB
 	{
 		0b00000'1'00, 0x00, 0x00, 0x00,
 
@@ -35,6 +35,7 @@ namespace Lightning::Core
 
 		0b01001'1'01, 0x00, 0x00, 0x00,
 	};
+	inline char disk[1 << 20][512]{};	// 512MB
 
 	inline constexpr unsigned char font[]
 	{
