@@ -4,7 +4,7 @@
 #define opcode ir.bitfields.opcode
 #define rDest reg[ir.bitfields.reg]
 #define rSource reg[ir.bitfields.op2]
-#define imm static_cast<int>(ir.bitfields.op2)
+#define imm static_cast<int>((ir.bitfields.op2 & 0x800000 ? (0xff000000 | ir.bitfields.op2) : ir.bitfields.op2))
 #define aMode ir.bitfields.addrMode
 
 static void readMemory(int address, int* dest)
