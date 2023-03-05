@@ -18,8 +18,6 @@ namespace Lightning::CPU
 		ST,		//	Store reg op2 in addr rDest			Store imm op2 in addr rDest
 		PUSH,	//	Push reg op2 to stack				Push imm op2 to stack
 		POP,	//	Pop top of stack					Pop top of stack into rDest
-		RDSK,	//	Read from disk
-		WDSK,	//	Write to disk
 
 		//	Flow control
 		//	value in rDest changes behaviour of pc change:
@@ -86,6 +84,8 @@ namespace Lightning::CPU
 	{
 		// int name			args
 		print_char,		//	ax: char
+		read_disk,		//	ax: sector_start, bx: num_sectors, cx: mem_addr
+		write_disk,		//	ax: mem_start, bx: num_sectors, cx: sector_addr
 
 		total_interrupts
 	};
