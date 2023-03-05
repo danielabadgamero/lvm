@@ -64,7 +64,10 @@ void Lightning::CPU::decode()
 		if (aMode == 0)
 			Core::running = false;
 		else
+		{
 			Core::chipSelected = imm;
+			pc = 0x1000;
+		}
 		break;
 	case CMP:
 		if (aMode == 0)
