@@ -86,38 +86,71 @@ int main(int argc, char* argv[])
 	std::map<std::string, unsigned char> labelDefinitions{};
 	std::map<std::string, unsigned char> labelReferences{};
 
-	std::vector<char[4]> out{};
+	std::vector<unsigned char> out{};
 
 	unsigned char pc{};
 
 	for (std::string& line : content)
 	{
-		std::string instr{ line.substr(0, line.find(' ') + 1) };
+		std::string instr{ line.substr(line.find(' ') + 1) };
 		std::string opcode{ line.substr(0, line.find(' ')) };
 
 		if (opcodes.contains(opcode))
 		{
-			char instruction[4]{};
-			instruction[0] |= (0 << 3);
+			out.push_back(opcodes[opcode] << 3);
 			if (regs.contains(instr.substr(0, instr.find(','))))
-				instruction[0] |= regs[instr.substr(0, instr.find(','))];
+				out.back() |= regs[instr.substr(0, instr.find(','))];
 			else
-				instruction[0] |= static_cast<char>(std::stoi(instr.substr(instr.find(','))));
+				out.back() |= static_cast<char>(std::stoi(instr.substr(instr.find(','))));
 			if (regs.contains(instr.substr(instr.find(' ') + 1)))
-				instruction[3] |= regs[instr.substr(instr.find(' ') + 1)];
+			{
+				out.push_back(0);
+				out.push_back(0);
+				out.push_back(regs[instr.substr(instr.find(' ') + 1)]);
+			}
 			else
 			{
-				instruction[0] |= (1 << 2);
-				instruction[1] = static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1)) >> 16);
-				instruction[2] = static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1)) >> 8);
-				instruction[3] = static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1)));
-				out.push_back(instruction);
+				out.back() |= (1 << 2);
+				try
+				{
+					out.push_back(static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1)) >> 16));
+					out.push_back(static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1)) >> 8));
+					out.push_back(static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1))));
+				}
+				catch (std::invalid_argument)
+				{
+					labelReferences[instr.substr(instr.find(' ') + 1)] = pc + 1;
+					out.push_back(0);
+					out.push_back(0);
+					out.push_back(0);
+				}
 			}
+
+			pc += 4;
 		}
 		else
 		{
-			labelDefinitions[instr] = 
+			labelDefinitions[opcode.substr(0, opcode.find(':'))] = pc;
+			if (!instr.empty())
+				if (instr[0] == '"')
+					for (int i{ 1 }; i != instr.size() - 2; i++)
+					{
+						out.push_back(instr[i]);
+						pc++;
+					}
+				else
+				{
+					out.push_back(static_cast<unsigned char>(std::stoi(instr)));
+					pc++;
+				}
 		}
+	}
+
+	for (std::map<std::string, unsigned char>::iterator i{ labelReferences.begin() }; i != labelReferences.end(); i++)
+	{
+		out.at(i->second) = static_cast<unsigned char>(labelDefinitions[i->first] << 16);
+		out.at(i->second + 1) = static_cast<unsigned char>(labelDefinitions[i->first] << 8);
+		out.at(i->second + 2) = static_cast<unsigned char>(labelDefinitions[i->first]);
 	}
 
 	return 0;
