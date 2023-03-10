@@ -1,4 +1,4 @@
 MOV ax, MSG
-INT, print_char
+INT 0, print_char
 
 MSG: "Hello, world!"

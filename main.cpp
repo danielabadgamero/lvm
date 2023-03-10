@@ -44,13 +44,6 @@ int main(int argc, char* argv[])
 	opcodes["XNOR"] = 30;
 	opcodes["NOT"] = 31;
 
-	compFlags["equal"] = 0;
-	compFlags["not_equal"] = 1;
-	compFlags["greater"] = 2;
-	compFlags["greater_equal"] = 3;
-	compFlags["less"] = 4;
-	compFlags["less_equal"] = 5;
-
 	regs["ax"] = 0;
 	regs["bx"] = 1;
 	regs["cx"] = 2;
@@ -119,10 +112,19 @@ int main(int argc, char* argv[])
 				}
 				catch (std::invalid_argument)
 				{
-					labelReferences[instr.substr(instr.find(' ') + 1)] = pc + 1;
-					out.push_back(0);
-					out.push_back(0);
-					out.push_back(0);
+					if (interrupts.contains(instr.substr(instr.find(' ') + 1)))
+					{
+						out.push_back(0);
+						out.push_back(0);
+						out.push_back(interrupts[instr.substr(instr.find(' ') + 1)]);
+					}
+					else
+					{
+						labelReferences[instr.substr(instr.find(' ') + 1)] = pc + 1;
+						out.push_back(0);
+						out.push_back(0);
+						out.push_back(0);
+					}
 				}
 			}
 
