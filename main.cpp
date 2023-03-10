@@ -4,10 +4,10 @@
 #include <string>
 #include <map>
 
-std::map<std::string, unsigned char> opcodes{};
-std::map<std::string, unsigned char> compFlags{};
-std::map<std::string, unsigned char> regs{};
-std::map<std::string, unsigned char> interrupts{};
+std::map<std::string, char> opcodes{};
+std::map<std::string, char> compFlags{};
+std::map<std::string, char> regs{};
+std::map<std::string, char> interrupts{};
 
 int main(int argc, char* argv[])
 {
@@ -67,6 +67,8 @@ int main(int argc, char* argv[])
 		for (int i{}; argv[1][i] != '\0'; i++)
 			path.push_back(argv[1][i]);
 
+	path = "D:\\Projects\\LightningVM_Assembler\\test.lasm";
+
 	std::ifstream input{ path };
 	std::string fileName{ path.substr(path.find_last_of('\\') + 1).substr(0, path.find('.')) };
 	std::ofstream output{ fileName + ".bin" };
@@ -83,12 +85,12 @@ int main(int argc, char* argv[])
 			content.back().push_back(c);
 	}
 
-	std::map<std::string, unsigned char> labelDefinitions{};
-	std::map<std::string, unsigned char> labelReferences{};
+	std::map<std::string, char> labelDefinitions{};
+	std::map<std::string, char> labelReferences{};
 
-	std::vector<unsigned char> out{};
+	std::vector<char> out{};
 
-	unsigned char pc{};
+	char pc{};
 
 	for (std::string& line : content)
 	{
@@ -140,18 +142,21 @@ int main(int argc, char* argv[])
 					}
 				else
 				{
-					out.push_back(static_cast<unsigned char>(std::stoi(instr)));
+					out.push_back(static_cast<char>(std::stoi(instr)));
 					pc++;
 				}
 		}
 	}
 
-	for (std::map<std::string, unsigned char>::iterator i{ labelReferences.begin() }; i != labelReferences.end(); i++)
+	for (std::map<std::string, char>::iterator i{ labelReferences.begin() }; i != labelReferences.end(); i++)
 	{
-		out.at(i->second) = static_cast<unsigned char>(labelDefinitions[i->first] << 16);
-		out.at(i->second + 1) = static_cast<unsigned char>(labelDefinitions[i->first] << 8);
-		out.at(i->second + 2) = static_cast<unsigned char>(labelDefinitions[i->first]);
+		out.at(i->second) = static_cast<char>(labelDefinitions[i->first] << 16);
+		out.at(i->second + 1) = static_cast<char>(labelDefinitions[i->first] << 8);
+		out.at(i->second + 2) = static_cast<char>(labelDefinitions[i->first]);
 	}
+
+	for (char c : out)
+		output.write(&c, 1);
 
 	return 0;
 }
