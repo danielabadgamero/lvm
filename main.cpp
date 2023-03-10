@@ -67,8 +67,6 @@ int main(int argc, char* argv[])
 		for (int i{}; argv[1][i] != '\0'; i++)
 			path.push_back(argv[1][i]);
 
-	path = "D:\\Projects\\LightningVM_Assembler\\test.lasm";
-
 	std::ifstream input{ path };
 	std::string fileName{ path.substr(path.find_last_of('\\') + 1).substr(0, path.find('.')) };
 	std::ofstream output{ fileName + ".bin" };
@@ -151,8 +149,8 @@ int main(int argc, char* argv[])
 	for (std::map<std::string, char>::iterator i{ labelReferences.begin() }; i != labelReferences.end(); i++)
 	{
 		out.at(i->second) = static_cast<char>(labelDefinitions[i->first] << 16);
-		out.at(i->second + 1) = static_cast<char>(labelDefinitions[i->first] << 8);
-		out.at(i->second + 2) = static_cast<char>(labelDefinitions[i->first]);
+		out.at(static_cast<size_t>(i->second + 1)) = static_cast<char>(labelDefinitions[i->first] << 8);
+		out.at(static_cast<size_t>(i->second + 2)) = static_cast<char>(labelDefinitions[i->first]);
 	}
 
 	for (char c : out)
