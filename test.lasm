@@ -1,4 +1,0 @@
-MOV ax, MSG
-INT 0, print_char
-
-MSG: "Hello, world!"

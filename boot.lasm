@@ -1,0 +1,26 @@
+MOV bx, RUNNING_BOOT_MSG
+CALL 2, print_string
+
+JMP 1, 0
+
+print_string:
+PUSH 0, ax
+PUSH 0, bx
+PUSH 0, cx
+PUSH 0, dx
+
+LD ax, bx
+CMP ax, 0
+JEQ 2, end
+ADD bx, 1
+INT 0, print_char
+JMP 2, print_string
+
+POP ax, 0
+POP bx, 0
+POP cx, 0
+POP dx, 0
+end:
+RET 0, 0
+
+RUNNING_BOOT_MSG: "Running bootloader."

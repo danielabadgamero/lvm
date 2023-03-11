@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	if (argc == 2)
 		for (int i{}; argv[1][i] != '\0'; i++)
 			path.push_back(argv[1][i]);
-
+	
 	std::ifstream input{ path };
 	std::string fileName{ path.substr(path.find_last_of('\\') + 1).substr(0, path.find('.')) };
 	std::ofstream output{ fileName + ".bin" };
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 			if (regs.contains(instr.substr(0, instr.find(','))))
 				out.back() |= regs[instr.substr(0, instr.find(','))];
 			else
-				out.back() |= static_cast<char>(std::stoi(instr.substr(instr.find(','))));
+				out.back() |= static_cast<char>(std::stoi(instr.substr(0, instr.find(','))));
 			if (regs.contains(instr.substr(instr.find(' ') + 1)))
 			{
 				out.push_back(0);
@@ -110,7 +110,7 @@ int main(int argc, char* argv[])
 					out.push_back(static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1)) >> 8));
 					out.push_back(static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1))));
 				}
-				catch (std::invalid_argument)
+				catch (...)
 				{
 					if (interrupts.contains(instr.substr(instr.find(' ') + 1)))
 					{
@@ -127,19 +127,22 @@ int main(int argc, char* argv[])
 					}
 				}
 			}
-
 			pc += 4;
 		}
-		else
+		else if (!instr.empty())
 		{
 			labelDefinitions[opcode.substr(0, opcode.find(':'))] = pc;
-			if (!instr.empty())
+			if (instr.find(':') != instr.size() - 1)
 				if (instr[0] == '"')
+				{
 					for (int i{ 1 }; i != instr.size() - 2; i++)
 					{
 						out.push_back(instr[i]);
 						pc++;
 					}
+					out.push_back('\0');
+					pc++;
+				}
 				else
 				{
 					out.push_back(static_cast<char>(std::stoi(instr)));
