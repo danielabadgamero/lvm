@@ -1,6 +1,12 @@
 MOV bx, RUNNING_BOOT_MSG
 CALL 2, print_string
 
+MOV ax, 1
+MOV bx, 1
+MOV cx, 0x002000
+INT 0, read_disk
+
+
 JMP 1, 0
 
 print_string:
@@ -24,4 +30,4 @@ POP bx, 0
 POP ax, 0
 RET 0, 0
 
-RUNNING_BOOT_MSG: "Running bootloader."
+RUNNING_BOOT_MSG: "Running bootloader"

@@ -41,13 +41,13 @@ void Lightning::CPU::decode()
 		if (aMode == 0)
 			readMemory(rSource + pb, &rDest);
 		else
-			readMemory(imm + pb, &rDest);
+			readMemory(imm, &rDest);
 		break;
 	case ST:
 		if (aMode == 0)
 			writeMemory(rDest, rSource + pb);
 		else
-			writeMemory(rDest, imm + pb);
+			writeMemory(rDest, imm);
 		break;
 	case PUSH:
 		if (aMode == 0)

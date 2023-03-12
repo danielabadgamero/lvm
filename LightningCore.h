@@ -20,6 +20,21 @@
 #define OP_END_2 0x46
 #define EXIT 0x40
 
+/*
+
+Filesystem structure:
+
+Disk sector 0: MBR, bootloader
+
+Disk sectors 1 - 100:
+26 bytes: name, 3 bytes: extension, 3 bytes: sector start --> 1600 files
+
+Disk sectors from 101:
+3 bytes: next sector, or 0x000000 for final sector
+509 bytes: file content
+
+*/
+
 inline SDL_Window* window{};
 inline SDL_Renderer* renderer{};
 inline SDL_Event e{};

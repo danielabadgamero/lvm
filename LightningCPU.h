@@ -10,7 +10,7 @@ namespace Lightning::CPU
 {
 	enum Opcode
 	{
-		//			Description (addrMode = 0)			Description (addrMode = 1)
+		//			Description (addrMode == 0)			Description (addrMode == 1)
 
 		//	Data management
 		MOV,	//	Load reg op2 to rDest				Load imm op2 to rDest
