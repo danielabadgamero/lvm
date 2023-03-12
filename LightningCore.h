@@ -5,19 +5,19 @@
 
 #include <bitset>
 
-#define BIOS_MSG 0x74
-#define OK_MSG 0x98
-#define EXEC_MSG 0x7b
-#define COMPLETE_MSG 0x8a
+#define BIOS_MSG 0x78
+#define OK_MSG 0x9c
+#define EXEC_MSG 0x7f
+#define COMPLETE_MSG 0x8e
 #define READING_MSG_1 0x01
-#define READING_MSG_2 0x42
+#define READING_MSG_2 0x46
 #define PRINT_FUNC_1 0x01
-#define PRINT_FUNC_2 0x6b
+#define PRINT_FUNC_2 0x6f
 #define ASCII_FUNC_1 0x01
-#define ASCII_FUNC_2 0x53
-#define OP_START 0xa2
+#define ASCII_FUNC_2 0x57
+#define OP_START 0xa6
 #define OP_END_1 0x01
-#define OP_END_2 0x42
+#define OP_END_2 0x46
 #define EXIT 0x40
 
 inline SDL_Window* window{};
@@ -44,46 +44,47 @@ namespace Lightning::Core
 	{
 		// Print first messages: 20 bytes
 		0b00000'1'01, 0x00, 0x00, BIOS_MSG, // Address of message
-		0b10000'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print message
+		0b10001'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print message
 		0b00000'1'01, 0x00, 0x00, EXEC_MSG, // Address of message (start POST)
-		0b10000'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print message (start POST)
-		0b10010'0'00, 0x00, 0x00, 0x01, // New line
+		0b10001'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print message (start POST)
+		0b10011'0'00, 0x00, 0x00, 0x01, // New line
 
 		// POST loop: 44 bytes
 		0b00000'1'01, 0x00, 0x00, OP_START,	// Address of first opcode
-		0b01000'1'01, 0x00, OP_END_1, OP_END_2, // Address of last opcode
-		0b01010'1'00, 0x00, 0x00, EXIT, // If last, end loop
-		0b10000'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print opcode
+		0b01001'1'01, 0x00, OP_END_1, OP_END_2, // Address of last opcode
+		0b01011'1'00, 0x00, 0x00, EXIT, // If last, end loop
+		0b10001'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print opcode
 		0b00000'0'10, 0x00, 0x00, 0x01, // Save current address
 		0b00000'1'01, 0x00, 0x00, OK_MSG, // Load ok message
-		0b10000'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print ok message
+		0b10001'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print ok message
 		0b00000'0'01, 0x00, 0x00, 0x02, // Load opcode address
-		0b10011'1'01, 0x00, 0x00, 0x01, // Jump to next opcode
-		0b10010'0'00, 0x00, 0x00, 0x01, // New line
-		0b01001'1'01, 0xff, 0xff, 0xdc,	// Jump back
+		0b10100'1'01, 0x00, 0x00, 0x01, // Jump to next opcode
+		0b10011'0'00, 0x00, 0x00, 0x01, // New line
+		0b01010'1'01, 0xff, 0xff, 0xdc,	// Jump back
 
 		// Print POST complete: 12 bytes
 		0b00000'1'01, 0x00, 0x00, COMPLETE_MSG, // Address of complete message
-		0b10000'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print complete message
-		0b10010'0'00, 0x00, 0x00, 0x01, // New line
+		0b10001'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print complete message
+		0b10011'0'00, 0x00, 0x00, 0x01, // New line
 
 		// Test print ASCII values: 8 bytes
-		0b10000'1'00, 0x00, ASCII_FUNC_1, ASCII_FUNC_2, // Print ASCII table
-		0b10010'0'00, 0x00, 0x00, 0x01, // New line
+		0b10001'1'00, 0x00, ASCII_FUNC_1, ASCII_FUNC_2, // Print ASCII table
+		0b10011'0'00, 0x00, 0x00, 0x01, // New line
 
 		// Print reading disk: 12 bytes
 		0b00000'1'01, 0x00, READING_MSG_1, READING_MSG_2, // Address of reading message
-		0b10000'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print reading message
-		0b10010'0'00, 0x00, 0x00, 0x01, // New line
+		0b10001'1'00, 0x00, PRINT_FUNC_1, PRINT_FUNC_2, // Print reading message
+		0b10011'0'00, 0x00, 0x00, 0x01, // New line
 
 		// Read disk: 16 bytes
 		0b00000'1'00, 0x00, 0x00, 0x00,
 		0b00000'1'01, 0x00, 0x00, 0x01,
 		0b00000'1'10, 0x00, (BOOTLOADER & 0xff00) >> 8, BOOTLOADER & 0xff,
-		0b10010'0'00, 0x00, 0x00, 0x02,
+		0b10011'0'00, 0x00, 0x00, 0x02,
 
-		// Switch to RAM: 4 bytes
-		0b00111'1'00, 0x00, 0x00, 0x01,	// Switch to RAM
+		// Switch to RAM: 8 bytes
+		0b00001'1'00, 0x00, (BOOTLOADER & 0xff00) >> 8, BOOTLOADER & 0xff,
+		0b01000'1'00, 0x00, 0x00, 0x01,	// Switch to RAM
 
 		// Strings: 223 bytes
 		'B', 'I', 'O', 'S', ':', ' ', '\0', // 7 bytes
@@ -92,6 +93,7 @@ namespace Lightning::Core
 		' ', 'O', 'K', '\0', // 4 bytes
 		' ', 'F', 'a', 'i', 'l', '\0', // 6 bytes
 		'M', 'O', 'V', ' ', '\0', // 5 bytes
+		'S', 'P', 'B', ' ', '\0', // 5 bytes
 		'L', 'D', ' ', ' ', '\0', // 5 bytes
 		'S', 'T',  ' ', ' ','\0', // 5 bytes
 		'P', 'U', 'S', 'H', '\0', // 5 bytes
@@ -121,26 +123,25 @@ namespace Lightning::Core
 		'O', 'R', ' ', ' ', '\0', // 5 bytes
 		'X', 'O', 'R', ' ', '\0', // 5 bytes
 		'N', 'O', 'R', ' ', '\0', // 5 bytes
-		'X', 'N', 'O', 'R', '\0', // 5 bytes
 		'N', 'O', 'T', ' ', '\0', // 5 bytes
 		'R', 'e', 'a', 'd', 'i', 'n', 'g', ' ', 's', 'e', 'c', 't', 'o', 'r', ' ', '0', '\0', // 17 bytes
 
 		// Print ASCII table: 24 bytes
 		0b00000'1'00, 0x00, 0x00, 0x00,	// first character
-		0b10010'0'00, 0x00, 0x00, 0x00,	// print_char interrupt
-		0b10011'1'00, 0x00, 0x00, 0x01,	// next character
-		0b01000'1'00, 0x00, 0x00, 0x7f,	// check if last character
-		0b01111'1'01, 0xff, 0xff, 0xf4,	// jump back to loop if less than 128
-		0b10001'0'00, 0x00, 0x00, 0x00,	// return
+		0b10011'0'00, 0x00, 0x00, 0x00,	// print_char interrupt
+		0b10100'1'00, 0x00, 0x00, 0x01,	// next character
+		0b01001'1'00, 0x00, 0x00, 0x7f,	// check if last character
+		0b10000'1'01, 0xff, 0xff, 0xf4,	// jump back to loop if less than 128
+		0b10010'0'00, 0x00, 0x00, 0x00,	// return
 
 		// Print string: 28 bytes
-		0b00001'0'00, 0x00, 0x00, 0x01,	// load character to ax from address in bx
-		0b01000'1'00, 0x00, 0x00, 0x00,	// compare bx to 0
-		0b01010'1'01, 0x00, 0x00, 0x10,	// jump to return
-		0b10010'0'00, 0x00, 0x00, 0x00,	// print the character
-		0b10011'1'01, 0x00, 0x00, 0x01,	// next character
-		0b01001'1'01, 0xff, 0xff, 0xec,	// jump back to loop
-		0b10001'0'00, 0x00, 0x00, 0x00,	// return
+		0b00010'0'00, 0x00, 0x00, 0x01,	// load character to ax from address in bx
+		0b01001'1'00, 0x00, 0x00, 0x00,	// compare bx to 0
+		0b01011'1'01, 0x00, 0x00, 0x10,	// jump to return
+		0b10011'0'00, 0x00, 0x00, 0x00,	// print the character
+		0b10100'1'01, 0x00, 0x00, 0x01,	// next character
+		0b01010'1'01, 0xff, 0xff, 0xec,	// jump back to loop
+		0b10010'0'00, 0x00, 0x00, 0x00,	// return
 	};
 	inline char disk[1 << 17][512]{};	// 64MB
 

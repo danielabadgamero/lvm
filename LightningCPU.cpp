@@ -35,7 +35,8 @@ void Lightning::CPU::decode()
 		if (aMode == 0)
 			pb = rSource;
 		else
-			rDest = imm;
+			pb = imm;
+		break;
 	case LD:
 		if (aMode == 0)
 			readMemory(rSource + pb, &rDest);
