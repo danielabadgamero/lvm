@@ -6,6 +6,77 @@ MOV bx, 1
 MOV cx, 0x002000
 INT 0, read_disk
 
+LD ax, 0x002001
+CMP ax, "k"
+JEQ 1, 12
+MOV bx, KERNEL_NOT_FOUND_MSG
+CALL 2, print_string
+
+LD ax, 0x002002
+CMP ax, "e"
+JEQ 1, 12
+MOV bx, KERNEL_NOT_FOUND_MSG
+CALL 2, print_string
+
+LD ax, 0x002003
+CMP ax, "r"
+JEQ 1, 12
+MOV bx, KERNEL_NOT_FOUND_MSG
+CALL 2, print_string
+
+LD ax, 0x002004
+CMP ax, "n"
+JEQ 1, 12
+MOV bx, KERNEL_NOT_FOUND_MSG
+CALL 2, print_string
+
+LD ax, 0x002005
+CMP ax, "e"
+JEQ 1, 12
+MOV bx, KERNEL_NOT_FOUND_MSG
+CALL 2, print_string
+
+LD ax, 0x002006
+CMP ax, "l"
+JEQ 1, 12
+MOV bx, KERNEL_NOT_FOUND_MSG
+CALL 2, print_string
+
+LD ax, 0x00201a
+CMP ax, "b"
+JEQ 1, 12
+MOV bx, KERNEL_NOT_FOUND_MSG
+CALL 2, print_string
+
+LD ax, 0x00201b
+CMP ax, "i"
+JEQ 1, 12
+MOV bx, KERNEL_NOT_FOUND_MSG
+CALL 2, print_string
+
+LD ax, 0x00201c
+CMP ax, "n"
+JEQ 1, 12
+MOV bx, KERNEL_NOT_FOUND_MSG
+CALL 2, print_string
+
+LD ax, 0x00201c
+MOV bx, ax
+SHFT bx, -8
+LD ax, 0x00201d
+ADD bx, ax
+SHFT bx, -8
+LD ax, 0x00201e
+ADD bx, ax
+MOV ax, bx
+MOV bx, 1
+
+MOV cx, 0x003000
+CALL load_file
+
+ADD cx, 509
+SUB cx, 0x003000
+DIV cx, 512
 
 JMP 1, 0
 
@@ -14,20 +85,51 @@ PUSH 0, ax
 PUSH 0, bx
 PUSH 0, cx
 PUSH 0, dx
-
-loop:
+print_string_loop:
 LD ax, bx
 CMP ax, 0
-JEQ 2, end
+JEQ 2, print_string_end
 ADD bx, 1
 INT 0, print_char
-JMP 2, loop
-
-end:
+JMP 2, print_string_loop
+print_string_end:
 POP dx, 0
 POP cx, 0
 POP bx, 0
 POP ax, 0
 RET 0, 0
 
+load_file:
+PUSH 0, ax
+PUSH 0, bx
+PUSH 0, dx
+load_file_loop:
+SPB 0, 0
+INT 0, read_disk
+LD bx, cx
+MOV dx, bx
+SHFT dx, -8
+ADD cx, 1
+LD bx, cx
+ADD dx, bx
+SHFT dx, -8
+ADD dx, 1
+LD bx, cx
+ADD dx, cx
+CMP dx, 0
+SPB 0, 0x1000
+JEQ 0, load_file_end
+MOV ax, dx
+MOV bx, 1
+ADD cx, 509
+JMP 2, load_file_loop
+load_file_end:
+POP dx, 0
+POP bx, 0
+POP ax, 0
+RET 0, 0
+
 RUNNING_BOOT_MSG: "Running bootloader"
+KERNEL_NOT_FOUND_MSG: "Kernel not found!"
+KERNEL_FOUND_MSG: "Kernel found"
+LOADING_KERNERL_MSG: "Loading kernel into memory"
