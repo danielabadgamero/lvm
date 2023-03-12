@@ -16,11 +16,11 @@ ADD bx, 1
 INT 0, print_char
 JMP 2, print_string
 
+end:
 POP ax, 0
 POP bx, 0
 POP cx, 0
 POP dx, 0
-end:
 RET 0, 0
 
 RUNNING_BOOT_MSG: "Running bootloader."

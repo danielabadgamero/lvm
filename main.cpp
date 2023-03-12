@@ -9,6 +9,12 @@ std::map<std::string, char> compFlags{};
 std::map<std::string, char> regs{};
 std::map<std::string, char> interrupts{};
 
+struct Label
+{
+	std::string id{};
+	int addr{};
+};
+
 int main(int argc, char* argv[])
 {
 	opcodes["MOV"] = 0;
@@ -76,8 +82,8 @@ int main(int argc, char* argv[])
 			content.back().push_back(c);
 	}
 
-	std::map<std::string, char> labelDefinitions{};
-	std::map<std::string, char> labelReferences{};
+	std::vector<Label> labelDefinitions{};
+	std::vector<Label> labelReferences{};
 
 	std::vector<char> out{};
 
@@ -120,7 +126,7 @@ int main(int argc, char* argv[])
 					}
 					else
 					{
-						labelReferences[instr.substr(instr.find(' ') + 1)] = pc + 1;
+						labelReferences.push_back({ instr.substr(instr.find(' ') + 1), pc + 1 });
 						out.push_back(0);
 						out.push_back(0);
 						out.push_back(0);
@@ -131,7 +137,7 @@ int main(int argc, char* argv[])
 		}
 		else if (!instr.empty())
 		{
-			labelDefinitions[opcode.substr(0, opcode.find(':'))] = pc;
+			labelDefinitions.push_back({ opcode.substr(0, opcode.find(':')), pc });
 			if (instr.find(':') != instr.size() - 1)
 				if (instr[0] == '"')
 				{
@@ -151,11 +157,15 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	for (std::map<std::string, char>::iterator i{ labelReferences.begin() }; i != labelReferences.end(); i++)
+	for (std::vector<Label>::iterator i{ labelReferences.begin() }; i != labelReferences.end(); i++)
 	{
-		out.at(i->second) = static_cast<char>(labelDefinitions[i->first] << 16);
-		out.at(static_cast<size_t>(i->second + 1)) = static_cast<char>(labelDefinitions[i->first] << 8);
-		out.at(static_cast<size_t>(i->second + 2)) = static_cast<char>(labelDefinitions[i->first]);
+		Label targetLabel{};
+		for (std::vector<Label>::iterator j{ labelDefinitions.begin() }; j != labelDefinitions.end(); j++)
+			if (j->id == i->id)
+				targetLabel = *j;
+		out.at(i->addr) = static_cast<char>(targetLabel.addr << 16);
+		out.at(static_cast<size_t>(i->addr + 1)) = static_cast<char>(targetLabel.addr << 8);
+		out.at(static_cast<size_t>(i->addr + 2)) = static_cast<char>(targetLabel.addr);
 	}
 
 	for (char c : out)
