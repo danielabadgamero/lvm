@@ -142,7 +142,7 @@ namespace Lightning::Core
 		0b01001'1'01, 0xff, 0xff, 0xec,	// jump back to loop
 		0b10001'0'00, 0x00, 0x00, 0x00,	// return
 	};
-	inline char disk[1 << 20][512]{};	// 512MB
+	inline char disk[1 << 17][512]{};	// 64MB
 
 	inline constexpr unsigned char font[]
 	{

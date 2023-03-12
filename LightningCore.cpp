@@ -73,7 +73,7 @@ void Lightning::Core::quit()
 		std::remove("fs");
 
 	std::ofstream fs_out{ "fs", std::ios::binary };
-	for (int i{}; i != (1 << 20); i++)
+	for (int i{}; i != (1 << 17); i++)
 		fs_out.write(disk[i], 512);
 
 	SDL_WaitThread(Threads::CPU, NULL);
