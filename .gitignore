@@ -361,9 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/fs
 /LightningVM.vcxproj
 /.gitignore
 /LightningVM.vcxproj.filters
 /.gitignore
-/fs.bak

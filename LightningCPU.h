@@ -13,7 +13,8 @@ namespace Lightning::CPU
 		//			Description (addrMode = 0)			Description (addrMode = 1)
 
 		//	Data management
-		MOV,	//	Load reg op2 to rDest				Load imm to rDest
+		MOV,	//	Load reg op2 to rDest				Load imm op2 to rDest
+		SPB,	//	Set pb register to reg op2			Set pb register to imm op2
 		LD,		//	Load reg addr op2 to rDest			Load addr op2 to rDest
 		ST,		//	Store reg op2 in addr rDest			Store imm op2 in addr rDest
 		PUSH,	//	Push reg op2 to stack				Push imm op2 to stack
@@ -55,7 +56,6 @@ namespace Lightning::CPU
 		OR,		//	Bitwise OR of rDest and reg op2		Bitwise OR of rDest and imm op2
 		XOR,	//	Bitwise XOR of rDest and reg op2	Bitwise XOR of rDest and imm op2
 		NOR,	//	Bitwise NOR of rDest and reg op2	Bitwise NOR of rDest and imm op2
-		XNOR,	//	Bitwise XNOR of rDest and reg op2	Bitwise XNOR of rDest and imm op2
 		NOT,	//	Bitwise neg. of reg op2 in rDest	Bitwise neg. of imm op2 in rDest
 	};
 

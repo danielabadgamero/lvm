@@ -29,17 +29,22 @@ void Lightning::CPU::decode()
 		if (aMode == 0)
 			rDest = rSource;
 		else
-			rDest = imm + pb;
+			rDest = imm;
 		break;
+	case SPB:
+		if (aMode == 0)
+			pb = rSource;
+		else
+			rDest = imm;
 	case LD:
 		if (aMode == 0)
-			readMemory(rSource, &rDest);
+			readMemory(rSource + pb, &rDest);
 		else
 			readMemory(imm + pb, &rDest);
 		break;
 	case ST:
 		if (aMode == 0)
-			writeMemory(rDest, rSource);
+			writeMemory(rDest, rSource + pb);
 		else
 			writeMemory(rDest, imm + pb);
 		break;
@@ -47,7 +52,7 @@ void Lightning::CPU::decode()
 		if (aMode == 0)
 			stack.push(rSource);
 		else
-			stack.push(imm + pb);
+			stack.push(imm);
 		break;
 	case POP:
 		if (aMode)
@@ -462,12 +467,6 @@ void Lightning::CPU::decode()
 		else
 			rDest = ~(imm | rDest);
 		break;
-	case XNOR:
-		if (aMode == 0)
-			rDest = ~(rSource ^ rDest);
-		else
-			rDest = ~(imm ^ rDest);
-		break;
 	case NOT:
 		if (aMode == 0)
 			rDest = ~rSource;
@@ -512,7 +511,6 @@ int Lightning::CPU::cycle(void*)
 	{
 		for (int i{}; i != reg[bx]; i++)
 			SDL_memcpy(&Core::RAM[reg[cx] + i * 512], Core::disk[reg[ax] + i], 512);
-		pb = reg[cx];
 	};
 
 	interruptTable[write_disk] = []()
