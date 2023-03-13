@@ -18,7 +18,7 @@ static void readMemory(int address, int* dest)
 
 static void writeMemory(int address, int data)
 {
-	Lightning::Core::RAM[address] = (unsigned char)data;
+	Lightning::Core::RAM[address] = static_cast<unsigned char>(data);
 }
 
 void Lightning::CPU::decode()
@@ -55,6 +55,7 @@ void Lightning::CPU::decode()
 			Core::running = false;
 		else
 			Core::chipSelected = imm;
+		pc = 0;
 		break;
 	case CMP:
 		compFlags[equal] = rDest == value;
