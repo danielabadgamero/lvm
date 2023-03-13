@@ -3,6 +3,27 @@ CALL 0, print_string
 
 JMP 0, $
 
+read_3:
+	PUSH bx, 0
+	PUSH cx, 0
+	PUSH dx, 0
+
+	LD cx, bx
+	MOV ax, cx
+	SHFT ax, 8
+	ADD bx, 1
+	LD cx, bx
+	ADD ax, cx
+	SHFT ax, 8
+	ADD bx, 1
+	LD cx, bx
+	ADD ax, cx
+
+	POP dx, 0
+	POP cx, 0
+	POP bx, 0
+	RET 0, 0
+
 print_string:
 	PUSH ax, 0
 	PUSH bx, 0
