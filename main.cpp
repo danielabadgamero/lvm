@@ -18,7 +18,7 @@ struct Label
 int main(int argc, char* argv[])
 {
 	opcodes["MOV"] = 0;
-	opcodes["SPB"] = 1;
+	// opcodes[""] = 1;
 	opcodes["LD"] = 2;
 	opcodes["ST"] = 3;
 	opcodes["PUSH"] = 4;
@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 		input.read(&c, 1);
 		if (c == '\n')
 			content.push_back("");
-		else
+		else if (c != '\t')
 			content.back().push_back(c);
 	}
 
@@ -87,46 +87,60 @@ int main(int argc, char* argv[])
 
 	std::vector<char> out{};
 
-	char pc{};
+	int pc{};
 
+	// Loop through each line
 	for (std::string& line : content)
 	{
-		std::string instr{ line.substr(line.find(' ') + 1) };
 		std::string opcode{ line.substr(0, line.find(' ')) };
+		std::string operands{ line.substr(line.find(' ') + 1) };
+		std::string dest{ operands.substr(0, operands.find(',')) };
+		std::string source{ operands.substr(operands.find(' ') + 1) };
 
+		// Opcode instruction
 		if (opcodes.contains(opcode))
 		{
 			out.push_back(opcodes[opcode] << 3);
-			if (regs.contains(instr.substr(0, instr.find(','))))
-				out.back() |= regs[instr.substr(0, instr.find(','))];
+
+			// rDest
+			if (regs.contains(dest))
+				out.back() |= regs[dest];
 			else
-				out.back() |= static_cast<char>(std::stoi(instr.substr(0, instr.find(','))));
-			if (regs.contains(instr.substr(instr.find(' ') + 1)))
+				out.back() |= static_cast<char>(std::stoi(dest));
+
+			// rSource / imm
+			if (regs.contains(source))
 			{
 				out.push_back(0);
 				out.push_back(0);
-				out.push_back(regs[instr.substr(instr.find(' ') + 1)]);
+				out.push_back(regs[source]);
 			}
 			else
 			{
 				out.back() |= (1 << 2);
 				try
 				{
-					out.push_back(static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1)) >> 16));
-					out.push_back(static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1)) >> 8));
-					out.push_back(static_cast<char>(std::stoi(instr.substr(instr.find(' ') + 1))));
+					out.push_back(static_cast<char>(std::stoi(source) >> 16));
+					out.push_back(static_cast<char>(std::stoi(source) >> 8));
+					out.push_back(static_cast<char>(std::stoi(source)));
 				}
 				catch (...)
 				{
-					if (interrupts.contains(instr.substr(instr.find(' ') + 1)))
+					if (interrupts.contains(source))
 					{
 						out.push_back(0);
 						out.push_back(0);
-						out.push_back(interrupts[instr.substr(instr.find(' ') + 1)]);
+						out.push_back(interrupts[source]);
+					}
+					else if (source == "$")
+					{
+						out.push_back(static_cast<char>(pc << 16));
+						out.push_back(static_cast<char>(pc << 8));
+						out.push_back(static_cast<char>(pc));
 					}
 					else
 					{
-						labelReferences.push_back({ instr.substr(instr.find(' ') + 1), pc + 1 });
+						labelReferences.push_back({ source, pc + 1 });
 						out.push_back(0);
 						out.push_back(0);
 						out.push_back(0);
@@ -135,28 +149,53 @@ int main(int argc, char* argv[])
 			}
 			pc += 4;
 		}
-		else if (!instr.empty())
+		// Label
+		else if (!line.empty())
 		{
 			labelDefinitions.push_back({ opcode.substr(0, opcode.find(':')), pc });
-			if (instr.find(':') != instr.size() - 1)
-				if (instr[0] == '"')
-				{
-					for (int i{ 1 }; i != instr.size() - 2; i++)
-					{
-						out.push_back(instr[i]);
-						pc++;
-					}
-					out.push_back('\0');
-					pc++;
-				}
+			// Label for data
+			if (line.find(':') != line.size() - 1)
+				if (operands[0] == '"')
+					for (int i{ 1 }; i != operands.size() - 2; i++)
+						if (operands[i] == '\\')
+						{
+							i++;
+							switch (operands[i])
+							{
+							case '0':
+								out.push_back('\0');
+								break;
+							case 'n':
+								out.push_back('\n');
+								break;
+							case 't':
+								out.push_back('\t');
+								break;
+							case '\\':
+								out.push_back('\\');
+								break;
+							default:
+								std::cout << "Unrecognized escape sequence at line \"" << line << "\".";
+								goto end;
+							}
+							pc++;
+						}
+						else
+						{
+							out.push_back(operands[i]);
+							pc++;
+						}
 				else
 				{
-					out.push_back(static_cast<char>(std::stoi(instr)));
-					pc++;
+					out.push_back(static_cast<char>(std::stoi(operands) >> 16));
+					out.push_back(static_cast<char>(std::stoi(operands) >> 8));
+					out.push_back(static_cast<char>(std::stoi(operands)));
+					pc += 3;
 				}
 		}
 	}
 
+	// Resolve labels
 	for (std::vector<Label>::iterator i{ labelReferences.begin() }; i != labelReferences.end(); i++)
 	{
 		Label targetLabel{};
@@ -171,5 +210,6 @@ int main(int argc, char* argv[])
 	for (char c : out)
 		output.write(&c, 1);
 
+	end:
 	return 0;
 }
