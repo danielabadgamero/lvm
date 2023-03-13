@@ -65,6 +65,8 @@ int main(int argc, char* argv[])
 	if (argc == 2)
 		for (int i{}; argv[1][i] != '\0'; i++)
 			path.push_back(argv[1][i]);
+
+	path = "test.lasm";
 	
 	std::ifstream input{ path };
 	std::string fileName{ path.substr(path.find_last_of('\\') + 1).substr(0, path.find('.')) };
@@ -106,7 +108,7 @@ int main(int argc, char* argv[])
 			if (regs.contains(dest))
 				out.back() |= regs[dest];
 			else
-				out.back() |= static_cast<char>(std::stoi(dest));
+				out.back() |= static_cast<char>(std::stoi(dest, nullptr, 16));
 
 			// rSource / imm
 			if (regs.contains(source))
@@ -120,9 +122,9 @@ int main(int argc, char* argv[])
 				out.back() |= (1 << 2);
 				try
 				{
-					out.push_back(static_cast<char>(std::stoi(source) >> 16));
-					out.push_back(static_cast<char>(std::stoi(source) >> 8));
-					out.push_back(static_cast<char>(std::stoi(source)));
+					out.push_back(static_cast<char>(std::stoi(source, nullptr, 16) >> 16));
+					out.push_back(static_cast<char>(std::stoi(source, nullptr, 16) >> 8));
+					out.push_back(static_cast<char>(std::stoi(source, nullptr, 16)));
 				}
 				catch (...)
 				{
@@ -156,7 +158,7 @@ int main(int argc, char* argv[])
 			// Label for data
 			if (line.find(':') != line.size() - 1)
 				if (operands[0] == '"')
-					for (int i{ 1 }; i != operands.size() - 2; i++)
+					for (int i{ 1 }; i < operands.size() - 2; i++)
 						if (operands[i] == '\\')
 						{
 							i++;
@@ -178,6 +180,7 @@ int main(int argc, char* argv[])
 								std::cout << "Unrecognized escape sequence at line \"" << line << "\".";
 								goto end;
 							}
+							i++;
 							pc++;
 						}
 						else
@@ -187,9 +190,9 @@ int main(int argc, char* argv[])
 						}
 				else
 				{
-					out.push_back(static_cast<char>(std::stoi(operands) >> 16));
-					out.push_back(static_cast<char>(std::stoi(operands) >> 8));
-					out.push_back(static_cast<char>(std::stoi(operands)));
+					out.push_back(static_cast<char>(std::stoi(operands, nullptr, 16) >> 16));
+					out.push_back(static_cast<char>(std::stoi(operands, nullptr, 16) >> 8));
+					out.push_back(static_cast<char>(std::stoi(operands, nullptr, 16)));
 					pc += 3;
 				}
 		}
