@@ -65,8 +65,6 @@ int main(int argc, char* argv[])
 	if (argc == 2)
 		for (int i{}; argv[1][i] != '\0'; i++)
 			path.push_back(argv[1][i]);
-
-	path = "test.lasm";
 	
 	std::ifstream input{ path };
 	std::string fileName{ path.substr(path.find_last_of('\\') + 1).substr(0, path.find('.')) };
