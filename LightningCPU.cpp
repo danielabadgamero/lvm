@@ -6,6 +6,7 @@
 #define rSource reg[ir.bitfields.op2]
 #define imm static_cast<int>((ir.bitfields.op2 & 0x800000 ? (0xff000000 | ir.bitfields.op2) : ir.bitfields.op2))
 #define aMode ir.bitfields.addrMode
+#define value ((aMode == 0) ? rSource : imm)
 
 static void readMemory(int address, int* dest)
 {
@@ -26,38 +27,21 @@ void Lightning::CPU::decode()
 	{
 		//	Data management
 	case MOV:
-		if (aMode == 0)
-			rDest = rSource;
-		else
-			rDest = imm;
+		rDest = value;
 		break;
-	case SPB:
-		if (aMode == 0)
-			pb = rSource;
-		else
-			pb = imm;
+	case UNUSED_1:
 		break;
 	case LD:
-		if (aMode == 0)
-			readMemory(rSource + pb, &rDest);
-		else
-			readMemory(imm, &rDest);
+		readMemory(value, &rDest);
 		break;
 	case ST:
-		if (aMode == 0)
-			writeMemory(rDest, rSource + pb);
-		else
-			writeMemory(rDest, imm);
+		writeMemory(rDest, value);
 		break;
 	case PUSH:
-		if (aMode == 0)
-			stack.push(rSource);
-		else
-			stack.push(imm);
+		stack.push(value);
 		break;
 	case POP:
-		if (aMode)
-			rDest = stack.top();
+		rDest = stack.top();
 		stack.pop();
 		break;
 	case IN:
@@ -76,320 +60,42 @@ void Lightning::CPU::decode()
 		}
 		break;
 	case CMP:
-		if (aMode == 0)
-		{
-			compFlags[equal] = rDest == rSource;
-			compFlags[greater] = rDest > rSource;
-			compFlags[greater_equal] = rDest >= rSource;
-			compFlags[less] = rDest < rSource;
-			compFlags[less_equal] = rDest <= rSource;
-		}
-		else
-		{
-			compFlags[equal] = rDest == imm;
-			compFlags[greater] = rDest > imm;
-			compFlags[greater_equal] = rDest >= imm;
-			compFlags[less] = rDest < imm;
-			compFlags[less_equal] = rDest <= imm;
-		}
+		compFlags[equal] = rDest == value;
+		compFlags[greater] = rDest > value;
+		compFlags[greater_equal] = rDest >= value;
+		compFlags[less] = rDest < value;
+		compFlags[less_equal] = rDest <= value;
 		break;
 	case JMP:
-		if (aMode == 0)
-			switch (ir.bitfields.reg)
-			{
-			case 0:
-				pc = rSource;
-				break;
-			case 1:
-				pc += rSource - 4;
-				break;
-			case 2:
-				pc = pb + rSource;
-				break;
-			case 3:
-				readMemory(rSource, (int*)&pc);
-				break;
-			}
-		else
-			switch (ir.bitfields.reg)
-			{
-			case 0:
-				pc = imm;
-				break;
-			case 1:
-				pc += imm - 4;
-				break;
-			case 2:
-				pc = pb + imm;
-				break;
-			case 3:
-				readMemory(imm, (int*)&pc);
-				break;
-			}
+		pc = value;
 		break;
 	case JEQ:
 		if (compFlags[equal])
-		{
-			if (aMode == 0)
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = rSource;
-					break;
-				case 1:
-					pc += rSource - 4;
-					break;
-				case 2:
-					pc = pb + rSource;
-					break;
-				case 3:
-					readMemory(rSource, (int*)&pc);
-					break;
-				}
-			else
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = imm;
-					break;
-				case 1:
-					pc += imm - 4;
-					break;
-				case 2:
-					pc = pb + imm;
-					break;
-				case 3:
-					readMemory(imm, (int*)&pc);
-					break;
-				}
-			break;
-		}
+			pc = value;
 		break;
 	case JNE:
 		if (compFlags[not_equal])
-		{
-			if (aMode == 0)
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = rSource;
-					break;
-				case 1:
-					pc += rSource - 4;
-					break;
-				case 2:
-					pc = pb + rSource;
-					break;
-				case 3:
-					readMemory(rSource, (int*)&pc);
-					break;
-				}
-			else
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = imm;
-					break;
-				case 1:
-					pc += imm - 4;
-					break;
-				case 2:
-					pc = pb + imm;
-					break;
-				case 3:
-					readMemory(imm, (int*)&pc);
-					break;
-				}
-			break;
-		}
+			pc = value;
 		break;
 	case JGT:
 		if (compFlags[greater])
-		{
-			if (aMode == 0)
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = rSource;
-					break;
-				case 1:
-					pc += rSource - 4;
-					break;
-				case 2:
-					pc = pb + rSource;
-					break;
-				case 3:
-					readMemory(rSource, (int*)&pc);
-					break;
-				}
-			else
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = imm;
-					break;
-				case 1:
-					pc += imm - 4;
-					break;
-				case 2:
-					pc = pb + imm;
-					break;
-				case 3:
-					readMemory(imm, (int*)&pc);
-					break;
-				}
-			break;
-		}
+			pc = value;
 		break;
 	case JGE:
 		if (compFlags[greater_equal])
-		{
-			if (aMode == 0)
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = rSource;
-					break;
-				case 1:
-					pc += rSource - 4;
-					break;
-				case 2:
-					pc = pb + rSource;
-					break;
-				case 3:
-					readMemory(rSource, (int*)&pc);
-					break;
-				}
-			else
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = imm;
-					break;
-				case 1:
-					pc += imm - 4;
-					break;
-				case 2:
-					pc = pb + imm;
-					break;
-				case 3:
-					readMemory(imm, (int*)&pc);
-					break;
-				}
-			break;
-		}
+			pc = value;
 		break;
 	case JLT:
 		if (compFlags[less])
-		{
-			if (aMode == 0)
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = rSource;
-					break;
-				case 1:
-					pc += rSource - 4;
-					break;
-				case 2:
-					pc = pb + rSource;
-					break;
-				case 3:
-					readMemory(rSource, (int*)&pc);
-					break;
-				}
-			else
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = imm;
-					break;
-				case 1:
-					pc += imm - 4;
-					break;
-				case 2:
-					pc = pb + imm;
-					break;
-				case 3:
-					readMemory(imm, (int*)&pc);
-					break;
-				}
-			break;
-		}
+			pc = value;
 		break;
 	case JLE:
 		if (compFlags[less_equal])
-		{
-			if (aMode == 0)
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = rSource;
-					break;
-				case 1:
-					pc += rSource - 4;
-					break;
-				case 2:
-					pc = pb + rSource;
-					break;
-				case 3:
-					readMemory(rSource, (int*)&pc);
-					break;
-				}
-			else
-				switch (ir.bitfields.reg)
-				{
-				case 0:
-					pc = imm;
-					break;
-				case 1:
-					pc += imm - 4;
-					break;
-				case 2:
-					pc = pb + imm;
-					break;
-				case 3:
-					readMemory(imm, (int*)&pc);
-					break;
-				}
-			break;
-		}
+			pc = value;
 		break;
 	case CALL:
 		stack.push(pc);
-		if (aMode == 0)
-			switch (ir.bitfields.reg)
-			{
-			case 0:
-				pc = rSource;
-				break;
-			case 1:
-				pc += rSource - 4;
-				break;
-			case 2:
-				pc = pb + rSource;
-				break;
-			case 3:
-				readMemory(rSource, (int*)&pc);
-				break;
-			}
-		else
-			switch (ir.bitfields.reg)
-			{
-			case 0:
-				pc = imm;
-				break;
-			case 1:
-				pc += imm - 4;
-				break;
-			case 2:
-				pc = pb + imm;
-				break;
-			case 3:
-				readMemory(imm, (int*)&pc);
-				break;
-			}
-		break;
+		pc = value;
 		break;
 	case RET:
 		pc = stack.top();
@@ -401,78 +107,42 @@ void Lightning::CPU::decode()
 
 		//	Arithmetic
 	case ADD:
-		if (aMode == 0)
-			rDest += rSource;
-		else
-			rDest += imm;
+		rDest += value;
 		break;
 	case SUB:
-		if (aMode == 0)
-			rDest -= rSource;
-		else
-			rDest -= imm;
+		rDest -= value;
 		break;
 	case MUL:
-		if (aMode == 0)
-			rDest *= rSource;
-		else
-			rDest *= imm;
+		rDest *= value;
 		break;
 	case DIV:
-		if (aMode == 0)
-			rDest /= rSource;
-		else
-			rDest /= imm;
+		rDest /= value;
 		break;
 	case MOD:
-		if (aMode == 0)
-			rDest %= rSource;
-		else
-			rDest %= imm;
+		rDest %= value;
 		break;
 	case SHFT:
-		if (aMode == 0)
-			rDest >>= rSource;
-		else
-			rDest >>= imm;
+		rDest <<= value;
 		break;
 
 		//	Logic
 	case AND:
-		if (aMode == 0)
-			rDest &= rSource;
-		else
-			rDest &= imm;
+		rDest &= value;
 		break;
 	case NAND:
-		if (aMode == 0)
-			rDest = ~(rSource & rDest);
-		else
-			rDest = ~(imm & rDest);
+		rDest = ~(value & rDest);
 		break;
 	case OR:
-		if (aMode == 0)
-			rDest |= rSource;
-		else
-			rDest |= imm;
+		rDest |= value;
 		break;
 	case XOR:
-		if (aMode == 0)
-			rDest ^= rSource;
-		else
-			rDest ^= imm;
+		rDest ^= value;
 		break;
 	case NOR:
-		if (aMode == 0)
-			rDest = ~(rSource | rDest);
-		else
-			rDest = ~(imm | rDest);
+		rDest = ~(value | rDest);
 		break;
 	case NOT:
-		if (aMode == 0)
-			rDest = ~rSource;
-		else
-			rDest = ~imm;
+		rDest = ~value;
 		break;
 	}
 }
