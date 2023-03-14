@@ -26,10 +26,20 @@ void Lightning::CPU::decode()
 	switch (opcode)
 	{
 		//	Data management
+	case UNUSED_1:
+		break;
 	case MOV:
 		rDest = value;
 		break;
-	case UNUSED_1:
+	case SPB:
+		pb = value;
+		break;
+	case PSHB:
+		stack.push(pb);
+		break;
+	case POPB:
+		pb = stack.top();
+		stack.pop();
 		break;
 	case LD:
 		readMemory(value, &rDest);

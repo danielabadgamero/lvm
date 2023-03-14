@@ -80,6 +80,7 @@ namespace Lightning::CPU
 	} ir{};
 
 	inline unsigned short pc{};
+	inline unsigned short pb{};
 
 	inline std::stack<short> stack{};
 
