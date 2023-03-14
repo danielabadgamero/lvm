@@ -17,12 +17,14 @@ void Lightning::Core::init()
 
 	SDL_ShowCursor(SDL_DISABLE);
 
-	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", NULL);
+	// Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 
 	monitor = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen.w, screen.h);
 	pixelsSize = screen.w * screen.h * 3;
 	pixelsPitch = screen.w * 3;
 	pixels = new Uint8[pixelsSize]{};
+	videoSize = (screen.w / 24) * (screen.h / 32);
+	videoPitch = screen.w / 24;
 
 	if (std::filesystem::exists("fs"))
 	{
@@ -34,6 +36,8 @@ void Lightning::Core::init()
 			sector++;
 		}
 	}
+
+	RAM[VIDEO] = 'a';
 
 	running = true;
 }
@@ -58,7 +62,16 @@ int Lightning::Core::cycle()
 
 	SDL_RenderClear(renderer);
 
-	SDL_memcpy(pixels, RAM + VIDEO, pixelsSize);
+	for (int i{}; i != videoSize; i++)
+		//if (RAM[i + VIDEO] >= ' ' && RAM[i + VIDEO] <= '~')
+			for (int y{}; y != 32; y++)
+				for (int x{}; x != 3; x++)
+					for (int b{}; b != 8; b++)
+					{
+						int screenX{ x * 8 + b + (i % videoPitch) * 24 };
+						SDL_Log("%d", screenX);
+					}
+
 	SDL_UpdateTexture(monitor, NULL, pixels, pixelsPitch);
 	SDL_RenderCopy(renderer, monitor, NULL, NULL);
 	

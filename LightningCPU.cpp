@@ -4,11 +4,11 @@
 #define opcode ir.bitfields.opcode
 #define rDest reg[ir.bitfields.reg]
 #define rSource reg[ir.bitfields.op2]
-#define imm static_cast<int>((ir.bitfields.op2 & 0x800000 ? (0xff000000 | ir.bitfields.op2) : ir.bitfields.op2))
+#define imm static_cast<unsigned char>(ir.bitfields.op2)
 #define aMode ir.bitfields.addrMode
 #define value ((aMode == 0) ? rSource : imm)
 
-static void readMemory(int address, int* dest)
+static void readMemory(short address, short* dest)
 {
 	if (Lightning::Core::chipSelected)
 		*dest = Lightning::Core::RAM[address];
@@ -16,7 +16,7 @@ static void readMemory(int address, int* dest)
 		*dest = Lightning::Core::ROM[address];
 }
 
-static void writeMemory(int address, int data)
+static void writeMemory(short address, short data)
 {
 	Lightning::Core::RAM[address] = static_cast<unsigned char>(data);
 }
@@ -99,9 +99,6 @@ void Lightning::CPU::decode()
 		pc = stack.top();
 		stack.pop();
 		break;
-	case INT:
-		interruptTable[imm]();
-		break;
 
 		//	Arithmetic
 	case ADD:
@@ -127,17 +124,11 @@ void Lightning::CPU::decode()
 	case AND:
 		rDest &= value;
 		break;
-	case NAND:
-		rDest = ~(value & rDest);
-		break;
 	case OR:
 		rDest |= value;
 		break;
 	case XOR:
 		rDest ^= value;
-		break;
-	case NOR:
-		rDest = ~(value | rDest);
 		break;
 	case NOT:
 		rDest = ~value;
@@ -147,53 +138,12 @@ void Lightning::CPU::decode()
 
 int Lightning::CPU::cycle(void*)
 {
-	interruptTable[print_char] = []()
-	{
-		char c{ static_cast<char>(reg[ax]) };
-
-		for (int i{}; i != 32; i++)
-			for (int j{}; j != 3; j++)
-				for (int k{}; k != 8; k++)
-				{
-					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3] ^= ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3 + 1] ^= ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-					Core::RAM[VIDEO + (cursor.y + i) * pixelsPitch + cursor.x * 3 + j * 24 + k * 3 + 2] ^= ((Core::font[c * 96 + i * 3 + j] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-				}
-
-		if (cursor.x >= 1896)
-			interruptTable[new_line]();
-		else
-			cursor.x += 24;
-	};
-
-	interruptTable[new_line] = []()
-	{
-		if (cursor.y >= 1024)
-			for (int i{ VIDEO }; i != VIDEO + pixelsSize; i++)
-				Core::RAM[i] = Core::RAM[i + 32 * pixelsPitch];
-		else
-			cursor.y += 32;
-		cursor.x = 0;
-	};
-
-	interruptTable[read_disk] = []()
-	{
-		for (int i{}; i != reg[bx]; i++)
-			SDL_memcpy(&Core::RAM[reg[cx] + i * 512], Core::disk[reg[ax] + i], 512);
-	};
-
-	interruptTable[write_disk] = []()
-	{
-		for (int i{}; i != reg[bx]; i++)
-			SDL_memcpy(Core::disk[reg[cx] + i], &Core::RAM[reg[ax] + i * 512], 512);
-	};
-
 	while (!Core::running);
 
 	while (Core::running)
 	{
-		int instruction{};
-		for (int i{}; i != 4; i++)
+		short instruction{};
+		for (int i{}; i != 2; i++)
 		{
 			readMemory(pc, &instruction);
 			ir.instruction <<= 8;
