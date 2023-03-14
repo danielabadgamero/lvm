@@ -4,9 +4,11 @@
 #define opcode ir.bitfields.opcode
 #define rDest reg[ir.bitfields.reg]
 #define rSource reg[ir.bitfields.op2]
-#define imm static_cast<unsigned char>(ir.bitfields.op2)
+#define imm8 static_cast<unsigned char>(ir.bitfields.op2)
+#define imm10 static_cast<unsigned short>(ir.bitfields.reg << 8) + ir.bitfields.op2
 #define aMode ir.bitfields.addrMode
-#define value ((aMode == 0) ? rSource : imm)
+#define value ((aMode == 0) ? rSource : imm8)
+#define value10 ((aMode == 0) ? rSource : imm10)
 
 static void readMemory(short address, short* dest)
 {
@@ -42,10 +44,10 @@ void Lightning::CPU::decode()
 		stack.pop();
 		break;
 	case LD:
-		readMemory(value, &rDest);
+		readMemory(value + pb, &rDest);
 		break;
 	case ST:
-		writeMemory(rDest, value);
+		writeMemory(rDest, value + pb);
 		break;
 	case PUSH:
 		stack.push(value);
@@ -64,7 +66,7 @@ void Lightning::CPU::decode()
 		if (aMode == 0)
 			Core::running = false;
 		else
-			Core::chipSelected = imm;
+			Core::chipSelected = imm8;
 		pc = 0;
 		break;
 	case CMP:
@@ -75,35 +77,35 @@ void Lightning::CPU::decode()
 		compFlags[less_equal] = rDest <= value;
 		break;
 	case JMP:
-		pc = value;
+		pc = value10 + pb;
 		break;
 	case JEQ:
 		if (compFlags[equal])
-			pc = value;
+			pc = value10 + pb;
 		break;
 	case JNE:
 		if (compFlags[not_equal])
-			pc = value;
+			pc = value10 + pb;
 		break;
 	case JGT:
 		if (compFlags[greater])
-			pc = value;
+			pc = value10 + pb;
 		break;
 	case JGE:
 		if (compFlags[greater_equal])
-			pc = value;
+			pc = value10 + pb;
 		break;
 	case JLT:
 		if (compFlags[less])
-			pc = value;
+			pc = value10 + pb;
 		break;
 	case JLE:
 		if (compFlags[less_equal])
-			pc = value;
+			pc = value10 + pb;
 		break;
 	case CALL:
 		stack.push(pc);
-		pc = value;
+		pc = value10 + pb;
 		break;
 	case RET:
 		pc = stack.top();
