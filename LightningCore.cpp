@@ -17,7 +17,7 @@ void Lightning::Core::init()
 
 	SDL_ShowCursor(SDL_DISABLE);
 
-	// Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", NULL);
+	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 
 	monitor = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen.w, screen.h);
 	pixelsSize = screen.w * screen.h * 3;
@@ -37,7 +37,19 @@ void Lightning::Core::init()
 		}
 	}
 
-	RAM[VIDEO] = 'a';
+	RAM[VIDEO] = 'H';
+	RAM[VIDEO + 1] = 'e';
+	RAM[VIDEO + 2] = 'l';
+	RAM[VIDEO + 3] = 'l';
+	RAM[VIDEO + 4] = 'o';
+	RAM[VIDEO + 5] = ',';
+	RAM[VIDEO + 6] = ' ';
+	RAM[VIDEO + 7] = 'w';
+	RAM[VIDEO + 8] = 'o';
+	RAM[VIDEO + 9] = 'r';
+	RAM[VIDEO + 10] = 'l';
+	RAM[VIDEO + 11] = 'd';
+	RAM[VIDEO + 12] = '!';
 
 	running = true;
 }
@@ -62,14 +74,15 @@ int Lightning::Core::cycle()
 
 	SDL_RenderClear(renderer);
 
-	for (int i{}; i != videoSize; i++)
-		//if (RAM[i + VIDEO] >= ' ' && RAM[i + VIDEO] <= '~')
-			for (int y{}; y != 32; y++)
-				for (int x{}; x != 3; x++)
-					for (int b{}; b != 8; b++)
+	for (int c{}; c != videoSize; c++)
+		if (Core::RAM[c + VIDEO] >= ' ' && Core::RAM[c + VIDEO] <= '~')
+			for (int i{}; i != 32; i++)
+				for (int j{}; j != 3; j++)
+					for (int k{}; k != 8; k++)
 					{
-						int screenX{ x * 8 + b + (i % videoPitch) * 24 };
-						SDL_Log("%d", screenX);
+						pixels[(c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+						pixels[(c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3 + 1] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+						pixels[(c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3 + 2] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
 					}
 
 	SDL_UpdateTexture(monitor, NULL, pixels, pixelsPitch);
