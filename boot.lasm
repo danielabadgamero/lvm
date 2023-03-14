@@ -1,46 +1,49 @@
-MOV bx, RUNNING_BOOTLOADER_MSG
-CALL 0, print_string
+MOV 	bx, 	RUNNING_BOOTLOADER_MSG
+CALL 	0, 	print_string
 
-JMP 0, $
+MOV 	cx, 	READ_ADDR
+CALL 	0, 	read_3
 
-read_3:
-	PUSH bx, 0
-	PUSH cx, 0
-	PUSH dx, 0
-
-	LD cx, bx
-	MOV ax, cx
-	SHFT ax, 8
-	ADD bx, 1
-	LD cx, bx
-	ADD ax, cx
-	SHFT ax, 8
-	ADD bx, 1
-	LD cx, bx
-	ADD ax, cx
-
-	POP dx, 0
-	POP cx, 0
-	POP bx, 0
-	RET 0, 0
+JMP 	0, 	$
 
 print_string:
-	PUSH ax, 0
-	PUSH bx, 0
-	PUSH cx, 0
-	PUSH dx, 0
+	PUSH 	0, 	ax
+	PUSH 	0, 	bx
+	PUSH 	0, 	cx
+	PUSH 	0, 	dx
 print_string_loop:
-	LD ax, bx
-	CMP ax, 0
-	JEQ 0, print_string_end
-	ADD bx, 1
-	INT 0, print_char
-	JMP 0, print_string_loop
+	LD 	ax, 	bx
+	CMP 	ax, 	0x00
+	JEQ 	0, 	print_string_end
+	ADD 	bx, 	0x01
+	INT 	0, 	print_char
+	JMP 	0, 	print_string_loop
 print_string_end:
-	POP dx, 0
-	POP cx, 0
-	POP bx, 0
-	POP ax, 0
-	RET 0, 0
+	POP 	dx, 	0
+	POP 	cx, 	0
+	POP 	bx, 	0
+	POP 	ax, 	0
+	RET 	0, 	0
+
+read_3:
+	PUSH 	0, 	ax
+	PUSH 	0, 	bx
+	PUSH 	0, 	cx
+	LD 	bx, 	cx
+	MOV 	dx, 	bx
+	SHFT 	dx, 	0x08
+	ADD 	cx, 	0x01
+	LD 	bx, 	cx
+	OR 	dx, 	bx
+	SHFT 	dx, 	0x08
+	ADD 	cx, 	0x01
+	LD 	bx, 	cx
+	OR 	dx, 	bx
+	POP 	cx, 	0
+	POP 	bx, 	0
+	POP 	ax, 	0
+	RET 	0, 	0
 
 RUNNING_BOOTLOADER_MSG: "Running bootloader\0"
+READ_ADDR: 0x002000
+KERNEL_ADDR: 0x004000
