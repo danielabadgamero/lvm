@@ -37,20 +37,6 @@ void Lightning::Core::init()
 		}
 	}
 
-	RAM[VIDEO] = 'H';
-	RAM[VIDEO + 1] = 'e';
-	RAM[VIDEO + 2] = 'l';
-	RAM[VIDEO + 3] = 'l';
-	RAM[VIDEO + 4] = 'o';
-	RAM[VIDEO + 5] = ',';
-	RAM[VIDEO + 6] = ' ';
-	RAM[VIDEO + 7] = 'w';
-	RAM[VIDEO + 8] = 'o';
-	RAM[VIDEO + 9] = 'r';
-	RAM[VIDEO + 10] = 'l';
-	RAM[VIDEO + 11] = 'd';
-	RAM[VIDEO + 12] = '!';
-
 	running = true;
 }
 

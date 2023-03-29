@@ -28,44 +28,7 @@ namespace Lightning::Core
 	inline unsigned char RAM[1 << 16]{}; // 64KB
 	inline constexpr unsigned char ROM[]
 	{
-		// Strings: 223 bytes
-		'B', 'I', 'O', 'S', ':', ' ', '\0', // 7 bytes
-		'E', 'x', 'e', 'c', 'u', 't', 'i', 'n', 'g', ' ', 'P', 'O', 'S', 'T', '\0', // 15 bytes
-		'P', 'O', 'S', 'T', ' ', 'c', 'o', 'm', 'p', 'l', 'e', 't', 'e', '\0', // 14 bytes
-		' ', 'O', 'K', '\0', // 4 bytes
-		' ', 'F', 'a', 'i', 'l', '\0', // 6 bytes
-		'M', 'O', 'V', ' ', '\0', // 5 bytes
-		' ', ' ', ' ', ' ', '\0', // 5 bytes
-		'L', 'D', ' ', ' ', '\0', // 5 bytes
-		'S', 'T',  ' ', ' ','\0', // 5 bytes
-		'P', 'U', 'S', 'H', '\0', // 5 bytes
-		'P', 'O', 'P', ' ', '\0', // 5 bytes
-		'I', 'N', ' ', ' ', '\0', // 5 bytes
-		'O', 'U', 'T', ' ', '\0', // 5 bytes
-		'H', 'A', 'L', 'T', '\0', // 5 bytes
-		'C', 'M', 'P', ' ', '\0', // 5 bytes
-		'J', 'M', 'P', ' ', '\0', // 5 bytes
-		'J', 'E', 'Q', ' ', '\0', // 5 bytes
-		'J', 'N', 'E', ' ', '\0', // 5 bytes
-		'J', 'G', 'T', ' ', '\0', // 5 bytes
-		'J', 'G', 'E', ' ', '\0', // 5 bytes
-		'J', 'L', 'T', ' ', '\0', // 5 bytes
-		'J', 'L', 'E', ' ', '\0', // 5 bytes
-		'C', 'A', 'L', 'L', '\0', // 5 bytes
-		'R', 'E', 'T', ' ', '\0', // 5 bytes
-		'I', 'N', 'T', ' ', '\0', // 5 bytes
-		'A', 'D', 'D', ' ', '\0', // 5 bytes
-		'S', 'U', 'B', ' ', '\0', // 5 bytes
-		'M', 'U', 'L', ' ', '\0', // 5 bytes
-		'D', 'I', 'V', ' ', '\0', // 5 bytes
-		'M', 'O', 'D', ' ', '\0', // 5 bytes
-		'S', 'H', 'F', 'T', '\0', // 5 bytes
-		'A', 'N', 'D', ' ', '\0', // 5 bytes
-		'N', 'A', 'N', 'D', '\0', // 5 bytes
-		'O', 'R', ' ', ' ', '\0', // 5 bytes
-		'X', 'O', 'R', ' ', '\0', // 5 bytes
-		'N', 'O', 'R', ' ', '\0', // 5 bytes
-		'N', 'O', 'T', ' ', '\0', // 5 bytes
+		// Strings: 17 bytes
 		'R', 'e', 'a', 'd', 'i', 'n', 'g', ' ', 's', 'e', 'c', 't', 'o', 'r', ' ', '0', '\0', // 17 bytes
 	};
 
