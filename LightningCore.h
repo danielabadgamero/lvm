@@ -24,7 +24,7 @@ namespace Lightning::Core
 	inline bool running{};
 	inline bool chipSelected{};
 
-	inline char disk[1 << 22][512]{};
+	inline char disk[1 << 16][512]{};
 	inline unsigned char RAM[1 << 24]{};
 	inline constexpr unsigned char ROM[]
 	{
