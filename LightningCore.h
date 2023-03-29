@@ -22,14 +22,13 @@ inline constexpr int VIDEO{ 0xf500 };
 namespace Lightning::Core
 {
 	inline bool running{};
-	inline bool chipSelected{}; // 0 for ROM, 1 for RAM
+	inline bool chipSelected{};
 
-	inline char disk[1 << 17][512]{};	// 64MB
-	inline unsigned char RAM[1 << 16]{}; // 64KB
+	inline char disk[1 << 22][512]{};
+	inline unsigned char RAM[1 << 24]{};
 	inline constexpr unsigned char ROM[]
 	{
-		// Strings: 17 bytes
-		'R', 'e', 'a', 'd', 'i', 'n', 'g', ' ', 's', 'e', 'c', 't', 'o', 'r', ' ', '0', '\0', // 17 bytes
+		0
 	};
 
 	inline constexpr unsigned char font[]
