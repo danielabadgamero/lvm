@@ -7,7 +7,21 @@ namespace Lightning::CPU
 {
 	enum Opcode
 	{
+		//			address == 0				address != 0
+		// Data management
+		PUSH,	//	Push operand to stack		Push reg to stack
+		POP,	//	Pop top of stack			Pop top of stack to reg
+		RD,		//	
+		WR,		//
+		
+		// Flow control
+		HALT,	//
+		JMP,	//
 
+
+		// Arithmetic and logic
+		CMP,	//
+		ADD,	//
 	};
 
 	inline union
