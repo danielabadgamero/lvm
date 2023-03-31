@@ -28,7 +28,9 @@ namespace Lightning::Core
 	inline unsigned char RAM[1 << 24]{};
 	inline constexpr unsigned char ROM[]
 	{
-		0b0001'101'1, 0x00, 0x00, 0x00,
+		0b0001'
+		0b0111'000'1, 0x00, 0x00, 'H',
+		0b0001'100'1, 0x00, 0x00, 0x00,
 	};
 	inline std::bitset<3> flags{};
 	enum

@@ -47,7 +47,7 @@ namespace Lightning::CPU
 
 	enum Reg
 	{
-		ax = 1,
+		ax,
 		bx,
 		cx,
 		dx,

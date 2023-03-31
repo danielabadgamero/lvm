@@ -29,13 +29,12 @@ static int getSource()
 {
 	Lightning::CPU::regs[Lightning::CPU::pc]++;
 	if (Lightning::CPU::instruction.aMode == 0)
-		return readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
+		return readMemory(Lightning::CPU::regs[Lightning::CPU::pc] - 1);
 	else
 	{
 		int imm{};
-		imm = readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
+		imm = readMemory(Lightning::CPU::regs[Lightning::CPU::pc] - 1);
 		imm <<= 8;
-		Lightning::CPU::regs[Lightning::CPU::pc]++;
 		imm += readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
 		imm <<= 8;
 		Lightning::CPU::regs[Lightning::CPU::pc]++;
@@ -110,8 +109,8 @@ int Lightning::CPU::cycle(void*)
 	while (Core::running)
 	{
 		instruction = readMemory(regs[pc]);
-		decode();
 		regs[pc]++;
+		decode();
 	}
 
 	return 0;
