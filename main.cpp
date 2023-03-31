@@ -14,6 +14,27 @@ struct Label
 	int addr{};
 };
 
+struct Instruction
+{
+	unsigned char aMode : 1;	//	defines interpretation of immediate (if existent)
+	unsigned char dAddr : 3;	//	destination address
+	unsigned char opcode : 4;	//	16 different opcodes
+
+	unsigned char getInstruction()
+	{
+		return opcode << 4 + dAddr << 3 + aMode;
+	}
+
+	Instruction& operator=(unsigned char data)
+	{
+		opcode = (data & 0b1111'0000) >> 4;
+		dAddr = (data & 0b0000'1110) >> 1;
+		aMode = (data & 0b0000'0001);
+
+		return *this;
+	}
+};
+
 std::vector<std::string> getContent(std::ifstream& input)
 {
 	std::vector<std::string> content(1);
@@ -79,10 +100,15 @@ int main(int argc, char* argv[])
 		}
 		else if (opcode != opcodes.end())
 		{
-			switch (std::distance(opcodes.begin(), opcode))
+			Instruction instruction{};
+			instruction.opcode = std::distance(opcodes.begin(), opcode);
+			switch (instruction.opcode)
 			{
-
+			case POP:
+				if (args.size() > 1);
+				break;
 			}
+			out.push_back(instruction.getInstruction());
 		}
 		else
 		{

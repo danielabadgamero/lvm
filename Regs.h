@@ -6,6 +6,7 @@
 
 std::vector<std::string> regs
 {
+	"stack",
 	"ax",
 	"bx",
 	"cx",
@@ -13,17 +14,6 @@ std::vector<std::string> regs
 	"pc",
 	"pb",
 	"tr"
-};
-
-enum Reg
-{
-	ax,
-	bx,
-	cx,
-	dx,
-	pc,
-	pb,
-	tr,
 };
 
 #endif
