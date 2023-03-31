@@ -39,6 +39,7 @@ static int getSource()
 		imm <<= 8;
 		Lightning::CPU::regs[Lightning::CPU::pc]++;
 		imm += readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
+		Lightning::CPU::regs[Lightning::CPU::pc]++;
 		return imm;
 	}
 }
