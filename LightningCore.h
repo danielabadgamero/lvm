@@ -56,7 +56,7 @@ namespace Lightning::Core
 		0b1010'001'1, 0x00, 0x00, 0x01,
 		0b0111'001'1, 0x00, 0x00, '!',
 
-		0b0001'100'1, 0x00, 0x00, 0x68,
+		0b0001'101'1, 0x00, 0x00, 0x68,
 	};
 	inline std::bitset<3> flags{};
 	enum
