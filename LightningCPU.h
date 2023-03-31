@@ -33,9 +33,9 @@ namespace Lightning::CPU
 	{
 		struct
 		{
-			unsigned short operand : 24;	// 24-bit immediate
-			unsigned short dAddr : 3;		// destination address
-			unsigned short opcode : 4;		// 16 different opcodes
+			unsigned char aMode : 1;	//	defines interpretation of immediate (if existent)
+			unsigned char dAddr : 3;	//	destination address
+			unsigned char opcode : 4;	//	16 different opcodes
 		} bitfields;
 
 		unsigned char instr{};
@@ -54,7 +54,7 @@ namespace Lightning::CPU
 
 	inline int regs[7]{};
 
-	inline std::stack<short> stack{};
+	inline std::stack<int> stack{};
 
 	void decode();
 	int cycle(void*);
