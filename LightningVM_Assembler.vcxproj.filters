@@ -26,5 +26,8 @@
     <ClInclude Include="Regs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Keywords.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

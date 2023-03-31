@@ -2,7 +2,6 @@
 #include <fstream>
 #include <vector>
 #include <string>
-#include <map>
 
 #include "Opcodes.h"
 #include "Regs.h"
@@ -69,7 +68,12 @@ int main(int argc, char* argv[])
 				args.back().push_back(c);
 			}
 		
-		if (opcodes.contains(args[0]));
+		if ()
+		{
+
+		}
+		else
+
 	}
 
 	return 0;

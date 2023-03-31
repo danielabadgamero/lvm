@@ -138,6 +138,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Keywords.h" />
     <ClInclude Include="Opcodes.h" />
     <ClInclude Include="Regs.h" />
   </ItemGroup>
