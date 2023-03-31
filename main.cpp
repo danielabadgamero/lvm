@@ -103,6 +103,7 @@ int main(int argc, char* argv[])
 			Instruction instruction{};
 			instruction.opcode = std::distance(opcodes.begin(), opcode);
 			instruction.dAddr = std::distance(opcodes.begin(), std::find(regs.begin(), regs.end(), args[1]));
+			out.push_back(instruction.getInstruction());
 			switch (instruction.opcode)
 			{
 			case HALT:
@@ -112,14 +113,23 @@ int main(int argc, char* argv[])
 			default:
 				if (std::find(regs.begin(), regs.end(), args[2]) != regs.end())
 				{
-
+					out.push_back(std::distance(regs.begin(), std::find(regs.begin(), regs.end(), args[2])));
+					pc++;
 				}
-				else
+				else try
 				{
+					int num{ std::stoi(args[2]) };
+					out.push_back(static_cast<unsigned char>(num >> 16));
+					out.push_back(static_cast<unsigned char>(num >> 8));
+					out.push_back(static_cast<unsigned char>(num));
 					instruction.aMode = 1;
+					pc += 3;
+				}
+				catch (std::invalid_argument)
+				{
+					// Label reference
 				}
 			}
-			out.push_back(instruction.getInstruction());
 			pc++;
 		}
 		else
