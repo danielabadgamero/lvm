@@ -22,7 +22,9 @@ std::vector<std::string> getContent(std::ifstream& input)
 		input.read(&c, 1);
 		if (c == '\n')
 			content.push_back("");
-		else if (c != '\t')
+		else if (c == '\t')
+			content.back().push_back(' ');
+		else
 			content.back().push_back(c);
 	}
 	return content;
@@ -50,6 +52,8 @@ int main(int argc, char* argv[])
 
 	for (std::string& line : content)
 	{
+		std::vector<std::string> args{};
+		for (char c : line)
 
 	}
 
