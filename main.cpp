@@ -102,13 +102,17 @@ int main(int argc, char* argv[])
 		{
 			Instruction instruction{};
 			instruction.opcode = std::distance(opcodes.begin(), opcode);
+			instruction.dAddr = std::distance(opcodes.begin(), std::find(regs.begin(), regs.end(), args[1]));
 			switch (instruction.opcode)
 			{
+			case HALT:
 			case POP:
-				if (args.size() > 1);
+			case NOT:
 				break;
+			default:
 			}
 			out.push_back(instruction.getInstruction());
+			pc++;
 		}
 		else
 		{
