@@ -22,7 +22,7 @@ static int& getDest()
 	if (Lightning::CPU::instruction.dAddr == 0)
 		return Lightning::CPU::stack.top();
 	else
-		return Lightning::CPU::regs[Lightning::CPU::instruction.dAddr];
+		return Lightning::CPU::regs[Lightning::CPU::instruction.dAddr - 1];
 }
 
 static int getSource()
