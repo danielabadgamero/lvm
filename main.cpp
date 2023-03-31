@@ -55,7 +55,16 @@ int main(int argc, char* argv[])
 	{
 		std::vector<std::string> args(1);
 		for (char c : line)
-
+			switch (c)
+			{
+			case ' ':
+				args.push_back("");
+			case ',':
+			case ':':
+				break;
+			default:
+				args.back().push_back(c);
+			}
 	}
 
 	return 0;
