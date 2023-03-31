@@ -6,7 +6,9 @@
 
 std::vector<std::string> keywords
 {
-	"byte",
+	"wb",	// write byte
+	"wd",	// write double byte
+	"wq"	// write quad byte
 };
 
 #endif

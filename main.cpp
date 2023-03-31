@@ -2,9 +2,11 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #include "Opcodes.h"
 #include "Regs.h"
+#include "Keywords.h"
 
 struct Label
 {
@@ -68,12 +70,18 @@ int main(int argc, char* argv[])
 				args.back().push_back(c);
 			}
 		
-		if ()
+		if (std::find(keywords.begin(), keywords.end(), args[0]) != keywords.end())
 		{
-
+			// Keyword
+		}
+		else if (std::find(opcodes.begin(), opcodes.end(), args[0]) != opcodes.end())
+		{
+			// Instruction
 		}
 		else
-
+		{
+			// Label
+		}
 	}
 
 	return 0;
