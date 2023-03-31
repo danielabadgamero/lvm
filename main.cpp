@@ -53,6 +53,9 @@ int main(int argc, char* argv[])
 
 	for (std::string& line : content)
 	{
+		if (line.empty())
+			continue;
+
 		std::vector<std::string> args(1);
 		for (char c : line)
 			switch (c)
@@ -65,6 +68,8 @@ int main(int argc, char* argv[])
 			default:
 				args.back().push_back(c);
 			}
+		
+		if (opcodes.contains(args[0]));
 	}
 
 	return 0;
