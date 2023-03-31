@@ -7,6 +7,8 @@ namespace Lightning::CPU
 {
 	enum Opcode
 	{
+		HALT,	//	set selected chip to dAddr
+
 		// Data management
 		MOV,	//	move source to dAddr
 		MGT,	//	MOV if greater flag set
@@ -17,14 +19,14 @@ namespace Lightning::CPU
 		WR,		//	write source to address in dAddr
 		IN,		//	TBD
 		OUT,	//	TBD
-		
-		// Flow control
-		HALT,	//
-
 
 		// Arithmetic and logic
-		CMP,	//
-		ADD,	//
+		ADD,	//	add source to dAddr
+		MUL,	//	multiply dAddr times source
+		DIV,	//	divide dAddr by source
+		CMP,	//	compare dAddr with source and set flags
+		AND,	//	set dAddr to its bitwise and with source
+		NOT,	//	set dAddr to its bitwise negation
 	};
 
 	inline union
@@ -32,12 +34,12 @@ namespace Lightning::CPU
 		struct
 		{
 			unsigned short operand : 24;	// 24-bit immediate
-			unsigned short address : 3;		// Address specifier
-			unsigned short opcode : 5;		// 32 different opcodes
+			unsigned short dAddr : 3;		// destination address
+			unsigned short opcode : 4;		// 16 different opcodes
 		} bitfields;
 
-		unsigned short instruction{};
-	} ir{};
+		unsigned char instr{};
+	} instruction{};
 
 	enum Reg
 	{
