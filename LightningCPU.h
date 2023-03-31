@@ -29,16 +29,20 @@ namespace Lightning::CPU
 		NOT,	//	set dAddr to its bitwise negation
 	};
 
-	inline union
+	inline struct Instruction
 	{
-		struct
+		unsigned char aMode : 1;	//	defines interpretation of immediate (if existent)
+		unsigned char dAddr : 3;	//	destination address
+		unsigned char opcode : 4;	//	16 different opcodes
+		
+		Instruction& operator=(unsigned char data)
 		{
-			unsigned char aMode : 1;	//	defines interpretation of immediate (if existent)
-			unsigned char dAddr : 3;	//	destination address
-			unsigned char opcode : 4;	//	16 different opcodes
-		} bitfields;
+			opcode = (data & 0b1111'0000) >> 4;
+			dAddr = (data & 0b0000'1110) >> 1;
+			aMode = (data & 0b0000'0001);
 
-		unsigned char instr{};
+			return *this;
+		}
 	} instruction{};
 
 	enum Reg

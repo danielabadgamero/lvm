@@ -1,27 +1,26 @@
 #include "LightningCore.h"
 #include "LightningCPU.h"
 
-#define opcode ir.bitfields.opcode
-#define address ir.bitfields.address
-#define operand ir.bitfields.operand
+#define dest (instruction.dAddr == 0) ? 
 
-static void readMemory(int addr, int* dest)
+static unsigned char readMemory(int address)
 {
 	if (Lightning::Core::chipSelected)
-		*dest = Lightning::Core::RAM[addr];
+		return Lightning::Core::RAM[address];
 	else
-		*dest = Lightning::Core::ROM[addr];
+		return Lightning::Core::ROM[address];
 }
 
-static void writeMemory(int addr, int data)
+static void writeMemory(int address, unsigned char data)
 {
-	Lightning::Core::RAM[addr] = static_cast<unsigned char>(data);
+	Lightning::Core::RAM[address] = data;
 }
 
 void Lightning::CPU::decode()
 {
-	switch (opcode)
+	switch (instruction.opcode)
 	{
+
 	}
 }
 
@@ -31,14 +30,7 @@ int Lightning::CPU::cycle(void*)
 
 	while (Core::running)
 	{
-		int instruction{};
-		for (int i{}; i != 4; i++)
-		{
-			readMemory(regs[pc], &instruction);
-			ir.instruction <<= 8;
-			ir.instruction += instruction;
-			regs[pc]++;
-		}
+		instruction = readMemory(regs[pc]);
 		decode();
 	}
 
