@@ -57,7 +57,6 @@ namespace Lightning::CPU
 	};
 
 	inline int regs[7]{};
-
 	inline std::stack<int> stack{};
 
 	void decode();

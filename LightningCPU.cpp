@@ -1,7 +1,8 @@
 #include "LightningCore.h"
 #include "LightningCPU.h"
 
-#define dest (instruction.dAddr == 0) ? 
+#define dest getDest()
+#define source getSource()
 
 static unsigned char readMemory(int address)
 {
@@ -16,12 +17,89 @@ static void writeMemory(int address, unsigned char data)
 	Lightning::Core::RAM[address] = data;
 }
 
+static int& getDest()
+{
+	if (Lightning::CPU::instruction.dAddr == 0)
+		return Lightning::CPU::stack.top();
+	else
+		return Lightning::CPU::regs[Lightning::CPU::instruction.dAddr];
+}
+
+static int getSource()
+{
+	Lightning::CPU::regs[Lightning::CPU::pc]++;
+	if (Lightning::CPU::instruction.aMode == 0)
+		return readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
+	else
+	{
+		int imm{};
+		imm = readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
+		imm <<= 8;
+		Lightning::CPU::regs[Lightning::CPU::pc]++;
+		imm += readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
+		imm <<= 8;
+		Lightning::CPU::regs[Lightning::CPU::pc]++;
+		imm += readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
+		return imm;
+	}
+}
+
 void Lightning::CPU::decode()
 {
 	switch (instruction.opcode)
 	{
 	case HALT:
 		Core::chipSelected = instruction.dAddr;
+		break;
+	case MOV:
+		dest = source;
+		break;
+	case MGT:
+		if (Core::flags[Core::greater])
+			dest = source;
+		break;
+	case MLT:
+		if (Core::flags[Core::less])
+			dest = source;
+		break;
+	case MEQ:
+		if (Core::flags[Core::equal])
+			dest = source;
+		break;
+	case POP:
+		dest = stack.top();
+		stack.pop();
+		break;
+	case RD:
+		dest = readMemory(source);
+		break;
+	case WR:
+		writeMemory(dest, static_cast<unsigned char>(source));
+		break;
+	case IN:
+		break;
+	case OUT:
+		break;
+	case ADD:
+		dest += source;
+		break;
+	case MUL:
+		dest *= source;
+		break;
+	case DIV:
+		dest /= source;
+		break;
+	case CMP:
+		Core::flags[Core::greater] = dest > source;
+		Core::flags[Core::less] = dest < source;
+		Core::flags[Core::equal] = dest == source;
+		break;
+	case AND:
+		dest &= source;
+		break;
+	case NOT:
+		dest = ~dest;
+		break;
 	}
 }
 
@@ -33,6 +111,7 @@ int Lightning::CPU::cycle(void*)
 	{
 		instruction = readMemory(regs[pc]);
 		decode();
+		regs[pc]++;
 	}
 
 	return 0;
