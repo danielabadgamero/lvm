@@ -7,16 +7,19 @@ namespace Lightning::CPU
 {
 	enum Opcode
 	{
-		//			address == 0				address != 0
 		// Data management
-		PUSH,	//	Push operand to stack		Push reg to stack
-		POP,	//	Pop top of stack			Pop top of stack to reg
-		RD,		//	
-		WR,		//
+		MOV,	//	move source to dAddr
+		MGT,	//	MOV if greater flag set
+		MLT,	//	MOV if less flag set
+		MEQ,	//	MOV if equal flag set
+		POP,	//	pop top of stack to dAddr
+		RD,		//	read at address in source to dAddr
+		WR,		//	write source to address in dAddr
+		IN,		//	TBD
+		OUT,	//	TBD
 		
 		// Flow control
 		HALT,	//
-		JMP,	//
 
 
 		// Arithmetic and logic
