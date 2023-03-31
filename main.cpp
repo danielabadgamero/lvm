@@ -110,6 +110,14 @@ int main(int argc, char* argv[])
 			case NOT:
 				break;
 			default:
+				if (std::find(regs.begin(), regs.end(), args[2]) != regs.end())
+				{
+
+				}
+				else
+				{
+					instruction.aMode = 1;
+				}
 			}
 			out.push_back(instruction.getInstruction());
 			pc++;
