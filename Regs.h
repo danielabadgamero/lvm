@@ -15,4 +15,15 @@ std::vector<std::string> regs
 	"tr"
 };
 
+enum Reg
+{
+	ax,
+	bx,
+	cx,
+	dx,
+	pc,
+	pb,
+	tr,
+};
+
 #endif

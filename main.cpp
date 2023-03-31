@@ -69,14 +69,20 @@ int main(int argc, char* argv[])
 			default:
 				args.back().push_back(c);
 			}
+
+		std::vector<std::string>::iterator keyword{ std::find(keywords.begin(), keywords.end(), args[0]) };
+		std::vector<std::string>::iterator opcode{ std::find(opcodes.begin(), opcodes.end(), args[0]) };
 		
-		if (std::find(keywords.begin(), keywords.end(), args[0]) != keywords.end())
+		if (keyword != keywords.end())
 		{
 			// Keyword
 		}
-		else if (std::find(opcodes.begin(), opcodes.end(), args[0]) != opcodes.end())
+		else if (opcode != opcodes.end())
 		{
-			// Instruction
+			switch (std::distance(opcodes.begin(), opcode))
+			{
+
+			}
 		}
 		else
 		{
