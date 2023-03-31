@@ -17,7 +17,7 @@ inline int pixelsPitch{};
 inline int videoSize{};
 inline int videoPitch{};
 
-inline constexpr int VIDEO{ 0xf500 };
+inline constexpr int VIDEO{ 0xf50000 };
 
 namespace Lightning::Core
 {
@@ -29,6 +29,13 @@ namespace Lightning::Core
 	inline constexpr unsigned char ROM[]
 	{
 		0
+	};
+	inline std::bitset<3> flags{};
+	enum
+	{
+		greater,
+		less,
+		equal
 	};
 
 	inline constexpr unsigned char font[]

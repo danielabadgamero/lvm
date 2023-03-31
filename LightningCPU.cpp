@@ -20,7 +20,8 @@ void Lightning::CPU::decode()
 {
 	switch (instruction.opcode)
 	{
-
+	case HALT:
+		Core::chipSelected = instruction.dAddr;
 	}
 }
 
