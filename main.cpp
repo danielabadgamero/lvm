@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
 			instruction.dAddr = std::distance(regs.begin(), std::find(regs.begin(), regs.end(), args[1]));
 			switch (instruction.opcode)
 			{
-			case HALT:
+			case SWTCH:
 			case POP:
 			case NOT:
 				out.push_back(instruction.getInstruction());

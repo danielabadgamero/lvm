@@ -6,7 +6,7 @@
 
 std::vector<std::string> opcodes
 {
-	"HALT",
+	"SWTCH",
 	"MOV",
 	"MGT",
 	"MLT",
@@ -26,7 +26,7 @@ std::vector<std::string> opcodes
 
 enum Opcode
 {
-	HALT,	//	set selected chip to dAddr
+	SWTCH,	//	set selected chip to dAddr
 
 	// Data management
 	MOV,	//	move source to dAddr
