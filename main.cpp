@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
 		
 		if (keyword != keywords.end())
 		{
-			int num{ std::stoi(args[1], nullptr, 16) };
+			int num{ std::stoi(args[1].substr(2), nullptr, 16) };
 			switch (std::distance(keywords.begin(), keyword))
 			{
 			case wb:
