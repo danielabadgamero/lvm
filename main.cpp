@@ -99,10 +99,23 @@ int main(int argc, char* argv[])
 			switch (std::distance(keywords.begin(), keyword))
 			{
 			case wb:
+				pc++;
+				char num{ std::stoi(args[1], nullptr, 16) };
+				out.push_back(static_cast<unsigned char>(num));
 				break;
 			case wd:
+				pc += 2;
+				short num{ std::stoi(args[1], nullptr, 16) };
+				out.push_back(static_cast<unsigned char>(num >> 8));
+				out.push_back(static_cast<unsigned char>(num));
 				break;
 			case wq:
+				pc += 4;
+				int num{ std::stoi(args[1], nullptr, 16) };
+				out.push_back(static_cast<unsigned char>(num >> 24));
+				out.push_back(static_cast<unsigned char>(num >> 16));
+				out.push_back(static_cast<unsigned char>(num >> 8));
+				out.push_back(static_cast<unsigned char>(num));
 				break;
 			}
 		}
