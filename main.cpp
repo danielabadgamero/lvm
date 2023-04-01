@@ -81,13 +81,18 @@ int main(int argc, char* argv[])
 			continue;
 
 		std::vector<std::string> args(1);
+		bool string{};
 		for (char c : line)
 			switch (c)
 			{
 			case ' ':
-				args.push_back("");
+				if (!string)
+					args.push_back("");
 			case ',':
 			case ':':
+				break;
+			case '"':
+				string = !string;
 				break;
 			default:
 				args.back().push_back(c);
