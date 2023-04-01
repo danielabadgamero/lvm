@@ -88,10 +88,10 @@ int main(int argc, char* argv[])
 			case ' ':
 				if (!string)
 					args.push_back("");
-				else
-					args.back().push_back(' ');
 			case ',':
 			case ':':
+				if (string)
+					args.back().push_back(c);
 				break;
 			case '"':
 				string = !string;
@@ -162,12 +162,38 @@ int main(int argc, char* argv[])
 				}
 				catch (std::invalid_argument)
 				{
-					labelReferences.push_back({ args[2], pc + 1 });
 					instruction.aMode = 1;
 					out.push_back(instruction.getInstruction());
-					out.push_back('\0');
-					out.push_back('\0');
-					out.push_back('\0');
+					if (args[2][0] == '\'')
+					{
+						char c{};
+						if (args[2][1] == '\\')
+							switch (args[2][2])
+							{
+							case '0': c = '\0'; break;
+							case 'a': c = '\a'; break;
+							case 'b': c = '\b'; break;
+							case 't': c = '\t'; break;
+							case 'n': c = '\n';	break;
+							case 'v': c = '\v'; break;
+							case 'f': c = '\f'; break;
+							case 'r': c = '\r'; break;
+							default:
+								c = args[2][2];
+							}
+						else
+							c = args[2][1];
+						out.push_back('\0');
+						out.push_back('\0');
+						out.push_back(c);
+					}
+					else
+					{
+						labelReferences.push_back({ args[2], pc + 1 });
+						out.push_back('\0');
+						out.push_back('\0');
+						out.push_back('\0');
+					}
 					pc += 2;
 				}
 			}
