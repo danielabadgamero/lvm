@@ -22,7 +22,7 @@ struct Instruction
 
 	unsigned char getInstruction()
 	{
-		return opcode << 4 + dAddr << 3 + aMode;
+		return (opcode << 4) + (dAddr << 3) + aMode;
 	}
 
 	Instruction& operator=(unsigned char data)
@@ -45,8 +45,10 @@ std::vector<std::string> getContent(std::ifstream& input)
 		if (c == '\n')
 			content.push_back("");
 		else if (c == '\t')
+		{
 			if (!content.back().empty())
 				content.back().push_back(' ');
+		}
 		else
 			content.back().push_back(c);
 	}
@@ -96,22 +98,20 @@ int main(int argc, char* argv[])
 		
 		if (keyword != keywords.end())
 		{
+			int num{ std::stoi(args[1], nullptr, 16) };
 			switch (std::distance(keywords.begin(), keyword))
 			{
 			case wb:
 				pc++;
-				char num{ std::stoi(args[1], nullptr, 16) };
 				out.push_back(static_cast<unsigned char>(num));
 				break;
 			case wd:
 				pc += 2;
-				short num{ std::stoi(args[1], nullptr, 16) };
 				out.push_back(static_cast<unsigned char>(num >> 8));
 				out.push_back(static_cast<unsigned char>(num));
 				break;
 			case wq:
 				pc += 4;
-				int num{ std::stoi(args[1], nullptr, 16) };
 				out.push_back(static_cast<unsigned char>(num >> 24));
 				out.push_back(static_cast<unsigned char>(num >> 16));
 				out.push_back(static_cast<unsigned char>(num >> 8));
@@ -123,30 +123,35 @@ int main(int argc, char* argv[])
 		{
 			Instruction instruction{};
 			instruction.opcode = std::distance(opcodes.begin(), opcode);
-			instruction.dAddr = std::distance(opcodes.begin(), std::find(regs.begin(), regs.end(), args[1]));
-			out.push_back(instruction.getInstruction());
+			instruction.dAddr = std::distance(regs.begin(), std::find(regs.begin(), regs.end(), args[1]));
 			switch (instruction.opcode)
 			{
 			case HALT:
 			case POP:
 			case NOT:
+				out.push_back(instruction.getInstruction());
 				break;
 			default:
 				pc++;
 				if (std::find(regs.begin(), regs.end(), args[2]) != regs.end())
-					out.push_back(std::distance(regs.begin(), std::find(regs.begin(), regs.end(), args[2])));
+				{
+					out.push_back(instruction.getInstruction());
+					out.push_back(static_cast<unsigned char>(std::distance(regs.begin(), std::find(regs.begin(), regs.end(), args[2]))));
+				}
 				else try
 				{
 					int num{ std::stoi(args[2].substr(2), nullptr, 16)};
+					instruction.aMode = 1;
+					out.push_back(instruction.getInstruction());
 					out.push_back(static_cast<unsigned char>(num >> 16));
 					out.push_back(static_cast<unsigned char>(num >> 8));
 					out.push_back(static_cast<unsigned char>(num));
-					instruction.aMode = 1;
 					pc += 2;
 				}
 				catch (std::invalid_argument)
 				{
 					labelReferences.push_back({ args[2], pc });
+					out.push_back(instruction.getInstruction());
 					out.push_back('\0');
 					out.push_back('\0');
 					out.push_back('\0');
@@ -161,10 +166,13 @@ int main(int argc, char* argv[])
 
 	for (Label& labelRef : labelReferences)
 	{
-		std::vector<Label>::iterator labelDef{ std::find_if(
-			labelDefinitions.begin(),
-			labelDefinitions.end(),
-			[labelRef](std::string id) { return id == labelRef.id; }) };
+		std::vector<Label>::iterator labelDef{ labelDefinitions.end() };
+		for (std::vector<Label>::iterator label{ labelDefinitions.begin() }; label != labelDefinitions.end(); label++)
+			if (label->id == labelRef.id)
+			{
+				labelDef = label;
+				break;
+			}
 
 		if (labelDef == labelDefinitions.end())
 			std::cerr << "Undefined label reference: " << labelRef.id << " at pc " << labelRef.addr << '\n';
