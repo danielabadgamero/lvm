@@ -22,7 +22,7 @@ struct Instruction
 
 	unsigned char getInstruction()
 	{
-		return (opcode << 4) + (dAddr << 3) + aMode;
+		return (opcode << 4) | (dAddr << 1) | aMode;
 	}
 
 	Instruction& operator=(unsigned char data)
