@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 			case ws:
 				for (const char& c : args[1])
 					out.push_back(c);
-				pc += static_cast<int>(args[1].size());
+				pc += static_cast<int>(args[1].size()) + 1;
 				out.push_back('\0');
 			}
 		}
@@ -150,9 +150,14 @@ int main(int argc, char* argv[])
 					out.push_back(instruction.getInstruction());
 					out.push_back(static_cast<unsigned char>(std::distance(regs.begin(), std::find(regs.begin(), regs.end(), args[2]))));
 				}
-				else try
+				else if (std::find_if(args[2].begin(), args[2].end(),
+					[](char c)
+					{
+						return (c >= '0') && (c <= '9');
+					}) != args[2].end() &&
+						std::find(args[2].begin(), args[2].end(), '\\') == args[2].end())
 				{
-					int num{ std::stoi(args[2].substr(2), nullptr, 16)};
+					int num{ std::stoi(args[2], nullptr, 16) };
 					instruction.aMode = 1;
 					out.push_back(instruction.getInstruction());
 					out.push_back(static_cast<unsigned char>(num >> 16));
@@ -160,7 +165,7 @@ int main(int argc, char* argv[])
 					out.push_back(static_cast<unsigned char>(num));
 					pc += 2;
 				}
-				catch (std::invalid_argument)
+				else
 				{
 					instruction.aMode = 1;
 					out.push_back(instruction.getInstruction());
