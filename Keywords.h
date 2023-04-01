@@ -8,7 +8,14 @@ std::vector<std::string> keywords
 {
 	"wb",	// write byte
 	"wd",	// write double byte
-	"wq"	// write quad byte
+	"wq",	// write quad byte
+};
+
+enum Keyword
+{
+	wb,
+	wd,
+	wq,
 };
 
 #endif

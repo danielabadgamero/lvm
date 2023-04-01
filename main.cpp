@@ -63,11 +63,11 @@ int main(int argc, char* argv[])
 	
 	std::ifstream input{ path };
 	std::string fileName{ path.substr(path.find_last_of('\\') + 1).substr(0, path.find('.')) };
-	std::ofstream output{ fileName + ".bin" };
+	std::ofstream output{ fileName + ".bin", std::ostream::binary };
 
 	std::vector<std::string> content{ getContent(input) };
 
-	std::vector<char> out{};
+	std::vector<unsigned char> out{};
 	std::vector<Label> labelDefinitions{};
 	std::vector<Label> labelReferences{};
 
@@ -96,7 +96,15 @@ int main(int argc, char* argv[])
 		
 		if (keyword != keywords.end())
 		{
-			// Keyword
+			switch (std::distance(keywords.begin(), keyword))
+			{
+			case wb:
+				break;
+			case wd:
+				break;
+			case wq:
+				break;
+			}
 		}
 		else if (opcode != opcodes.end())
 		{
@@ -111,32 +119,49 @@ int main(int argc, char* argv[])
 			case NOT:
 				break;
 			default:
+				pc++;
 				if (std::find(regs.begin(), regs.end(), args[2]) != regs.end())
-				{
 					out.push_back(std::distance(regs.begin(), std::find(regs.begin(), regs.end(), args[2])));
-					pc++;
-				}
 				else try
 				{
-					int num{ std::stoi(args[2]) };
+					int num{ std::stoi(args[2].substr(2), nullptr, 16)};
 					out.push_back(static_cast<unsigned char>(num >> 16));
 					out.push_back(static_cast<unsigned char>(num >> 8));
 					out.push_back(static_cast<unsigned char>(num));
 					instruction.aMode = 1;
-					pc += 3;
+					pc += 2;
 				}
 				catch (std::invalid_argument)
 				{
-					// Label reference
+					labelReferences.push_back({ args[2], pc });
+					out.push_back('\0');
+					out.push_back('\0');
+					out.push_back('\0');
+					pc += 2;
 				}
 			}
 			pc++;
 		}
 		else
-		{
-			// Label
-		}
+			labelDefinitions.push_back({ args[0], pc });
 	}
+
+	for (Label& labelRef : labelReferences)
+	{
+		std::vector<Label>::iterator labelDef{ std::find_if(
+			labelDefinitions.begin(),
+			labelDefinitions.end(),
+			[labelRef](std::string id) { return id == labelRef.id; }) };
+
+		if (labelDef == labelDefinitions.end())
+			std::cerr << "Undefined label reference: " << labelRef.id << " at pc " << labelRef.addr << '\n';
+
+		out[labelRef.addr] = static_cast<unsigned char>(labelDef->addr >> 16);
+		out[labelRef.addr + 1] = static_cast<unsigned char>(labelDef->addr >> 8);
+		out[labelRef.addr + 2] = static_cast<unsigned char>(labelDef->addr);
+	}
+
+	output.write((const char*)out.data(), out.size());
 
 	return 0;
 }
