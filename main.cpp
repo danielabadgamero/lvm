@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 					out.push_back(static_cast<unsigned char>(num >> 16));
 					out.push_back(static_cast<unsigned char>(num >> 8));
 					out.push_back(static_cast<unsigned char>(num));
-					pc++;
+					pc += 2;
 				}
 				catch (std::invalid_argument)
 				{
@@ -156,7 +156,7 @@ int main(int argc, char* argv[])
 					out.push_back('\0');
 					out.push_back('\0');
 					out.push_back('\0');
-					pc++;
+					pc += 2;
 				}
 			}
 			pc += 2;
