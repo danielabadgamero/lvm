@@ -88,6 +88,8 @@ int main(int argc, char* argv[])
 			case ' ':
 				if (!string)
 					args.push_back("");
+				else
+					args.back().push_back(' ');
 			case ',':
 			case ':':
 				break;
