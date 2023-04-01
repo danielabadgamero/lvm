@@ -28,13 +28,13 @@ namespace Lightning::Core
 	inline unsigned char RAM[1 << 24]{};
 	inline constexpr unsigned char ROM[]
 	{
-		0b0001'000'1, 0x00, 0x00, 0x0a,	// destination address
+		0b0001'000'1, 0x00, 0x00, 0x0c,	// destination address
 		0b0111'000'1, 0x00, 0x00, 0x00,	// source sector
-		0b0100'000'0,					// clean stack
-		0b0000'001'0,					// switch to RAM
+		0b0100'000'0, 0x00,				// clean stack
+		0b0000'001'0, 0x00,				// switch to RAM
 	};
 
-	inline std::bitset<3> flags{};
+	inline std::bitset<2> flags{};
 	enum
 	{
 		greater,

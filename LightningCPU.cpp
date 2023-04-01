@@ -27,19 +27,16 @@ static int& getDest()
 
 static int getSource()
 {
-	Lightning::CPU::regs[Lightning::CPU::pc]++;
 	if (Lightning::CPU::instruction.aMode == 0)
-		return readMemory(Lightning::CPU::regs[Lightning::CPU::pc] - 1);
+		return Lightning::CPU::regs[readMemory(Lightning::CPU::regs[Lightning::CPU::pc] - 1) - 1];
 	else
 	{
 		int imm{};
-		imm = readMemory(Lightning::CPU::regs[Lightning::CPU::pc] - 1);
+		imm = readMemory(Lightning::CPU::regs[Lightning::CPU::pc] - 3);
 		imm <<= 8;
-		imm += readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
+		imm += readMemory(Lightning::CPU::regs[Lightning::CPU::pc] - 2);
 		imm <<= 8;
-		Lightning::CPU::regs[Lightning::CPU::pc]++;
-		imm += readMemory(Lightning::CPU::regs[Lightning::CPU::pc]);
-		Lightning::CPU::regs[Lightning::CPU::pc]++;
+		imm += readMemory(Lightning::CPU::regs[Lightning::CPU::pc] - 1);
 		return imm;
 	}
 }
@@ -52,7 +49,7 @@ void Lightning::CPU::decode()
 		Core::chipSelected = instruction.dAddr;
 		break;
 	case MOV:
-		if (instruction.dAddr == 0)
+ 		if (instruction.dAddr == 0)
 			stack.push(0);
 		dest = source;
 		break;
@@ -122,7 +119,10 @@ int Lightning::CPU::cycle(void*)
 	while (Core::running)
 	{
 		instruction = readMemory(regs[pc]);
-		regs[pc]++;
+		if (instruction.aMode == 0)
+			regs[pc] += 2;
+		else
+			regs[pc] += 4;
 		decode();
 	}
 
