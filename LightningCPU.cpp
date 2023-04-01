@@ -76,9 +76,11 @@ void Lightning::CPU::decode()
 	case WR:
 		writeMemory(dest, static_cast<unsigned char>(source));
 		break;
-	case IN:
+	case RDSK:
+		SDL_memcpy(&Core::RAM[dest], Core::disk[source], 512);
 		break;
-	case OUT:
+	case WDSK:
+		SDL_memcpy(Core::disk[dest], &Core::RAM[source], 512);
 		break;
 	case ADD:
 		dest += source;
