@@ -26,9 +26,9 @@ void Lightning::Core::init()
 	videoSize = (screen.w / 24) * (screen.h / 32);
 	videoPitch = screen.w / 24;
 
-	if (std::filesystem::exists("fs"))
+	if (std::filesystem::exists("disk"))
 	{
-		std::ifstream fs_in{ "fs", std::ios::binary };
+		std::ifstream fs_in{ "disk", std::ios::binary };
 		int sector{};
 		while (!fs_in.eof())
 		{
@@ -81,10 +81,10 @@ int Lightning::Core::cycle()
 
 void Lightning::Core::quit()
 {
-	if (std::filesystem::exists("fs"))
-		std::remove("fs");
+	if (std::filesystem::exists("disk"))
+		std::remove("disk");
 
-	std::ofstream fs_out{ "fs", std::ios::binary };
+	std::ofstream fs_out{ "disk", std::ios::binary };
 	for (int i{}; i != (1 << 16); i++)
 		fs_out.write(disk[i], 512);
 
