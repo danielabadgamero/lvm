@@ -64,14 +64,6 @@ void Lightning::CPU::decode()
 			dest = source;
 		}
 		break;
-	case MLT:
-		if (Core::flags[Core::less])
-		{
-			if (instruction.dAddr == 0)
-				stack.push(0);
-			dest = source;
-		}
-		break;
 	case MEQ:
 		if (Core::flags[Core::equal])
 		{
@@ -101,6 +93,9 @@ void Lightning::CPU::decode()
 	case ADD:
 		dest += source;
 		break;
+	case SUB:
+		dest -= source;
+		break;
 	case MUL:
 		dest *= source;
 		break;
@@ -109,7 +104,6 @@ void Lightning::CPU::decode()
 		break;
 	case CMP:
 		Core::flags[Core::greater] = dest > source;
-		Core::flags[Core::less] = dest < source;
 		Core::flags[Core::equal] = dest == source;
 		break;
 	case AND:

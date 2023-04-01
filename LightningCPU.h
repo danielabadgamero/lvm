@@ -21,6 +21,7 @@ namespace Lightning::CPU
 
 		// Arithmetic and logic
 		ADD,	//	add source to dAddr
+		SUB,	//	substract source from dAddr
 		MUL,	//	multiply dAddr times source
 		DIV,	//	divide dAddr by source
 		CMP,	//	compare dAddr with source and set flags

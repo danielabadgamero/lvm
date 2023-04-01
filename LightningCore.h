@@ -28,9 +28,10 @@ namespace Lightning::Core
 	inline unsigned char RAM[1 << 24]{};
 	inline constexpr unsigned char ROM[]
 	{
-		0b0001'000'1, 0x00, 0x00, 0x00,	// destination address
+		0b0001'000'1, 0x00, 0x00, 0x0a,	// destination address
 		0b1000'000'1, 0x00, 0x00, 0x00,	// source sector
 		0b0101'000'0,
+		0b0000'001'0,
 	};
 
 	inline std::bitset<3> flags{};
