@@ -9,7 +9,6 @@ std::vector<std::string> opcodes
 	"SWTCH",
 	"MOV",
 	"MGT",
-	"MLT",
 	"MEQ",
 	"POP",
 	"RD",
@@ -17,6 +16,7 @@ std::vector<std::string> opcodes
 	"IN",
 	"OUT",
 	"ADD",
+	"SUB",
 	"MUL",
 	"DIV",
 	"CMP",
@@ -31,7 +31,6 @@ enum Opcode
 	// Data management
 	MOV,	//	move source to dAddr
 	MGT,	//	MOV if greater flag set
-	MLT,	//	MOV if less flag set
 	MEQ,	//	MOV if equal flag set
 	POP,	//	pop top of stack to dAddr
 	RD,		//	read at address in source to dAddr
@@ -41,6 +40,7 @@ enum Opcode
 
 	// Arithmetic and logic
 	ADD,	//	add source to dAddr
+	SUB,	//	substract source from dAddr
 	MUL,	//	multiply dAddr times source
 	DIV,	//	divide dAddr by source
 	CMP,	//	compare dAddr with source and set flags
