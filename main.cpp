@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 			case ws:
 				for (const char& c : args[1])
 					out.push_back(c);
-				pc += args[1].size();
+				pc += static_cast<int>(args[1].size());
 				out.push_back('\0');
 			}
 		}
