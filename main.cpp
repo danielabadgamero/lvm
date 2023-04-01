@@ -117,6 +117,11 @@ int main(int argc, char* argv[])
 				out.push_back(static_cast<unsigned char>(num >> 8));
 				out.push_back(static_cast<unsigned char>(num));
 				break;
+			case ws:
+				for (const char& c : args[1])
+					out.push_back(c);
+				pc += args[1].size();
+				out.push_back('\0');
 			}
 		}
 		else if (opcode != opcodes.end())
