@@ -48,29 +48,45 @@ void Lightning::CPU::decode()
 {
 	switch (instruction.opcode)
 	{
-	case HALT:
+	case SWTCH:
 		Core::chipSelected = instruction.dAddr;
 		break;
 	case MOV:
+		if (instruction.dAddr == 0)
+			stack.push(0);
 		dest = source;
 		break;
 	case MGT:
 		if (Core::flags[Core::greater])
+		{
+			if (instruction.dAddr == 0)
+				stack.push(0);
 			dest = source;
+		}
 		break;
 	case MLT:
 		if (Core::flags[Core::less])
+		{
+			if (instruction.dAddr == 0)
+				stack.push(0);
 			dest = source;
+		}
 		break;
 	case MEQ:
 		if (Core::flags[Core::equal])
+		{
+			if (instruction.dAddr == 0)
+				stack.push(0);
 			dest = source;
+		}
 		break;
 	case POP:
 		dest = stack.top();
 		stack.pop();
 		break;
 	case RD:
+		if (instruction.dAddr == 0)
+			stack.push(0);
 		dest = readMemory(source);
 		break;
 	case WR:

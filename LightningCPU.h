@@ -7,12 +7,11 @@ namespace Lightning::CPU
 {
 	enum Opcode
 	{
-		HALT,	//	set selected chip to dAddr
+		SWTCH,	//	set selected chip to dAddr
 
 		// Data management
 		MOV,	//	move source to dAddr
 		MGT,	//	MOV if greater flag set
-		MLT,	//	MOV if less flag set
 		MEQ,	//	MOV if equal flag set
 		POP,	//	pop top of stack to dAddr
 		RD,		//	read at address in source to dAddr
