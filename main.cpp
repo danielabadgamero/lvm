@@ -49,7 +49,7 @@ std::vector<std::string> getContent(std::ifstream& input)
 			if (!content.back().empty())
 				content.back().push_back(' ');
 		}
-		else
+		else if (c != '\0')
 			content.back().push_back(c);
 	}
 	return content;
@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
 				}
 				catch (std::invalid_argument)
 				{
-					labelReferences.push_back({ args[2].substr(0, args[2].size() - 1), pc});
+					labelReferences.push_back({ args[2], pc});
 					out.push_back(instruction.getInstruction());
 					out.push_back('\0');
 					out.push_back('\0');
