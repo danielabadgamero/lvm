@@ -2,4 +2,4 @@
 
 Work in progress!
 
-LightningVM is a virtual machine that will be focused on running small physics simulation programmes or mini-games.
+LightningVM is a virtual machine. Instructions on how to use it will be released in the future.
