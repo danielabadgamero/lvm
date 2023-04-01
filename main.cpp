@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
 				}
 				catch (std::invalid_argument)
 				{
-					labelReferences.push_back({ args[2], pc});
+					labelReferences.push_back({ args[2], pc + 1 });
 					instruction.aMode = 1;
 					out.push_back(instruction.getInstruction());
 					out.push_back('\0');
