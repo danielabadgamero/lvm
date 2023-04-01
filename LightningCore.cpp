@@ -66,9 +66,9 @@ int Lightning::Core::cycle()
 				for (int j{}; j != 3; j++)
 					for (int k{}; k != 8; k++)
 					{
-						pixels[(c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-						pixels[(c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3 + 1] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-						pixels[(c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3 + 2] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+						pixels[(32 * c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+						pixels[(32 * c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3 + 1] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
+						pixels[(32 * c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3 + 2] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
 					}
 
 	SDL_UpdateTexture(monitor, NULL, pixels, pixelsPitch);
