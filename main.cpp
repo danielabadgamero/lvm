@@ -130,9 +130,9 @@ int main(int argc, char* argv[])
 			case POP:
 			case NOT:
 				out.push_back(instruction.getInstruction());
+				out.push_back(0);
 				break;
 			default:
-				pc++;
 				if (std::find(regs.begin(), regs.end(), args[2]) != regs.end())
 				{
 					out.push_back(instruction.getInstruction());
@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 					out.push_back(static_cast<unsigned char>(num >> 16));
 					out.push_back(static_cast<unsigned char>(num >> 8));
 					out.push_back(static_cast<unsigned char>(num));
-					pc += 2;
+					pc++;
 				}
 				catch (std::invalid_argument)
 				{
@@ -156,10 +156,10 @@ int main(int argc, char* argv[])
 					out.push_back('\0');
 					out.push_back('\0');
 					out.push_back('\0');
-					pc += 2;
+					pc++;
 				}
 			}
-			pc++;
+			pc += 2;
 		}
 		else
 			labelDefinitions.push_back({ args[0], pc });
