@@ -52,7 +52,7 @@ void Lightning::Core::cycle()
 				running = false;
 				break;
 			default:
-				RAM[1] = static_cast<unsigned char>(e.key.keysym.sym);
+				RAM[2] = static_cast<unsigned char>(e.key.keysym.sym);
 			}
 			break;
 		case SDL_QUIT:
