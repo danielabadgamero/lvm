@@ -60,11 +60,12 @@ void Lightning::Core::cycle()
 			break;
 		}
 
+	SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xff);
 	SDL_RenderClear(renderer);
 
 	for (int i{}; i != videoSize; i++)
 	{
-		SDL_Surface* surface{ TTF_RenderGlyph_Solid(font, static_cast<Uint16>(Core::RAM[VIDEO + i]), { 0xff, 0xff, 0xff }) };
+		SDL_Surface* surface{ TTF_RenderGlyph_Solid(font, static_cast<Uint16>(RAM[VIDEO + i]), { 0xff, 0xff, 0xff }) };
 		SDL_Texture* glyph{ SDL_CreateTextureFromSurface(renderer, surface) };
 		SDL_FreeSurface(surface);
 		
@@ -72,6 +73,11 @@ void Lightning::Core::cycle()
 		SDL_RenderCopy(renderer, glyph, NULL, &glyphRect);
 		SDL_DestroyTexture(glyph);
 	}
+	int cursor{ (RAM[0] << 8) | RAM[1] };
+	SDL_Rect cursorRect{ (cursor % 128) * 15, (cursor / 128) * 30, 15, 30 };
+	SDL_SetRenderDrawColor(renderer, 0xff, 0xff, 0xff, 0xff);
+	SDL_RenderFillRect(renderer, &cursorRect);
+
 	SDL_RenderPresent(renderer);
 }
 
