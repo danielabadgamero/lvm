@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 			int num{};
 			try
 			{
-				std::stoi(args[1].substr(2), nullptr, 16);
+				num = std::stoi(args[1].substr(2), nullptr, 16);
 			}
 			catch (...) {}
 			switch (std::distance(keywords.begin(), keyword))
