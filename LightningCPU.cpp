@@ -114,8 +114,6 @@ void Lightning::CPU::decode()
 
 int Lightning::CPU::cycle(void*)
 {
-	while (!Core::running);
-
 	while (Core::running)
 	{
 		instruction = readMemory(regs[pc]);
@@ -124,7 +122,7 @@ int Lightning::CPU::cycle(void*)
 		else
 			regs[pc] += 4;
 		decode();
-		SDL_Delay(10);
+		SDL_Delay(1);
 	}
 
 	return 0;

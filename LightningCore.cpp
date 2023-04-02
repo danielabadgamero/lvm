@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include "LightningCPU.h"
 #include "LightningCore.h"
@@ -9,6 +10,7 @@
 void Lightning::Core::init()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
+	TTF_Init();
 
 	SDL_GetCurrentDisplayMode(0, &screen);
 
@@ -17,14 +19,10 @@ void Lightning::Core::init()
 
 	SDL_ShowCursor(SDL_DISABLE);
 
-	Threads::CPU = SDL_CreateThread(CPU::cycle, "CPU", NULL);
+	videoSize = (screen.w / 15) * (screen.h / 30);
+	videoPitch = screen.w / 15;
 
-	monitor = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen.w, screen.h);
-	pixelsSize = screen.w * screen.h * 3;
-	pixelsPitch = screen.w * 3;
-	pixels = new Uint8[pixelsSize]{};
-	videoSize = (screen.w / 24) * (screen.h / 32);
-	videoPitch = screen.w / 24;
+	font = TTF_OpenFont("font.ttf", 24);
 
 	if (std::filesystem::exists("disk"))
 	{
@@ -38,9 +36,11 @@ void Lightning::Core::init()
 	}
 
 	running = true;
+
+	CPU_Thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 }
 
-int Lightning::Core::cycle()
+void Lightning::Core::cycle()
 {
 	while (SDL_PollEvent(&e))
 		switch (e.type)
@@ -60,27 +60,23 @@ int Lightning::Core::cycle()
 
 	SDL_RenderClear(renderer);
 
-	for (int c{}; c != videoSize; c++)
-		if (Core::RAM[c + VIDEO] >= ' ' && Core::RAM[c + VIDEO] <= '~')
-			for (int i{}; i != 32; i++)
-				for (int j{}; j != 3; j++)
-					for (int k{}; k != 8; k++)
-					{
-						pixels[(32 * c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-						pixels[(32 * c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3 + 1] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-						pixels[(32 * c / videoPitch + i) * pixelsPitch + (c % videoPitch) * 72 + j * 24 + k * 3 + 2] = ((Core::font[Core::RAM[c + VIDEO] * 96 + i * 3 + j - ' ' * 96] & (1 << (7 - k))) >> (7 - k)) * 0xff;
-					}
-
-	SDL_UpdateTexture(monitor, NULL, pixels, pixelsPitch);
-	SDL_RenderCopy(renderer, monitor, NULL, NULL);
-	
+	for (int i{}; i != videoSize; i++)
+	{
+		SDL_Surface* surface{ TTF_RenderGlyph_Solid(font, static_cast<Uint16>(Core::RAM[VIDEO + i]), { 0xff, 0xff, 0xff }) };
+		SDL_Texture* glyph{ SDL_CreateTextureFromSurface(renderer, surface) };
+		SDL_FreeSurface(surface);
+		
+		SDL_Rect glyphRect{ (i % videoPitch) * 15, (i / videoPitch) * 30, 15, 30 };
+		SDL_RenderCopy(renderer, glyph, NULL, &glyphRect);
+		SDL_DestroyTexture(glyph);
+	}
 	SDL_RenderPresent(renderer);
-
-	return 0;
 }
 
 void Lightning::Core::quit()
 {
+	SDL_WaitThread(CPU_Thread, NULL);
+
 	if (std::filesystem::exists("disk"))
 		std::remove("disk");
 
@@ -88,8 +84,9 @@ void Lightning::Core::quit()
 	for (int i{}; i != (1 << 16); i++)
 		fs_out.write(disk[i], 512);
 
-	SDL_WaitThread(Threads::CPU, NULL);
-
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
+
+	SDL_Quit();
+	TTF_Quit();
 }
