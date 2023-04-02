@@ -51,6 +51,8 @@ void Lightning::Core::cycle()
 			case SDL_SCANCODE_ESCAPE:
 				running = false;
 				break;
+			default:
+				RAM[1] = static_cast<unsigned char>(e.key.keysym.sym);
 			}
 			break;
 		case SDL_QUIT:

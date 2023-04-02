@@ -122,7 +122,6 @@ int Lightning::CPU::cycle(void*)
 		else
 			regs[pc] += 4;
 		decode();
-		SDL_Delay(1);
 	}
 
 	return 0;
