@@ -13,8 +13,8 @@ std::vector<std::string> opcodes
 	"POP",
 	"RD",
 	"WR",
-	"IN",
-	"OUT",
+	"RDSK",
+	"WDSK",
 	"ADD",
 	"SUB",
 	"MUL",
@@ -35,8 +35,8 @@ enum Opcode
 	POP,	//	pop top of stack to dAddr
 	RD,		//	read at address in source to dAddr
 	WR,		//	write source to address in dAddr
-	IN,		//	TBD
-	OUT,	//	TBD
+	RDSK,		//	TBD
+	WDSK,	//	TBD
 
 	// Arithmetic and logic
 	ADD,	//	add source to dAddr
