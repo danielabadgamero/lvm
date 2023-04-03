@@ -61,6 +61,8 @@ void Lightning::CPU::decode()
 			if (instruction.dAddr == 0)
 				stack.push(0);
 			dest = source;
+			if (instruction.dAddr == pc + 1 || instruction.dAddr == tr + 1)
+				dest += regs[pb];
 		}
 		break;
 	case MEQ:
@@ -69,6 +71,8 @@ void Lightning::CPU::decode()
 			if (instruction.dAddr == 0)
 				stack.push(0);
 			dest = source;
+			if (instruction.dAddr == pc + 1 || instruction.dAddr == tr + 1)
+				dest += regs[pb];
 		}
 		break;
 	case POP:
