@@ -30,4 +30,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="x64\Debug\test.lasm">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

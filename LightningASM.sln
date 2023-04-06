@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LightningVM_Assembler", "LightningVM_Assembler.vcxproj", "{7C2573FB-3DC0-4EFD-AC08-B5F324301E4F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LightningASM", "LightningASM.vcxproj", "{7C2573FB-3DC0-4EFD-AC08-B5F324301E4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
