@@ -16,8 +16,8 @@ namespace Lightning::CPU
 		POP,	//	pop top of stack to dAddr
 		RD,		//	read at address in source to dAddr
 		WR,		//	write source to address in dAddr
-		RDSK,	//	read at sector address in source to address in dAddr (disk)
-		WDSK,	//	write source address + 512 bytes to sector in dAddr (disk)
+		UNUSED_1,
+		UNUSED_2,
 
 		// Arithmetic and logic
 		ADD,	//	add source to dAddr

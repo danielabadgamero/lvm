@@ -21,22 +21,9 @@ void Lightning::Core::init()
 
 	videoSize = (screen.w / 15) * (screen.h / 30);
 	videoPitch = screen.w / 15;
-
 	font = TTF_OpenFont("font.ttf", 24);
 
-	if (std::filesystem::exists("disk"))
-	{
-		std::ifstream fs_in{ "disk", std::ios::binary };
-		int sector{};
-		while (!fs_in.eof())
-		{
-			fs_in.read(disk[sector], 512);
-			sector++;
-		}
-	}
-
 	running = true;
-
 	CPU_Thread = SDL_CreateThread(CPU::cycle, "CPU", NULL);
 }
 
@@ -84,13 +71,6 @@ void Lightning::Core::cycle()
 void Lightning::Core::quit()
 {
 	SDL_WaitThread(CPU_Thread, NULL);
-
-	if (std::filesystem::exists("disk"))
-		std::remove("disk");
-
-	std::ofstream fs_out{ "disk", std::ios::binary };
-	for (int i{}; i != (1 << 16); i++)
-		fs_out.write(disk[i], 512);
 
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
