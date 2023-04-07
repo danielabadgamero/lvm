@@ -4,8 +4,6 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
-#include <bitset>
-
 inline SDL_Window* window{};
 inline SDL_Renderer* renderer{};
 inline SDL_Event e{};
@@ -22,7 +20,6 @@ inline constexpr int VIDEO{ 0xf50000 };
 namespace Lightning::Core
 {
 	inline bool running{};
-	inline bool chipSelected{};
 
 	inline unsigned char RAM[1 << 24]{};
 	inline constexpr unsigned char ROM[]
@@ -31,13 +28,6 @@ namespace Lightning::Core
 		0b0111'000'1, 0x00, 0x00, 0x00,	// source sector
 		0b0100'000'0, 0x00,				// clean stack
 		0b0000'001'0, 0x00,				// switch to RAM
-	};
-
-	inline std::bitset<2> flags{};
-	enum
-	{
-		greater,
-		equal
 	};
 
 	inline SDL_Thread* CPU_Thread{};
