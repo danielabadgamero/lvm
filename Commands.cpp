@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include <filesystem>
+#include <fstream>
 
 #include "Core.h"
 #include "Errors.h"
@@ -52,6 +53,15 @@ void Commands::init()
 			if (!std::filesystem::exists(args["default"])) E5(args["default"]);
 
 			std::filesystem::current_path(std::filesystem::current_path().append(args["default"]));
+		},
+		{ "default" }
+	};
+
+	functions["mkdir"] = CommandFunc
+	{
+		[](Args args)
+		{
+			std::filesystem::create_directory(args["default"]);
 		},
 		{ "default" }
 	};
