@@ -32,7 +32,8 @@ void Core::loop()
 
 	std::unordered_map<std::string, std::string> args{};
 	for (std::string& word : words)
-		if (word.find('=') == std::string::npos)
+		if (word == words[0]) continue;
+		else if (word.find('=') == std::string::npos)
 			args["default"] = word;
 		else
 		{
@@ -42,7 +43,7 @@ void Core::loop()
 		}
 
 	if (words[0].empty()) E1;
-	if (!Commands::functions.contains(words[0])) E2;
+	if (!Commands::functions.contains(words[0])) E2(words[0]);
 
 	Commands::functions[words.at(0)](args);
 	std::cout << '\n';
