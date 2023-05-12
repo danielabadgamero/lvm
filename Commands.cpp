@@ -139,6 +139,11 @@ void Commands::init()
 	{
 		[](Args)
 		{
+			std::remove("disk");
+			std::ofstream diskOut{ "disk", std::ios::binary };
+			for (int i{}; i != 1 << 16; i++)
+				for (int j{}; j != 512; j++)
+					diskOut.write(&Lightning::disk[i][j], 1);
 			Core::running = false;
 		}
 	};
@@ -159,4 +164,20 @@ void Commands::init()
 		},
 		{ "default" }
 	};
+
+	if (std::filesystem::exists("disk"))
+	{
+		std::ifstream diskIn{ "disk", std::ios::binary };
+		char c{};
+		int i{};
+		int j{};
+		diskIn.read(&c, 1);
+		while (!diskIn.eof())
+		{
+			Lightning::disk[i][j] = c;
+			if (i == 1 << 16) i = 0;
+			if (j == 512) j = 0;
+			diskIn.read(&c, 1);
+		}
+	}
 }
