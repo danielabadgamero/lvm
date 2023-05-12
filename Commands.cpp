@@ -7,6 +7,9 @@
 #include "Core.h"
 #include "Errors.h"
 #include "Commands.h"
+#include "Text.h"
+#include "Lightning.h"
+#include "Assembler.h"
 
 CommandFunc::CommandFunc(void(*func)(Args), std::vector<std::string> r, std::vector<std::string> o) : func{ func }, reqArgs{ r }, optArgs{ o }
 {
@@ -93,11 +96,67 @@ void Commands::init()
 		{ "default" }
 	};
 
+	functions["print"] = CommandFunc
+	{
+		[](Args args)
+		{
+			std::ifstream in{ args["default"] };
+			std::string line{};
+			while (std::getline(in, line))
+				std::cout << line << '\n';
+		},
+		{ "default" }
+	};
+
+	functions["edit"] = CommandFunc
+	{
+		[](Args args)
+		{
+			if (!std::filesystem::exists(args["default"])) E6(args["default"]);
+
+			std::ifstream in{ args["default"] };
+			Core::mode = Core::TXT;
+			Text::init(in, args["default"]);
+		},
+		{ "default" }
+	};
+
+	functions["help"] = CommandFunc
+	{
+		[](Args)
+		{
+			for (const std::pair<const std::string, CommandFunc>& pair : functions)
+			{
+				std::cout << pair.first << ' ';
+				for (const std::string& arg : pair.second.optArgs)
+					std::cout << arg << ' ';
+				std::cout << '\n';
+			}
+		}
+	};
+
 	functions["exit"] = CommandFunc
 	{
 		[](Args)
 		{
 			Core::running = false;
 		}
+	};
+
+	functions["lasm"] = CommandFunc
+	{
+		[](Args args)
+		{
+			std::ifstream input{ args["default"] };
+			std::string line{};
+			std::vector<std::string> content{};
+			while (std::getline(input, line))
+				content.push_back(line);
+			std::string fileName{ args["default"].substr(0, args["default"].find('.')) };
+			std::ofstream output{ fileName + ".bin", std::ios::binary };
+			std::vector<char> bytes{ Assembler::assemble(content) };
+			output.write(bytes.data(), bytes.size());
+		},
+		{ "default" }
 	};
 }

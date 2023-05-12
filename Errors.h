@@ -8,5 +8,6 @@
 #define E3(arg) ERROR("Missing \"" + arg + "\" argument.");
 #define E4(arg) ERROR("Too many arguments: \"" + arg + "\"");
 #define E5(arg) ERROR("\"" + arg + "\""": Directory not found.")
+#define E6(arg) ERROR("\"" + arg + "\""": File doesn't exist.")
 
 #endif

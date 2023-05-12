@@ -3,6 +3,13 @@
 
 namespace Core
 {
+	inline enum
+	{
+		CMD,
+		TXT,
+		EXE
+	} mode{};
+
 	inline bool running{};
 
 	void init();
