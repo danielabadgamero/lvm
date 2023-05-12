@@ -9,18 +9,20 @@ namespace Lightning::CPU
 	enum Opcode
 	{
 		MOV,
-
+		
 	};
 
 	inline struct Instruction
 	{
+		unsigned char aMode : 1;	//	addressing mode
 		unsigned char dAddr : 2;	//	destination address
 		unsigned char opcode : 6;	//	64 different opcodes
 		
 		Instruction& operator=(unsigned char data)
 		{
-			opcode = (data & 0b1111'1100) >> 2;
-			dAddr = (data & 0b0000'0011) >> 1;
+			opcode = (data & 0b1111'1000) >> 2;
+			dAddr = (data & 0b0000'0110) >> 1;
+			aMode = (data & 0b0000'0001);
 
 			return *this;
 		}
