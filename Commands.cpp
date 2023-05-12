@@ -66,6 +66,33 @@ void Commands::init()
 		{ "default" }
 	};
 
+	functions["rmdir"] = CommandFunc
+	{
+		[](Args args)
+		{
+			std::filesystem::remove_all(args["default"]);
+		},
+		{ "default" }
+	};
+
+	functions["mkfile"] = CommandFunc
+	{
+		[](Args args)
+		{
+			std::ofstream out{ args["default"] };
+		},
+		{ "default" }
+	};
+
+	functions["rmfile"] = CommandFunc
+	{
+		[](Args args)
+		{
+			std::filesystem::remove(args["default"]);
+		},
+		{ "default" }
+	};
+
 	functions["exit"] = CommandFunc
 	{
 		[](Args)
