@@ -26,9 +26,9 @@ namespace Lightning
 
 		// Arithmetic and bitwise logic
 		"ADD",
-		"SUB",
 		"MUL",
 		"DIV",
+		"CMP",
 		"AND",
 		"OR",
 	};
@@ -65,9 +65,9 @@ namespace Lightning
 	{
 		unsigned char opcode : 4;
 		unsigned char dest : 1;
-		unsigned char destDir : 1;
+		unsigned char ddMode : 1;
 		unsigned char src : 1;
-		unsigned char srcDir : 1;
+		unsigned char sdMode : 1;
 
 		void operator=(char);
 	} op{};
