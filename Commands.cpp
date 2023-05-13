@@ -165,6 +165,27 @@ void Commands::init()
 		{ "default" }
 	};
 
+	functions["add"] = CommandFunc
+	{
+		[](Args args)
+		{
+
+		},
+		{ "default" }
+	};
+
+	functions["start"] = CommandFunc
+	{
+		[](Args args)
+		{
+			std::ifstream in{ args["default"], std::ios::binary };
+			Lightning::reset();
+			in.read(Lightning::RAM, 1ll << 16);
+			Core::mode = Core::EXE;
+		},
+		{ "default" }
+	};
+
 	if (std::filesystem::exists("disk"))
 	{
 		std::ifstream diskIn{ "disk", std::ios::binary };
