@@ -1,5 +1,11 @@
 #include "Lightning.h"
 
+struct Bytes
+{
+	int start{};
+	int size{};
+};
+
 void Lightning::Op::operator=(char byte)
 {
 	opcode = (byte & 0xf0) >> 4;
@@ -9,10 +15,35 @@ void Lightning::Op::operator=(char byte)
 	sdMode = byte & 0x01;
 }
 
+static Bytes getBytes(unsigned char reg)
+{
+	Bytes bytes{ 0, 8 };
+
+	int selBytes{ (reg & 0x30) >> 4 };
+	if (selBytes == 0b11) return bytes;
+	bytes.size = 4;
+	if (selBytes == 0b01)
+		bytes.start += 4;
+
+	selBytes = (reg & 0x0c) >> 2;
+	if (selBytes == 0b11) return bytes;
+	bytes.size = 2;
+	if (selBytes == 0b01)
+		bytes.start += 2;
+
+	selBytes = (reg & 0x03);
+	if (selBytes == 0b11) return bytes;
+	bytes.size = 1;
+	if (selBytes == 0b01)
+		bytes.start += 1;
+
+	return bytes;
+}
+
 void Lightning::reset()
 {
 	memset(RAM, 0, 1ll << 16);
-	memset(reg, 0, 8);
+	memset(reg, 0, 4 * sizeof(long long));
 	pc = pb = 0;
 	flag.reset();
 	while (!stack.empty()) stack.pop();
@@ -22,7 +53,56 @@ void Lightning::loop()
 {
 	op = RAM[pc];
 	pc++;
-	if (op.dest)
+	if (op.dest == 0) (op.dReg = RAM[pc]), pc++;
+	else (op.dImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
+	if (op.src == 0) (op.sReg = RAM[pc]), pc++;
+	else (op.sImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
+
+	switch (op.opcode)
 	{
+	case 0x00:
+		if (op.dest == 0)
+		{
+			if (op.src == 0)
+			{
+			}
+			else
+			{
+				Bytes bytes{ getBytes(op.dImm) };
+				long long* dReg{ &reg[op.dReg & 0xc0] };
+				unsigned char* 
+			}
+		}
+		break;
+	case 0x01:
+		break;
+	case 0x02:
+		break;
+	case 0x03:
+		break;
+	case 0x04:
+		break;
+	case 0x05:
+		break;
+	case 0x06:
+		break;
+	case 0x07:
+		break;
+	case 0x08:
+		break;
+	case 0x09:
+		break;
+	case 0x0a:
+		break;
+	case 0x0b:
+		break;
+	case 0x0c:
+		break;
+	case 0x0d:
+		break;
+	case 0x0e:
+		break;
+	case 0x0f:
+		break;
 	}
 }

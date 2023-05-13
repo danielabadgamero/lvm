@@ -54,6 +54,7 @@ namespace Lightning
 	};
 
 	inline std::stack<long long> stack{};
+	inline std::vector<long long> sysFuncs{};
 	inline std::bitset<8> flag{};
 	inline long long pc{};
 	inline long long pb{};
@@ -68,6 +69,11 @@ namespace Lightning
 		unsigned char ddMode : 1;
 		unsigned char src : 1;
 		unsigned char sdMode : 1;
+
+		unsigned char sReg{};
+		short sImm{};
+		unsigned char dReg{};
+		short dImm{};
 
 		void operator=(char);
 	} op{};
