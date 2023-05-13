@@ -33,39 +33,44 @@ namespace Lightning
 		"OR",
 	};
 
-	enum Flag
+	inline std::vector<std::string> flags
 	{
-		TRUE,
-		EQUAL,
-		LESS,
-		CARRY,
+		"TRUE",
+		"EQUAL",
+		"NOT_EQUAL",
+		"LESS",
+		"GREATER",
+		"ZERO",
+		"NOT_ZERO",
+		"CARRY",
+	};
+
+	inline std::vector<std::string> regs
+	{
+		"a",
+		"b",
+		"c",
+		"d",
 	};
 
 	inline std::stack<long long> stack{};
-	inline std::bitset<4> flags{};
+	inline std::bitset<8> flag{};
+	inline long long pc{};
+	inline long long pb{};
 	inline long long reg[4]{};
 	inline char RAM[1 << 16]{};
 	inline char disk[1 << 16][512]{};
 
-	struct Instruction
+	inline struct Op
 	{
-		union
-		{
-			char byte{};
-			char sMode : 1;
-			char dMode : 1;
-			char dReg : 2;
-			char opcode : 4;
-		} op{};
+		unsigned char opcode : 4;
+		unsigned char dest : 1;
+		unsigned char destDir : 1;
+		unsigned char src : 1;
+		unsigned char srcDir : 1;
 
-		union
-		{
-			short byte{};
-			char padding : 5;
-			char dReg : 2;
-			char sMode : 1;
-		} regSrc{};
-	} instr{};
+		void operator=(char);
+	} op{};
 	
 	void reset();
 	void loop();

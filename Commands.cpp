@@ -167,7 +167,7 @@ void Commands::init()
 
 	functions["add"] = CommandFunc
 	{
-		[](Args args)
+		[](Args)
 		{
 
 		},
