@@ -58,21 +58,40 @@ void Lightning::loop()
 	if (op.src == 0) (op.sReg = RAM[pc]), pc++;
 	else (op.sImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
 
+	long long src{};
+	char* dest{};
+	int destSize{};
+
+	if (op.src == 0)
+	{
+		Bytes bytes{ getBytes(op.sReg) };
+		unsigned char* dBytes{ (unsigned char*)&src + (7ull - bytes.start) };
+		for (int b{ bytes.size - 1 }; b >= 0; b--)
+		if (op.sdMode == 0)
+			*(dBytes - b) = (reg[(op.sReg & 0xc0) >> 6] & (0xffull << (bytes.size - b - 1) * 8)) >> (bytes.size - b - 1) * 8;
+		else
+			*(dBytes - b) = (RAM[reg[(op.sReg & 0xc0) >> 6]] & (0xffull << (bytes.size - b - 1) * 8)) >> (bytes.size - b - 1) * 8;
+	}
+	else
+		if (op.sdMode == 0) src = op.sImm;
+		else src = RAM[op.sImm];
+
+	if (op.dest == 0)
+	{
+		Bytes bytes{ getBytes(op.dReg) };
+		destSize = bytes.size;
+		if (op.ddMode == 0)
+			dest = (char*)&reg[(op.sReg) >> 6] + (7ull - bytes.start);
+		else
+			dest = &RAM[reg[(op.sReg) >> 6] + (7ull - bytes.start)];
+	}
+	else
+		if (op.ddMode == 0) dest = &RAM[op.dImm];
+		else dest = &RAM[RAM[op.dImm]];
+			
 	switch (op.opcode)
 	{
 	case 0x00:
-		if (op.dest == 0)
-		{
-			if (op.src == 0)
-			{
-			}
-			else
-			{
-				Bytes bytes{ getBytes(op.dImm) };
-				long long* dReg{ &reg[op.dReg & 0xc0] };
-				unsigned char* 
-			}
-		}
 		break;
 	case 0x01:
 		break;
