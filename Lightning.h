@@ -66,8 +66,8 @@ namespace Lightning
 	inline std::stack<long long> stack{};
 	inline std::vector<long long> sysFuncs{};
 	inline std::bitset<8> flag{};
-	inline long long pc{};
-	inline long long pb{};
+	inline short pc{};
+	inline short pb{};
 	inline long long reg[4]{};
 	inline char RAM[1 << 16]{};
 	inline char disk[1 << 16][512]{};
