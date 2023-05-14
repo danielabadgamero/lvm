@@ -49,6 +49,43 @@ std::vector<char> Assembler::assemble(std::vector<std::string>& input)
 			else if (c != ',') words.back().push_back(c);
 
 		std::vector<std::string>::iterator opcodeIt{ std::find(opcodes.begin(), opcodes.end(), words[0]) };
+		if (opcodeIt == opcodes.end())
+		{
+			words[0].pop_back();
+			labelDef.emplace(words[0], pc);
+			if (words.size() > 1)
+			{
+				if (words[1] == "ws")
+				{
+					bool escaped{};
+					for (const char& c : words[2])
+					{
+						if (escaped)
+						{
+							switch (c)
+							{
+							case '0': bin.push_back('\0'); break;
+							case '\\': bin.push_back('\\'); break;
+							case 'n': bin.push_back('\n'); break;
+							case 't': bin.push_back('\t'); break;
+							case 'b': bin.push_back('\b'); break;
+							}
+							escaped = false;
+							pc++;
+							continue;
+						}
+						if (c == '\\')
+							escaped = true;
+						else
+							bin.push_back(c), pc++;
+					}
+				}
+			}
+		}
+		else
+		{
+			unsigned char opcode{ static_cast<unsigned char>(std::distance(opcodes.begin(), opcodeIt)) << 4 };
+		}
 	}
 	
 	return bin;
