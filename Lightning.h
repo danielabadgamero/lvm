@@ -18,54 +18,46 @@ namespace Lightning
 	inline SDL_Thread* thread{};
 	inline bool running{};
 
-	inline std::vector<std::string> opcodes
+	enum Opcode
 	{
 		// Data management
-		"MOV",
-		"PUSH",
-		"POP",
-		"RD",
-		"WR",
-		"REC",
+		MOV,
+		PUSH,
+		POP,
+		RD,
+		WR,
+		REC,
 
 		// Flow control
-		"HALT",
-		"JMP",
-		"CALL",
-		"RET",
+		HALT,
+		JMP,
+		CALL,
+		RET,
 
 		// Arithmetic and bitwise logic
-		"ADD",
-		"MUL",
-		"DIV",
-		"CMP",
-		"AND",
-		"NOT",
+		ADD,
+		MUL,
+		DIV,
+		CMP,
+		AND,
+		NOT
 	};
 
-	inline std::vector<std::string> flags
+	enum Flag
 	{
-		"TRUE",
-		"EQUAL",
-		"NOT_EQUAL",
-		"LESS",
-		"GREATER",
-		"ZERO",
-		"NOT_ZERO",
-		"CARRY",
-	};
-
-	inline std::vector<std::string> regs
-	{
-		"a",
-		"b",
-		"c",
-		"d",
+		TRUE,
+		EQUAL,
+		NOT_EQUAL,
+		LESS,
+		GREATER,
+		ZERO,
+		NOT_ZERO,
+		CARRY
 	};
 
 	inline std::stack<long long> stack{};
 	inline std::vector<long long> sysFuncs{};
-	inline std::bitset<8> flag{};
+	inline std::bitset<8> flags{};
 	inline short pc{};
 	inline short pb{};
 	inline long long reg[4]{};

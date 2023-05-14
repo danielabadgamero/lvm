@@ -56,8 +56,8 @@ void Lightning::reset()
 	memset(RAM, 0, 1ll << 16);
 	memset(reg, 0, 4 * sizeof(long long));
 	pc = pb = 0;
-	flag.reset();
-	flag.set(0);
+	flags.reset();
+	flags.set(0);
 	while (!stack.empty()) stack.pop();
 
 	SDL_GetDesktopDisplayMode(0, &screen);
@@ -117,27 +117,34 @@ int Lightning::loop(void*)
 	{
 		op = RAM[pc];
 		pc++;
-		if (op.dest == 0) (op.dReg = RAM[pc]), pc++;
-		else (op.dImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
-		if (op.src == 0) (op.sReg = RAM[pc]), pc++;
-		else (op.sImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
 
 		long long src{};
 		long long dest{};
 
-		if (op.src == 0)
-			if (op.sdMode == 0) src = getRegVal(op.sReg);
-			else src = RAM[getRegVal(op.sReg)];
-		else
-			if (op.sdMode == 0) src = op.sImm;
-			else src = RAM[op.sImm + pb];
+		if (op.opcode != RET && op.opcode != HALT)
+		{
+			if (op.opcode != REC && op.opcode != NOT && op.opcode != POP && op.opcode != CALL)
+			{
+				if (op.dest == 0) (op.dReg = RAM[pc]), pc++;
+				else (op.dImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
 
-		if (op.dest == 0)
-			if (op.ddMode == 0) dest = getRegVal(op.dReg);
-			else dest = RAM[getRegVal(op.dReg)];
-		else
-			if (op.ddMode == 0) dest = RAM[op.dImm];
-			else dest = RAM[op.dImm + pb];
+				if (op.dest == 0)
+					if (op.ddMode == 0) dest = getRegVal(op.dReg);
+					else dest = RAM[getRegVal(op.dReg)];
+				else
+					if (op.ddMode == 0) dest = RAM[op.dImm];
+					else dest = RAM[op.dImm + pb];
+			}
+			if (op.src == 0) (op.sReg = RAM[pc]), pc++;
+			else (op.sImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
+
+			if (op.src == 0)
+				if (op.sdMode == 0) src = getRegVal(op.sReg);
+				else src = RAM[getRegVal(op.sReg)];
+			else
+				if (op.sdMode == 0) src = op.sImm;
+				else src = RAM[op.sImm + pb];
+		}
 
 		bool write{ true };
 		bool toDisk{ false };
@@ -145,78 +152,78 @@ int Lightning::loop(void*)
 
 		switch (op.opcode)
 		{
-		case 0x0:
+		case MOV:
 			dest = src;
 			break;
-		case 0x1:
+		case PUSH:
 			stack.push(src);
 			write = false;
 			break;
-		case 0x2:
+		case POP:
 			dest = stack.top();
 			stack.pop();
 			break;
-		case 0x3:
+		case RD:
 			fromDisk = true;
 			break;
-		case 0x4:
+		case WR:
 			toDisk = true;
 			break;
-		case 0x5:
+		case REC:
 			write = false;
 			sysFuncs.push_back(src);
 			break;
-		case 0x6:
+		case HALT:
 			running = false;
 			return 0;
-		case 0x7:
+		case JMP:
 			write = false;
-			if (flag.test(op.dReg)) { pc = static_cast<short>(src) + pb; break; }
+			if (flags.test(op.dReg)) { pc = static_cast<short>(src) + pb; break; }
 			break;
-		case 0x8:
+		case CALL:
 			write = false;
 			stack.push(pc);
 			if (op.sdMode == 0) pc = static_cast<short>(src) + pb;
 			else pc = static_cast<short>(sysFuncs[op.sImm]);
 			pb = pc;
 			break;
-		case 0x9:
+		case RET:
 			write = false;
 			pc = static_cast<short>(stack.top());
 			stack.pop();
 			if (!stack.empty()) pb = static_cast<short>(stack.top());
 			else pb = 0;
 			break;
-		case 0xa:
+		case ADD:
 			dest += src;
-			flag.set(5, dest == 0);
-			flag.set(6, dest != 0);
-			flag.set(7, dest > 0xff);
+			flags.set(5, dest == 0);
+			flags.set(6, dest != 0);
+			flags.set(7, dest > 0xff);
 			break;
-		case 0xb:
+		case MUL:
 			dest *= src;
-			flag.set(5, dest == 0);
-			flag.set(6, dest != 0);
-			flag.set(7, dest > 0xff);
+			flags.set(5, dest == 0);
+			flags.set(6, dest != 0);
+			flags.set(7, dest > 0xff);
 			break;
-		case 0xc:
+		case DIV:
 			dest /= src;
-			flag.set(5, dest == 0);
-			flag.set(6, dest != 0);
-			flag.set(7, dest > 0xff);
+			flags.set(5, dest == 0);
+			flags.set(6, dest != 0);
+			flags.set(7, dest > 0xff);
 			break;
-		case 0xd:
+		case CMP:
 			write = false;
-			flag.set(0);
-			flag.set(1, dest == src);
-			flag.set(2, dest != src);
-			flag.set(3, dest < src);
-			flag.set(4, dest > src);
+			flags.set(0);
+			flags.set(1, dest == src);
+			flags.set(2, dest != src);
+			flags.set(3, dest < src);
+			flags.set(4, dest > src);
 			break;
-		case 0xe:
+		case AND:
 			dest &= src;
 			break;
-		case 0xf:
+		case NOT:
 			dest = ~src;
 			break;
 		}
