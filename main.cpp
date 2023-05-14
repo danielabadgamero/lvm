@@ -2,7 +2,7 @@
 #include "Text.h"
 #include "Lightning.h"
 
-int main()
+int main(int, char**)
 {
 	Core::init();
 

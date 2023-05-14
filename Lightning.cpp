@@ -53,11 +53,11 @@ void Lightning::reset()
 	SDL_Init(SDL_INIT_EVERYTHING);
 	TTF_Init();
 
-	flag.set(0);
 	memset(RAM, 0, 1ll << 16);
 	memset(reg, 0, 4 * sizeof(long long));
 	pc = pb = 0;
 	flag.reset();
+	flag.set(0);
 	while (!stack.empty()) stack.pop();
 
 	SDL_GetDesktopDisplayMode(0, &screen);
@@ -65,9 +65,9 @@ void Lightning::reset()
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_ShowCursor(SDL_DISABLE);
 	font = TTF_OpenFont("C:\\Windows\\Fonts\\courbd.ttf", 32);
-	thread = SDL_CreateThread(loop, "CPU", NULL);
 
 	running = true;
+	thread = SDL_CreateThread(loop, "CPU", NULL);
 }
 
 long long getRegVal(unsigned char regByte)
@@ -84,21 +84,31 @@ long long getRegVal(unsigned char regByte)
 
 void Lightning::loop()
 {
+	SDL_Event e{};
+	while (SDL_PollEvent(&e))
+		switch (e.type)
+		{
+		case SDL_KEYDOWN:
+			break;
+		}
+	
+	SDL_RenderClear(renderer);
+
 	if (running)
-	{
 		for (int i{}; i != screen.h / 32; i++)
-			for (int j{}; j != screen.w / 24; j++)
+			for (int j{}; j != screen.w / 20; j++)
 			{
 				SDL_Surface* glyph{ TTF_RenderGlyph_Solid(font, RAM[0xf000 + i * (screen.h / 32) + j], { 0xff, 0xff, 0xff }) };
 				SDL_Texture* texture{ SDL_CreateTextureFromSurface(renderer, glyph) };
-				SDL_Rect rect{ j * 24, j * 32 };
+				SDL_Rect rect{ j * 20, i * 32 };
 				SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h);
 				SDL_RenderCopy(renderer, texture, NULL, &rect);
 				SDL_FreeSurface(glyph);
 				SDL_DestroyTexture(texture);
 			}
-	}
 	else quit();
+
+	SDL_RenderPresent(renderer);
 }
 
 int Lightning::loop(void*)
@@ -123,11 +133,11 @@ int Lightning::loop(void*)
 			else src = RAM[op.sImm];
 
 		if (op.dest == 0)
-			if (op.ddMode == 0) src = getRegVal(op.dReg);
-			else src = RAM[getRegVal(op.dReg)];
+			if (op.ddMode == 0) dest = getRegVal(op.dReg);
+			else dest = RAM[getRegVal(op.dReg)];
 		else
-			if (op.ddMode == 0) src = RAM[op.dImm];
-			else src = RAM[RAM[op.dImm]];
+			if (op.ddMode == 0) dest = RAM[op.dImm];
+			else dest = RAM[RAM[op.dImm]];
 
 		bool write{ true };
 		bool toDisk{ false };
@@ -161,7 +171,7 @@ int Lightning::loop(void*)
 			return 0;
 		case 0x7:
 			write = false;
-			if (flag.test(op.dImm)) { pc = src; break; }
+			if (flag.test(op.dReg)) { pc = src; break; }
 			break;
 		case 0x8:
 			write = false;
@@ -225,7 +235,7 @@ int Lightning::loop(void*)
 				else
 				{
 					Bytes bytes{ getBytes(op.dReg) };
-					long long val{};
+					unsigned long long val{};
 					long long rVal{ reg[(op.dReg & 0xc0) >> 6] };
 					for (int b{}; b != bytes.size; b++)
 						val |= rVal & (0xffull << (b + bytes.start));
@@ -242,24 +252,26 @@ int Lightning::loop(void*)
 				if (op.ddMode == 0)
 				{
 					if (!toDisk && !fromDisk)
-						RAM[op.dImm] = static_cast<char>(dest);
+						RAM[(uint16_t)op.dImm] = static_cast<char>(dest);
 					else if (toDisk)
-						memcpy_s(disk[op.dImm], 512, RAM + src, 512);
+						memcpy_s(disk[(uint16_t)op.dImm], 512, RAM + (uint16_t)src, 512);
 					else if (fromDisk)
-						memcpy_s(RAM + op.dImm, 512, disk[src], 512);
+						memcpy_s(RAM + (uint16_t)op.dImm, 512, disk[(uint16_t)src], 512);
 				}
 				else
 				{
 					if (!toDisk && !fromDisk)
-						RAM[RAM[op.dImm]] = static_cast<char>(dest);
+						RAM[RAM[(uint16_t)op.dImm]] = static_cast<char>(dest);
 					else if (toDisk)
-						memcpy_s(disk[RAM[op.dImm]], 512, RAM + src, 512);
+						memcpy_s(disk[RAM[(uint16_t)op.dImm]], 512, RAM + (uint16_t)src, 512);
 					else if (fromDisk)
-						memcpy_s(RAM + RAM[op.dImm], 512, disk[src], 512);
+						memcpy_s(RAM + RAM[(uint16_t)op.dImm], 512, disk[(uint16_t)src], 512);
 				}
 			}
 		}
 	}
+
+	return -1;
 }
 
 void Lightning::quit()
