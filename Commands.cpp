@@ -165,15 +165,6 @@ void Commands::init()
 		{ "default" }
 	};
 
-	functions["add"] = CommandFunc
-	{
-		[](Args)
-		{
-
-		},
-		{ "default" }
-	};
-
 	functions["start"] = CommandFunc
 	{
 		[](Args args)

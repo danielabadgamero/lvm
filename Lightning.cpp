@@ -181,6 +181,7 @@ int Lightning::loop(void*)
 			pb = pc;
 			break;
 		case 0x9:
+			write = false;
 			pc = stack.top();
 			stack.pop();
 			if (!stack.empty()) pb = stack.top();

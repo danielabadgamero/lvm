@@ -1,0 +1,18 @@
+MOV all, ENTRY_MSG
+CALL print_string
+
+JMP $
+
+print_string:
+	CMP all, 0
+	JMP ZERO, print_string_end
+	MOV alh, CURSOR
+	MOV CURSOR, [all]
+	ADD CURSOR, 1
+	ADD all, 1
+	JMP print_string
+print_string_end:
+	RET
+
+ENTRY_MSG: wb "Executing kernel\0"
+CURSOR: wdb 0xf000

@@ -2,6 +2,7 @@
 #include <string>
 
 #include "Assembler.h"
+#include "Lightning.h"
 
 std::vector<char> Assembler::assemble(std::vector<std::string>& input)
 {
