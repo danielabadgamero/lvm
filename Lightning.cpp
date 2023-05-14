@@ -171,20 +171,20 @@ int Lightning::loop(void*)
 			return 0;
 		case 0x7:
 			write = false;
-			if (flag.test(op.dReg)) { pc = src; break; }
+			if (flag.test(op.dReg)) { pc = static_cast<short>(src); break; }
 			break;
 		case 0x8:
 			write = false;
 			stack.push(pc);
-			if (op.ddMode == 0) pc = src;
-			else pc = sysFuncs[src];
+			if (op.ddMode == 0) pc = static_cast<short>(src);
+			else pc = static_cast<short>(sysFuncs[src]);
 			pb = pc;
 			break;
 		case 0x9:
 			write = false;
-			pc = stack.top();
+			pc = static_cast<short>(stack.top());
 			stack.pop();
-			if (!stack.empty()) pb = stack.top();
+			if (!stack.empty()) pb = static_cast<short>(stack.top());
 			else pb = 0;
 			break;
 		case 0xa:
