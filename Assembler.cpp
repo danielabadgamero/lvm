@@ -24,47 +24,6 @@ std::vector<char> Assembler::assemble(std::vector<std::string>& input)
 			else if (c == ' ' && !words.back().empty() && !quotes) words.push_back("");
 			else if (c == '"') quotes ^= 1;
 			else words.back().push_back(c);
-
-		std::vector<std::string>::iterator opcodeIt{ std::find(Lightning::opcodes.begin(), Lightning::opcodes.end(), words[0]) };
-		if (opcodeIt == Lightning::opcodes.end())
-		{
-			if (words.size() > 1)
-			{
-				if (words[1] == "ws")
-				{
-					bool escaped{};
-					for (const char& c : words[2])
-					{
-						if (escaped)
-						{
-							switch (c)
-							{
-							case '0': bin.push_back('\0'); break;
-							case '\\': bin.push_back('\\'); break;
-							case 'n': bin.push_back('\n'); break;
-							case 't': bin.push_back('\t'); break;
-							case 'b': bin.push_back('\b'); break;
-							}
-							escaped = false;
-							pc++;
-							continue;
-						}
-						if (c == '\\')
-							escaped = true;
-						else
-							bin.push_back(c), pc++;
-					}
-				}
-			}
-			else
-			{
-
-			}
-		}
-		else
-		{
-			unsigned char opcode{ static_cast<unsigned char>(std::distance(Lightning::opcodes.begin(), opcodeIt)) };
-		}
 	}
 	
 	return bin;

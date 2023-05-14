@@ -130,14 +130,14 @@ int Lightning::loop(void*)
 			else src = RAM[getRegVal(op.sReg)];
 		else
 			if (op.sdMode == 0) src = op.sImm;
-			else src = RAM[op.sImm];
+			else src = RAM[op.sImm + pb];
 
 		if (op.dest == 0)
 			if (op.ddMode == 0) dest = getRegVal(op.dReg);
 			else dest = RAM[getRegVal(op.dReg)];
 		else
 			if (op.ddMode == 0) dest = RAM[op.dImm];
-			else dest = RAM[RAM[op.dImm]];
+			else dest = RAM[op.dImm + pb];
 
 		bool write{ true };
 		bool toDisk{ false };
@@ -171,13 +171,13 @@ int Lightning::loop(void*)
 			return 0;
 		case 0x7:
 			write = false;
-			if (flag.test(op.dReg)) { pc = static_cast<short>(src); break; }
+			if (flag.test(op.dReg)) { pc = static_cast<short>(src) + pb; break; }
 			break;
 		case 0x8:
 			write = false;
 			stack.push(pc);
-			if (op.ddMode == 0) pc = static_cast<short>(src);
-			else pc = static_cast<short>(sysFuncs[src]);
+			if (op.sdMode == 0) pc = static_cast<short>(src) + pb;
+			else pc = static_cast<short>(sysFuncs[op.sImm]);
 			pb = pc;
 			break;
 		case 0x9:
@@ -262,11 +262,11 @@ int Lightning::loop(void*)
 				else
 				{
 					if (!toDisk && !fromDisk)
-						RAM[RAM[(uint16_t)op.dImm]] = static_cast<char>(dest);
+						RAM[(uint16_t)op.dImm + pb] = static_cast<char>(dest);
 					else if (toDisk)
-						memcpy_s(disk[RAM[(uint16_t)op.dImm]], 512, RAM + (uint16_t)src, 512);
+						memcpy_s(disk[RAM[(uint16_t)op.dImm]], 512, RAM + (uint16_t)src + pb, 512);
 					else if (fromDisk)
-						memcpy_s(RAM + RAM[(uint16_t)op.dImm], 512, disk[(uint16_t)src], 512);
+						memcpy_s(RAM + (uint16_t)op.dImm + pb, 512, disk[(uint16_t)src], 512);
 				}
 			}
 		}
