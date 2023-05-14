@@ -33,7 +33,27 @@ std::vector<char> Assembler::assemble(std::vector<std::string>& input)
 				if (words[1] == "ws")
 				{
 					bool escaped{};
-					for (const char& c : words[2]);
+					for (const char& c : words[2])
+					{
+						if (escaped)
+						{
+							switch (c)
+							{
+							case '0': bin.push_back('\0'); break;
+							case '\\': bin.push_back('\\'); break;
+							case 'n': bin.push_back('\n'); break;
+							case 't': bin.push_back('\t'); break;
+							case 'b': bin.push_back('\b'); break;
+							}
+							escaped = false;
+							pc++;
+							continue;
+						}
+						if (c == '\\')
+							escaped = true;
+						else
+							bin.push_back(c), pc++;
+					}
 				}
 			}
 			else
