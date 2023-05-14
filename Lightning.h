@@ -6,8 +6,18 @@
 #include <bitset>
 #include <stack>
 
+#include <SDL.h>
+#include <SDL_ttf.h>
+
 namespace Lightning
 {
+	inline SDL_Window* window{};
+	inline SDL_Renderer* renderer{};
+	inline SDL_DisplayMode screen{};
+	inline TTF_Font* font{};
+	inline SDL_Thread* thread{};
+	inline bool running{};
+
 	inline std::vector<std::string> opcodes
 	{
 		// Data management
@@ -30,7 +40,7 @@ namespace Lightning
 		"DIV",
 		"CMP",
 		"AND",
-		"OR",
+		"NOT",
 	};
 
 	inline std::vector<std::string> flags
@@ -80,6 +90,8 @@ namespace Lightning
 	
 	void reset();
 	void loop();
+	int loop(void*);
+	void quit();
 }
 
 #endif

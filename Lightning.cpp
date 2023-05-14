@@ -1,4 +1,12 @@
+#include <stack>
+#include <bitset>
+#include <vector>
+
+#include <SDL.h>
+#include <SDL_ttf.h>
+
 #include "Lightning.h"
+#include "Core.h"
 
 struct Bytes
 {
@@ -42,86 +50,228 @@ static Bytes getBytes(unsigned char reg)
 
 void Lightning::reset()
 {
+	SDL_Init(SDL_INIT_EVERYTHING);
+	TTF_Init();
+
+	flag.set(0);
 	memset(RAM, 0, 1ll << 16);
 	memset(reg, 0, 4 * sizeof(long long));
 	pc = pb = 0;
 	flag.reset();
 	while (!stack.empty()) stack.pop();
+
+	SDL_GetDesktopDisplayMode(0, &screen);
+	window = SDL_CreateWindow("LightningVM", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screen.w, screen.h, SDL_WINDOW_BORDERLESS);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_ShowCursor(SDL_DISABLE);
+	font = TTF_OpenFont("C:\\Windows\\Fonts\\courbd.ttf", 32);
+	thread = SDL_CreateThread(loop, "CPU", NULL);
+
+	running = true;
+}
+
+long long getRegVal(unsigned char regByte)
+{
+	long long src{};
+
+	Bytes bytes{ getBytes(regByte) };
+	unsigned char* dBytes{ (unsigned char*)&src + (7ull - bytes.start) };
+	for (int b{ bytes.size - 1 }; b >= 0; b--)
+		*(dBytes - b) = (Lightning::reg[(regByte & 0xc0) >> 6] & (0xffull << (bytes.size - b - 1) * 8)) >> (bytes.size - b - 1) * 8;
+
+	return src;
 }
 
 void Lightning::loop()
 {
-	op = RAM[pc];
-	pc++;
-	if (op.dest == 0) (op.dReg = RAM[pc]), pc++;
-	else (op.dImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
-	if (op.src == 0) (op.sReg = RAM[pc]), pc++;
-	else (op.sImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
-
-	long long src{};
-	char* dest{};
-	int destSize{};
-
-	if (op.src == 0)
+	if (running)
 	{
-		Bytes bytes{ getBytes(op.sReg) };
-		unsigned char* dBytes{ (unsigned char*)&src + (7ull - bytes.start) };
-		for (int b{ bytes.size - 1 }; b >= 0; b--)
-		if (op.sdMode == 0)
-			*(dBytes - b) = (reg[(op.sReg & 0xc0) >> 6] & (0xffull << (bytes.size - b - 1) * 8)) >> (bytes.size - b - 1) * 8;
+		for (int i{}; i != screen.h / 32; i++)
+			for (int j{}; j != screen.w / 24; j++)
+			{
+				SDL_Surface* glyph{ TTF_RenderGlyph_Solid(font, RAM[0xf000 + i * (screen.h / 32) + j], { 0xff, 0xff, 0xff }) };
+				SDL_Texture* texture{ SDL_CreateTextureFromSurface(renderer, glyph) };
+				SDL_Rect rect{ j * 24, j * 32 };
+				SDL_QueryTexture(texture, NULL, NULL, &rect.w, &rect.h);
+				SDL_RenderCopy(renderer, texture, NULL, &rect);
+				SDL_FreeSurface(glyph);
+				SDL_DestroyTexture(texture);
+			}
+	}
+	else quit();
+}
+
+int Lightning::loop(void*)
+{
+	while (running)
+	{
+		op = RAM[pc];
+		pc++;
+		if (op.dest == 0) (op.dReg = RAM[pc]), pc++;
+		else (op.dImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
+		if (op.src == 0) (op.sReg = RAM[pc]), pc++;
+		else (op.sImm = (RAM[pc] << 8) | RAM[pc + 1]), pc += 2;
+
+		long long src{};
+		long long dest{};
+
+		if (op.src == 0)
+			if (op.sdMode == 0) src = getRegVal(op.sReg);
+			else src = RAM[getRegVal(op.sReg)];
 		else
-			*(dBytes - b) = (RAM[reg[(op.sReg & 0xc0) >> 6]] & (0xffull << (bytes.size - b - 1) * 8)) >> (bytes.size - b - 1) * 8;
-	}
-	else
-		if (op.sdMode == 0) src = op.sImm;
-		else src = RAM[op.sImm];
+			if (op.sdMode == 0) src = op.sImm;
+			else src = RAM[op.sImm];
 
-	if (op.dest == 0)
-	{
-		Bytes bytes{ getBytes(op.dReg) };
-		destSize = bytes.size;
-		if (op.ddMode == 0)
-			dest = (char*)&reg[(op.sReg) >> 6] + (7ull - bytes.start);
+		if (op.dest == 0)
+			if (op.ddMode == 0) src = getRegVal(op.dReg);
+			else src = RAM[getRegVal(op.dReg)];
 		else
-			dest = &RAM[reg[(op.sReg) >> 6] + (7ull - bytes.start)];
+			if (op.ddMode == 0) src = RAM[op.dImm];
+			else src = RAM[RAM[op.dImm]];
+
+		bool write{ true };
+		bool toDisk{ false };
+		bool fromDisk{ false };
+
+		switch (op.opcode)
+		{
+		case 0x0:
+			dest = src;
+			break;
+		case 0x1:
+			stack.push(src);
+			write = false;
+			break;
+		case 0x2:
+			dest = stack.top();
+			stack.pop();
+			break;
+		case 0x3:
+			fromDisk = true;
+			break;
+		case 0x4:
+			toDisk = true;
+			break;
+		case 0x5:
+			write = false;
+			sysFuncs.push_back(src);
+			break;
+		case 0x6:
+			running = false;
+			return 0;
+		case 0x7:
+			write = false;
+			if (flag.test(op.dImm)) { pc = src; break; }
+			break;
+		case 0x8:
+			write = false;
+			stack.push(pc);
+			if (op.ddMode == 0) pc = src;
+			else pc = sysFuncs[src];
+			pb = pc;
+			break;
+		case 0x9:
+			pc = stack.top();
+			stack.pop();
+			if (!stack.empty()) pb = stack.top();
+			else pb = 0;
+			break;
+		case 0xa:
+			dest += src;
+			flag.set(5, dest == 0);
+			flag.set(6, dest != 0);
+			flag.set(7, dest > 0xff);
+			break;
+		case 0xb:
+			dest *= src;
+			flag.set(5, dest == 0);
+			flag.set(6, dest != 0);
+			flag.set(7, dest > 0xff);
+			break;
+		case 0xc:
+			dest /= src;
+			flag.set(5, dest == 0);
+			flag.set(6, dest != 0);
+			flag.set(7, dest > 0xff);
+			break;
+		case 0xd:
+			write = false;
+			flag.set(0);
+			flag.set(1, dest == src);
+			flag.set(2, dest != src);
+			flag.set(3, dest < src);
+			flag.set(4, dest > src);
+			break;
+		case 0xe:
+			dest &= src;
+			break;
+		case 0xf:
+			dest = ~src;
+			break;
+		}
+
+		if (write)
+		{
+			if (op.dest == 0)
+			{
+				if (op.ddMode == 0)
+				{
+					Bytes bytes{ getBytes(op.dReg) };
+					long long* dReg{ &reg[(op.dReg & 0xc0) >> 6] };
+					unsigned char* dBytes{ (unsigned char*)dReg + (7ull - bytes.start) };
+					for (int b{ bytes.size - 1 }; b >= 0; b--)
+						*(dBytes - b) = (dest & (0xffull << (bytes.size - b - 1) * 8)) >> (bytes.size - b - 1) * 8;
+				}
+				else
+				{
+					Bytes bytes{ getBytes(op.dReg) };
+					long long val{};
+					long long rVal{ reg[(op.dReg & 0xc0) >> 6] };
+					for (int b{}; b != bytes.size; b++)
+						val |= rVal & (0xffull << (b + bytes.start));
+					if (!toDisk && !fromDisk)
+						RAM[val] = static_cast<char>(dest);
+					else if (toDisk)
+						memcpy_s(disk[val], 512, RAM + src, 512);
+					else if (fromDisk)
+						memcpy_s(RAM + val, 512, disk[src], 512);
+				}
+			}
+			else
+			{
+				if (op.ddMode == 0)
+				{
+					if (!toDisk && !fromDisk)
+						RAM[op.dImm] = static_cast<char>(dest);
+					else if (toDisk)
+						memcpy_s(disk[op.dImm], 512, RAM + src, 512);
+					else if (fromDisk)
+						memcpy_s(RAM + op.dImm, 512, disk[src], 512);
+				}
+				else
+				{
+					if (!toDisk && !fromDisk)
+						RAM[RAM[op.dImm]] = static_cast<char>(dest);
+					else if (toDisk)
+						memcpy_s(disk[RAM[op.dImm]], 512, RAM + src, 512);
+					else if (fromDisk)
+						memcpy_s(RAM + RAM[op.dImm], 512, disk[src], 512);
+				}
+			}
+		}
 	}
-	else
-		if (op.ddMode == 0) dest = &RAM[op.dImm];
-		else dest = &RAM[RAM[op.dImm]];
-			
-	switch (op.opcode)
-	{
-	case 0x00:
-		break;
-	case 0x01:
-		break;
-	case 0x02:
-		break;
-	case 0x03:
-		break;
-	case 0x04:
-		break;
-	case 0x05:
-		break;
-	case 0x06:
-		break;
-	case 0x07:
-		break;
-	case 0x08:
-		break;
-	case 0x09:
-		break;
-	case 0x0a:
-		break;
-	case 0x0b:
-		break;
-	case 0x0c:
-		break;
-	case 0x0d:
-		break;
-	case 0x0e:
-		break;
-	case 0x0f:
-		break;
-	}
+}
+
+void Lightning::quit()
+{
+	SDL_WaitThread(thread, NULL);
+	TTF_CloseFont(font);
+
+	SDL_DestroyWindow(window);
+	SDL_DestroyRenderer(renderer);
+
+	TTF_Quit();
+	SDL_Quit();
+
+	Core::mode = Core::CMD;
 }
