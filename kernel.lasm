@@ -3,7 +3,9 @@ MOV bll, 0xf000
 CALL print_string
 
 loop:
-	JMP TRUE, loop
+	CMP dlll, 0xd
+	JMP NOT_EQUAL, loop
+HALT
 
 print_string:
 	CMP [all], 0

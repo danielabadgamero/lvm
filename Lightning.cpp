@@ -89,6 +89,8 @@ void Lightning::loop()
 		switch (e.type)
 		{
 		case SDL_KEYDOWN:
+			reg[3] &= 0xffffffffffffff00;
+			reg[3] |= static_cast<unsigned char>(e.key.keysym.sym);
 			break;
 		}
 	
