@@ -1,36 +1,18 @@
 MOV all, ENTRY_MSG
+MOV bll, 0xf000
 CALL print_string
 
-JMP $
+loop:
+	JMP TRUE, loop
 
 print_string:
-	CMP all, 0
-	JMP ZERO, print_string_end
-	MOV alh, CURSOR
-	MOV CURSOR, [all]
-	ADD CURSOR, 1
-	ADD all, 1
-	JMP print_string
+	CMP [all], 0
+	JMP EQUAL, print_string_end
+	MOV [bll], [all]
+	ADD bll, 0x1
+	ADD all, 0x1
+	JMP TRUE, print_string
 print_string_end:
 	RET
 
 ENTRY_MSG: ws "Executing kernel\0"
-CURSOR: wdb 0xf000
-MOV all, ENTRY_MSG
-CALL print_string
-
-JMP $
-
-print_string:
-	CMP all, 0
-	JMP ZERO, print_string_end
-	MOV alh, CURSOR
-	MOV CURSOR, [all]
-	ADD CURSOR, 1
-	ADD all, 1
-	JMP print_string
-print_string_end:
-	RET
-
-ENTRY_MSG: ws "Executing kernel\0"
-CURSOR: wdb 0xf000

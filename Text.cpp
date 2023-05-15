@@ -17,6 +17,7 @@ void Text::init(std::ifstream& in, std::string& fName)
 {
 	name = fName;
 	std::string line{};
+	file.clear();
 	while (std::getline(in, line))
 		file.push_back(line);
 }

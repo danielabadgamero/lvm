@@ -178,12 +178,12 @@ int Lightning::loop(void*)
 			return 0;
 		case JMP:
 			write = false;
-			if (flags.test(op.dReg)) { pc = static_cast<short>(src) + pb; break; }
+			if (flags.test(op.dImm)) { pc = static_cast<short>(src); break; }
 			break;
 		case CALL:
 			write = false;
 			stack.push(pc);
-			if (op.sdMode == 0) pc = static_cast<short>(src) + pb;
+			if (op.sdMode == 0) pc = static_cast<short>(src);
 			else pc = static_cast<short>(sysFuncs[op.sImm]);
 			pb = pc;
 			break;
@@ -246,7 +246,7 @@ int Lightning::loop(void*)
 					unsigned long long val{};
 					long long rVal{ reg[(op.dReg & 0xc0) >> 6] };
 					for (int b{}; b != bytes.size; b++)
-						val |= rVal & (0xffull << (b + bytes.start));
+						val |= rVal & (0xffull << ((7 - (b + bytes.start)) * 8));
 					if (!toDisk && !fromDisk)
 						RAM[val] = static_cast<char>(dest);
 					else if (toDisk)
