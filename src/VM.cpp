@@ -70,7 +70,7 @@ void VM::execute(const std::string& command)
 		flags[always_true] = true;
 		pc++;
 
-		// std::cout << std::find_if(opcodes.begin(), opcodes.end(), [&](const std::pair<std::string, unsigned char>& p){ return p.second == OPCODE; })->first << std::endl;
+		// std::cout << std::hex << std::find_if(opcodes.begin(), opcodes.end(), [&](const std::pair<std::string, unsigned char>& p){ return p.second == OPCODE; })->first << std::endl;
 
 		switch (OPCODE)
 		{
@@ -107,7 +107,7 @@ void VM::execute(const std::string& command)
 		case SIG: Dev::devices[(dest & 0xff00) >> 8](dest & 0xff); continue;
 		case CLR: if (opByte & 1) { stack.push(pc); pc = dest; } else { pc = stack.top(); stack.pop(); } continue;
 		case JMP: if (flags[opByte & 0xf]) pc = dest; continue;
-		case NOT: DEST(~DEST_VAL); continue;
+		case NOT: DEST(~DEST_VAL) continue;
 		}
 
 		unsigned short srce{};
@@ -136,7 +136,7 @@ void VM::execute(const std::string& command)
 		case MUL: DEST(DEST_VAL * srce); flags[zero] = DEST_VAL == 0; continue;
 		case DIV: DEST(DEST_VAL / srce); flags[zero] = DEST_VAL == 0; continue;
 		case MOD: DEST(DEST_VAL % srce); flags[zero] = DEST_VAL == 0; continue;
-		case AND: DEST(DEST_VAL & srce); flags[zero] = DEST_VAL == 0; continue;
+		case AND: DEST(DEST_VAL & (srce | 0xff00)); flags[zero] = DEST_VAL == 0; continue;
 		}
 	}
 }

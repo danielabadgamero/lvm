@@ -5,11 +5,12 @@
 
 namespace Dev
 {
-	inline std::function<void(int)> devices[128]{};
+	inline std::function<void(int)> devices[256]{};
 	
-	enum Output_Dev
+	enum Device
 	{
 		CONSOLE,
+		GRAPHICS,
 	};
 
 	void init();
