@@ -1,6 +1,7 @@
 #include "Core.h"
 #include "Asm.h"
 #include "VM.h"
+#include "Dev.h"
 
 #include <sstream>
 #include <iostream>
@@ -9,12 +10,10 @@
 void Core::init()
 {
 	commands["help"] = 
-		[](const std::string& cmd)
+		[](const std::string&)
 		{
-			if (cmd.empty()) for (const auto& c : commands)
-				std::cout << c.first << std::endl;
-			else if (desc.contains(cmd)) std::cout << cmd << ": " << desc.at(cmd) << std::endl;
-			else std::cout << "Command not found" << std::endl;
+			for (const auto& c : commands)
+				std::cout << c.first << ":\t" << desc.at(c.first) << std::endl;
 		};
 	desc["help"] = "Display a list of all commands and get specific information about one";
 
@@ -60,6 +59,8 @@ void Core::init()
 			VM::loadCommands(prog_path);
 		};
 	desc["run"] = "Initialize a programme to handle further commands until it terminates";
+
+	Dev::init();
 }
 
 void Core::loop()

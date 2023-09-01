@@ -4,9 +4,10 @@
 
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 
 #define OPCODE ((opByte & 0xf0) >> 4)
-#define DEST RAM[dest]
+#define DEST(v) { if (((opByte & 0b1100) >> 2) == 3) { stack.top() = v; } else { RAM[dest] = v; } }
 
 static unsigned short nextShort()
 {
@@ -48,6 +49,12 @@ void VM::loadCommands(const std::filesystem::path& path)
 
 	bin.read((char*)RAM + 1024, size);
 
+	if (std::filesystem::exists(prog_path / "disk"))
+	{
+		std::ifstream disk_out{ (prog_path / "disk").string(), std::ios::binary };
+		disk_out.read((char*)disk, 1 << 16);
+	}
+
 	Core::executing = true;
 }
 
@@ -58,67 +65,75 @@ void VM::execute(const std::string& command)
 
 	while (running)
 	{
-		unsigned char opByte{ RAM[pc++] };
+		unsigned char opByte{ RAM[pc] };
+		flags[always_true] = true;
+		pc++;
 
 		switch (OPCODE)
 		{
-		case HLT: Core::executing = false;
-		{	for (unsigned char& b : RAM) b = 0;
-			std::ofstream disk_out{ (prog_path / "disk").string(), std::ios::binary };
-			disk_out.write((char*)disk, sizeof(disk));
-			prog_path = "";
-		}	prog_name.clear();
-			return;
-		case RET: running = false; return;
+		case HLT:
+			if ((opByte & 1) == 0)
+			{
+				Core::executing = false;
+				for (unsigned char& b : RAM) b = 0;
+				std::ofstream disk_out{ (prog_path / "disk").string(), std::ios::binary };
+				disk_out.write((char*)disk, sizeof(disk));
+				prog_path = "";
+				prog_name.clear();
+				return;
+			}
+			else running = false;
+			continue;
+		case PSP: if (opByte & 1) stack.push(0); else stack.pop(); continue;
 		}
 
 		// bit	desc
-		// 0-1	src2: imm(0) / RAM(1) / disk(2) / RAM[RAM](3)
-		// 2-3	src1: imm(0) / RAM(1) / disk(2) / RAM[RAM](3)
+		// 0-1	srce: imm(0) / RAM[stack](1) / RAM(2) / stack(3)
+		// 2-3	dest: RAM(0) / RAM[stack](1) / RAM[RAM](2) / stack(3)
 		// 4-7	opcode
 
-		unsigned short dest{ nextShort() };
-
+		unsigned short dest{};
+		if (((opByte & 4) >> 2) == 0 || OPCODE == JMP || OPCODE == SIG) dest = nextShort();
+		else dest = stack.top();
+		if (((opByte & 12) >> 2) == 2) dest = static_cast<unsigned short>(RAM[dest] << 8) | RAM[dest + 1];
+		unsigned short DEST_VAL{};
+		if (((opByte & 12) >> 2) == 3) DEST_VAL = stack.top();
+		else DEST_VAL = RAM[dest]; 
 		switch (OPCODE)
 		{
-		case JMP: pc = dest; continue;
-		case NOT: DEST = ~DEST; continue;
-		case SND: Dev::devices[(dest & 0xff00) >> 8](dest & 0xff); continue;
+		case SIG: Dev::devices[(dest & 0xff00) >> 8](dest & 0xff); continue;
+		case CLR: if (opByte & 1) { stack.push(pc); pc = dest; } else { pc = stack.top(); stack.pop(); } continue;
+		case JMP: if (flags[opByte & 0xf]) pc = dest; continue;
+		case NOT: DEST(~DEST_VAL); continue;
 		}
 
-		unsigned short src1{ nextShort() };
-		switch (opByte & 12)
-		{
-		case 1: src1 = RAM[src1]; break;
-		case 2: src1 = disk[src1]; break;
-		case 3: src1 = RAM[RAM[src1]]; break;
-		}
-
-		switch (OPCODE)
-		{
-		case STO: disk[dest] = src1; continue;
-		case MOV: DEST = src1; continue;
-		case ADD: DEST += src1; continue;
-		case SUB: DEST -= src1; continue;
-		case MUL: DEST *= src1; continue;
-		case DIV: DEST /= src1; continue;
-		case MOD: DEST %= src1; continue;
-		case AND: DEST &= src1; continue;
-		case NOR: DEST = ~(src1 | DEST); continue;
-		}
-
-		unsigned short src2{ nextShort() };
+		unsigned short srce{};
+		if ((opByte & 1) == 0) srce = nextShort();
 		switch (opByte & 3)
 		{
-		case 1: src2 = RAM[src2]; break;
-		case 2: src2 = disk[src2]; break;
-		case 3: src2 = RAM[RAM[src2]]; break;
+		case 1: srce = static_cast<unsigned short>(RAM[stack.top()] << 8) | RAM[stack.top() + 1]; break;
+		case 2: srce = static_cast<unsigned short>(RAM[srce] << 8) | RAM[srce + 1]; break;
+		case 3: srce = stack.top(); break;
 		}
-
 		switch (OPCODE)
 		{
-		case JGT: if (src1 > src2) pc = dest; continue;
-		case JEQ: if (src1 == src2) pc = dest; continue;
+		case SET: if (((opByte & 12) >> 2) == 3) disk[stack.top()] = srce; else disk[static_cast<unsigned short>(RAM[dest] << 8) | RAM[dest + 1]] = srce; continue;
+		case GET: DEST(disk[srce]) continue;
+		case MOV: DEST(srce) continue;
+		case CMP:
+			flags[equal] = DEST_VAL == srce;
+			flags[not_equal] = DEST_VAL != srce;
+			flags[greater] = DEST_VAL > srce;
+			flags[greater_equal] = DEST_VAL >= srce;
+			flags[lower] = DEST_VAL < srce;
+			flags[lower_equal] = DEST_VAL <= srce;
+			continue;
+		case ADD: DEST(DEST_VAL + srce); flags[zero] = DEST_VAL == 0; continue;
+		case SUB: DEST(DEST_VAL - srce); flags[zero] = DEST_VAL == 0; continue;
+		case MUL: DEST(DEST_VAL * srce); flags[zero] = DEST_VAL == 0; continue;
+		case DIV: DEST(DEST_VAL / srce); flags[zero] = DEST_VAL == 0; continue;
+		case MOD: DEST(DEST_VAL % srce); flags[zero] = DEST_VAL == 0; continue;
+		case AND: DEST(DEST_VAL & srce); flags[zero] = DEST_VAL == 0; continue;
 		}
 	}
 }
