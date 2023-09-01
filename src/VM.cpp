@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #define OPCODE ((opByte & 0xf0) >> 4)
-#define DEST(v) { if (((opByte & 0b1100) >> 2) == 3) { stack.top() = v; } else { RAM[dest] = v; } }
+#define DEST(v) { if (((opByte & 0b1100) >> 2) == 3) { stack.top() = v; } else { RAM[dest] = (v); } }
 
 static unsigned short nextShort()
 {
@@ -34,6 +34,7 @@ void VM::loadCommands(const std::filesystem::path& path)
 			unsigned short address{};
 			sym.read((char*)(&address), 2);
 			commands[command] = address;
+			command.clear();
 		}
 		else command.push_back(byte);
 	}
@@ -68,6 +69,8 @@ void VM::execute(const std::string& command)
 		unsigned char opByte{ RAM[pc] };
 		flags[always_true] = true;
 		pc++;
+
+		// std::cout << std::find_if(opcodes.begin(), opcodes.end(), [&](const std::pair<std::string, unsigned char>& p){ return p.second == OPCODE; })->first << std::endl;
 
 		switch (OPCODE)
 		{
@@ -111,8 +114,8 @@ void VM::execute(const std::string& command)
 		if ((opByte & 1) == 0) srce = nextShort();
 		switch (opByte & 3)
 		{
-		case 1: srce = static_cast<unsigned short>(RAM[stack.top()] << 8) | RAM[stack.top() + 1]; break;
-		case 2: srce = static_cast<unsigned short>(RAM[srce] << 8) | RAM[srce + 1]; break;
+		case 1: srce = RAM[stack.top()]; break;
+		case 2: srce = RAM[srce]; break;
 		case 3: srce = stack.top(); break;
 		}
 		switch (OPCODE)

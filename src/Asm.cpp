@@ -65,6 +65,7 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 					case 'n': words.back().push_back('\n'); break;
 					case 't': words.back().push_back('\t'); break;
 					case 'b': words.back().push_back('\b'); break;
+					case '0': words.back().push_back('\0'); break;
 					default: words.back().push_back(*c); break;
 					}
 				else if ((*c == ' ' || *c == '\t') && !words.back().empty()) words.push_back("");
@@ -82,11 +83,23 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 				out.push_back(static_cast<unsigned char>(parseBytes(words[1])));
 				continue;
 			}
+			else if (words[0] == "ws")
+			{
+				for (const char& c : words[1]) { out.push_back(c); }
+				pc += words[1].size();
+				continue;
+			}
 
 			std::string suffix{};
 			if (words[0].size() > 3) suffix = words[0].substr(3);
 			unsigned char suffix_bits{};
 			if (!suffix.empty()) suffix_bits = static_cast<unsigned char>(std::stoi(suffix, nullptr, 2));
+
+			if (!VM::opcodes.contains(words[0].substr(0, 3)))
+			{
+				std::cout << "Unknown opcode: \"" << words[0].substr(0, 3) << "\" (" << lineNum << ')' << std::endl;
+				return;
+			}
 
 			unsigned char opcode{ VM::opcodes.at(words[0].substr(0, 3)) };
 			unsigned char opByte{ static_cast<unsigned char>(opcode << 4) };
@@ -113,6 +126,7 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 				{
 				case '@': if (suffix.empty()) { suffix_bits = 0b1000; } sym_ref.emplace(pc, words[1].substr(2)); pc += 2; hasDest = true; break;
 				case '^': if (suffix.empty()) { suffix_bits = 0b0100; } break;
+				case '#': hasDest = true; pc += 2; dest = parseBytes(words[1].substr(2)); break;
 				default: sym_ref.emplace(pc, words[1].substr(1)); pc += 2; hasDest = true;
 				} break;
 			case '^': if (suffix.empty()) suffix_bits = 0b1100; break;
@@ -164,20 +178,15 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 
 	for (const auto& ref : sym_ref)
 	{
+		if (!sym_def.contains(ref.second))
+		{
+			std::cout << "Undefined symbol: \"" << ref.second << "\" (" << ref.first << ')' << std::endl;
+			return;
+		}
 		unsigned short val{ static_cast<unsigned short>(sym_def.at(ref.second) + static_cast<unsigned short>(1024)) };
 		out.at(ref.first) = (val & 0xff00) >> 8;
 		out.at(ref.first + 1) = val & 0xff;
 	}
-
-	std::cout << "Symbol definitions:" << std::hex << std::endl;
-	for (const auto& s : sym_def)
-		std::cout << s.first << ' ' << s.second << std::endl;
-	std::cout << "\nSymbol references:" << std::endl;
-	for (const auto& s : sym_ref)
-		std::cout << s.first << ' ' << s.second << std::endl;
-	std::cout << "\nCommand definitions:" << std::endl;
-	for (const auto& c : command_def)
-		std::cout << c.first << ' ' << c.second << std::endl;
 
 	std::ofstream bin{ (prog_path / (prog_name + ".bin")).string(), std::ios::binary | std::ios::trunc };
 	std::ofstream sym{ (prog_path / (prog_name + ".sym")).string(), std::ios::binary | std::ios::trunc };
