@@ -70,7 +70,7 @@ void VM::execute(const std::string& command)
 		flags[always_true] = true;
 		pc++;
 
-		// std::cout << std::hex << std::find_if(opcodes.begin(), opcodes.end(), [&](const std::pair<std::string, unsigned char>& p){ return p.second == OPCODE; })->first << std::endl;
+		// std::cout << std::hex << pc << ' ' << std::find_if(opcodes.begin(), opcodes.end(), [&](const std::pair<std::string, unsigned char>& p){ return p.second == OPCODE; })->first << std::endl;
 
 		switch (OPCODE)
 		{

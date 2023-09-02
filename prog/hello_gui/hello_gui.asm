@@ -2,6 +2,13 @@
 	PSP1
 	MOV ^ title
 	CLR1 write_string
+	SUB ^ title
+	ADD ^ #1
+	MOV @^ #0
+	ADD ^ #1
+	MOV @^ #0
+	ADD ^ #1
+	MOV @^ #0
 	PSP
 	SIG #0x0100
 loop:
@@ -10,6 +17,37 @@ loop:
 	SIG #0x0103
 	CMP @#0 #1
 	JMP0001 end
+
+	PSP1
+	MOV ^ title
+	CLR1 write_string
+	SUB ^ title
+
+	ADD ^ #1
+	MOV @^ #0
+
+	ADD @counter #1
+	CMP @counter #0x7f
+	JMP0010 next
+	MOV @counter #0
+	ADD @x-pos #1
+
+next:
+	ADD ^ #1
+	MOV @^ @x-pos
+
+	ADD ^ #1
+	MOV @^ #0x7f
+
+	ADD ^ #1
+	MOV @^ #1
+
+	ADD ^ #1
+	MOV @^ #1
+
+	SIG #0x0105
+	PSP
+
 	JMP loop
 end:
 	SIG #0x0104
@@ -17,11 +55,17 @@ end:
 
 title:
 	ws Hello,\ World!\0
+counter:
+	wb 0x00
+x-pos:
+	wb 0x00
 
 .exit:
 	HLT
 
 write_string:
+	MOV @ws_addr #0
+	MOV @ws_addr+1 #0
 	MOV @ws_pc+1 ^
 	DIV ^ #256
 	MOV @ws_pc ^
