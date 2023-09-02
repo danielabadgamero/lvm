@@ -231,7 +231,7 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 		}
 		unsigned short val{ static_cast<unsigned short>(global_def.at(ref.second) + 1024) };
 		bin.at(ref.first) = (val & 0xff00) >> 8;
-		bin.at(ref.first + 1) = val = 0xff;
+		bin.at(ref.first + 1) = val & 0xff;
 	}
 
 	std::ofstream out{ (prog_path / "bin").string(), std::ios::binary | std::ios::trunc };
