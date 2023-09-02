@@ -7,9 +7,11 @@
 
 namespace Asm
 {
-	inline std::unordered_map<std::string, int> command_def{};
-	inline std::unordered_map<std::string, unsigned short> sym_def{};
-	inline std::unordered_map<unsigned short, std::string> sym_ref{};
+	inline std::unordered_map<std::string, unsigned short> command_def{};
+	inline std::unordered_map<std::string, unsigned short> global_def{};
+	inline std::unordered_map<unsigned short, std::string> global_ref{};
+
+	inline unsigned short pc{};
 
 	void assemble(const std::filesystem::path&);
 }

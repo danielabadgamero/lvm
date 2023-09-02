@@ -20,7 +20,7 @@ void VM::loadCommands(const std::filesystem::path& path)
 {
 	prog_path = path;
 	prog_name = prog_path.filename();
-	std::filesystem::path sym_path{ prog_path / (prog_name + ".sym") };
+	std::filesystem::path sym_path{ prog_path / "sym" };
 	std::ifstream sym{ sym_path.string(), std::ios::binary };
 
 	char byte{};
@@ -39,7 +39,7 @@ void VM::loadCommands(const std::filesystem::path& path)
 		else command.push_back(byte);
 	}
 
-	std::filesystem::path bin_path{ prog_path / (prog_name + ".bin") };
+	std::filesystem::path bin_path{ prog_path / "bin" };
 	std::ifstream bin{ bin_path.string(), std::ios::binary };
 	size_t size{ std::filesystem::file_size(bin_path) };
 	if (size > ((1 << 16) - 1024))
@@ -105,7 +105,7 @@ void VM::execute(const std::string& command)
 		switch (OPCODE)
 		{
 		case SIG: Dev::devices[(dest & 0xff00) >> 8](dest & 0xff); continue;
-		case CLR: if (opByte & 1) { stack.push(pc); pc = dest; } else { pc = stack.top(); stack.pop(); } continue;
+		case CLR: if (opByte & 1) { call_stack.push(pc); pc = dest; } else { pc = call_stack.top(); call_stack.pop(); } continue;
 		case JMP: if (flags[opByte & 0xf]) pc = dest; continue;
 		case NOT: DEST(~DEST_VAL) continue;
 		}

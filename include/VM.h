@@ -71,6 +71,7 @@ namespace VM
 	inline std::filesystem::path prog_path{};
 	inline std::string prog_name{};
 	inline std::stack<unsigned short> stack{};
+	inline std::stack<unsigned short> call_stack{};
 
 	void loadCommands(const std::filesystem::path&);
 	void execute(const std::string&);
