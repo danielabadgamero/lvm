@@ -112,6 +112,7 @@ namespace Graphics
 			if (l.second.alignX) rect.x -= rect.w / 2;
 			if (l.second.alignY) rect.y -= rect.h / 2;
 			SDL_RenderCopy(renderer, t, NULL, &rect);
+			SDL_DestroyTexture(t);
 		}
 
 		SDL_RenderPresent(renderer);
@@ -120,6 +121,10 @@ namespace Graphics
 	void get_state()
 	{
 		VM::RAM[0] = windowShouldClose;
+		int numKeys{};
+		const Uint8* keystate{ SDL_GetKeyboardState(&numKeys) };
+		for (int i{}; i != numKeys - 1; i++)
+			VM::RAM[i + 1] = keystate[i + 1];
 	}
 
 	void quit()

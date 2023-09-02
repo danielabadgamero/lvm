@@ -67,7 +67,7 @@ void Core::loop()
 {
 	while (running)
 	{
-		std::cout << "> ";
+		std::cout << VM::prog_name << "> ";
 		std::string input{};
 		std::getline(std::cin, input);
 		std::stringstream line{ input };
