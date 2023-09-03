@@ -1,5 +1,5 @@
 _print_string:
-	CLR1 clear_buffer
+	CAL clear_buffer
 	MOV @addr #0
 	MOV @addr+1 #0
 print_string_loop:
@@ -15,11 +15,11 @@ add:
 	JMP print_string_loop
 print_string_end:
 	SIG #0x0002
-	PSP
-	CLR
+	POP #0xffff
+	RET
 
 clear_buffer:
-	PSP1
+	PSH #0
 clear_buffer_loop:
 	CMP ^ #1024
 	JMP0001 clear_buffer_end
@@ -27,8 +27,8 @@ clear_buffer_loop:
 	ADD ^ #1
 	JMP clear_buffer_loop
 clear_buffer_end:
-	PSP
-	CLR
+	POP #0xffff
+	RET
 
 addr:
 	wb 0x00

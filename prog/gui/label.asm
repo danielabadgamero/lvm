@@ -1,16 +1,11 @@
 _render_label:
-	MOV @aligny ^
-	PSP
-	MOV @alignx ^
-	PSP
-	MOV @y-pos ^
-	PSP
-	MOV @x-pos ^
-	PSP
-	MOV @id ^
-	PSP
-	CLR1 _write_string
-	ADD ^ #1
+	POP @aligny		; Get the arguments (in reverse order!)
+	POP @alignx
+	POP @y-pos
+	POP @x-pos
+	POP @id
+	CAL _write_string	; Write the text of the label to first bytes in RAM
+	ADD ^ #1		; Fill in the other parameters
 	MOV @^ @id
 	ADD ^ #1
 	MOV @^ @x-pos
@@ -20,8 +15,8 @@ _render_label:
 	MOV @^ @alignx
 	ADD ^ #1
 	MOV @^ @aligny
-	SIG #0x0105
-	CLR
+	SIG #0x0105		; And tell the graphics device to create / modify the (existing) label
+	RET
 
 id:
 	wb 0x00

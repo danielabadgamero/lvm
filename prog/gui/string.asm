@@ -19,7 +19,7 @@ end:
 	NOT @addr+1		; NOT B
 	AND ^ @addr+1		; NOT A AND NOT B
 	NOT ^			; NOT (NOT A AND NOT B)
-	CLR			; Return to the calling address
+	RET			; Return to the calling address
 
 addr:
 	wb 0x00

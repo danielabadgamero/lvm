@@ -5,19 +5,13 @@ _render_loop:
 	CMP @#0 #1			; Check for windowShouldClose
 	SIG #0x0106			; Get input text
 	JMP0001 render_loop_end		; If true, end loop
-	PSP1				; Start filling the stack with function parameters
-	MOV ^ #0			; A pointer to the text of the label
-	PSP1
-	MOV ^ #0			; The id of the label
-	PSP1
-	MOV ^ #0x7f			; The position in x direction
-	PSP1
-	MOV ^ #0x7f			; The position in y direction
-	PSP1
-	MOV ^ #1			; The label should be x-aligned
-	PSP1
-	MOV ^ #1			; The label should be y-aligned
-	CLR1 _render_label		; Call the label rendering function
+	PSH #0				; Start filling the stack with function parameters, first a pointer to the text of the label
+	PSH #0				; The id of the label
+	PSH #0x7f			; The position in x direction
+	PSH #0x7f			; The position in y direction
+	PSH #1				; The label should be x-aligned
+	PSH #1				; The label should be y-aligned
+	CAL _render_label		; Call the label rendering function
 	JMP _render_loop		; Jump back again
 render_loop_end:
-	CLR				; Jump back to calling address
+	RET				; Jump back to calling address

@@ -50,12 +50,6 @@ void VM::loadCommands(const std::filesystem::path& path)
 
 	bin.read((char*)RAM + 1024, size);
 
-	if (std::filesystem::exists(prog_path / "disk"))
-	{
-		std::ifstream disk_out{ (prog_path / "disk").string(), std::ios::binary };
-		disk_out.read((char*)disk, 1 << 16);
-	}
-
 	Core::executing = true;
 }
 
@@ -79,15 +73,16 @@ void VM::execute(const std::string& command)
 			{
 				Core::executing = false;
 				for (unsigned char& b : RAM) b = 0;
-				std::ofstream disk_out{ (prog_path / "disk").string(), std::ios::binary };
-				disk_out.write((char*)disk, sizeof(disk));
 				prog_path = "";
 				prog_name.clear();
 				return;
 			}
 			else running = false;
 			continue;
-		case PSP: if (opByte & 1) stack.push(0); else stack.pop(); continue;
+		case RET:
+			pc = call_stack.top();
+			call_stack.pop();
+			continue;
 		}
 
 		// bit	desc
@@ -96,7 +91,7 @@ void VM::execute(const std::string& command)
 		// 4-7	opcode
 
 		unsigned short dest{};
-		if (((opByte & 4) >> 2) == 0 || OPCODE == JMP || OPCODE == SIG) dest = nextShort();
+		if (((opByte & 4) >> 2) == 0 || OPCODE == JMP || OPCODE == SIG || OPCODE == CAL || OPCODE == PSH || OPCODE == POP) dest = nextShort();
 		else dest = stack.top();
 		if (((opByte & 12) >> 2) == 2) dest = static_cast<unsigned short>(RAM[dest] << 8) | RAM[dest + 1];
 		unsigned short DEST_VAL{};
@@ -104,8 +99,10 @@ void VM::execute(const std::string& command)
 		else DEST_VAL = RAM[dest]; 
 		switch (OPCODE)
 		{
+		case CAL: call_stack.push(pc); pc = dest; continue;
+		case PSH: stack.push(dest); continue;
+		case POP: DEST(stack.top()) stack.pop(); continue;
 		case SIG: Dev::devices[(dest & 0xff00) >> 8](dest & 0xff); continue;
-		case CLR: if (opByte & 1) { call_stack.push(pc); pc = dest; } else { pc = call_stack.top(); call_stack.pop(); } continue;
 		case JMP: if (flags[opByte & 0xf]) pc = dest; continue;
 		case NOT: DEST(~DEST_VAL) continue;
 		}
@@ -120,8 +117,6 @@ void VM::execute(const std::string& command)
 		}
 		switch (OPCODE)
 		{
-		case SET: if (((opByte & 12) >> 2) == 3) disk[stack.top()] = srce; else disk[static_cast<unsigned short>(RAM[dest] << 8) | RAM[dest + 1]] = srce; continue;
-		case GET: DEST(disk[srce]) continue;
 		case MOV: DEST(srce) continue;
 		case CMP:
 			flags[equal] = DEST_VAL == srce;

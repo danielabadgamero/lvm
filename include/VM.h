@@ -14,11 +14,11 @@ namespace VM
 	{
 		//	arg1	arg2
 		HLT,//	----	----
-		CLR,//	dest	----
-		PSP,//	----	----
+		CAL,//	dest	----
+		RET,//	----	----
+		PSH,//	dest	----
+		POP,//	dest	----
 		SIG,//	dest	----
-		SET,//	dest	srce
-		GET,//	dest	srce
 		MOV,//	dest	srce
 		CMP,//	dest	srce
 		JMP,//	dest	----
@@ -34,11 +34,11 @@ namespace VM
 	inline std::unordered_map<std::string, unsigned char> opcodes
 	{
 		{ "HLT", 0 },
-		{ "CLR", 1 },
-		{ "PSP", 2 },
-		{ "SIG", 3 },
-		{ "SET", 4 },
-		{ "GET", 5 },
+		{ "CAL", 1 },
+		{ "RET", 2 },
+		{ "PSH", 3 },
+		{ "POP", 4 },
+		{ "SIG", 5 },
 		{ "MOV", 6 },
 		{ "CMP", 7 },
 		{ "JMP", 8 },
