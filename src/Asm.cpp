@@ -112,74 +112,67 @@ static std::vector<unsigned char> compile(const std::filesystem::path& file)
 				continue;
 			}
 
-			// bit  desc
-			// 0-1  srce: imm(0) / RAM[stack](1) / RAM(2) / stack(3)
-			// 2-3  dest: RAM(0) / RAM[stack](1) / RAM[RAM](2) / stack(3)
-			// 4-7  opcode
+			// bit	desc
+			// 0	srce and dest: 1 byte (0) / 2 bytes (1)
+			// 1-2	srce: imm(0) / RAM(1) / RAM[RAM](2)
+			// 3	dest: RAM(0) / RAM[RAM](1)
+			// 4-7	opcode
 
 			unsigned short dest{};
-			bool hasDest{};
 			switch (words[1][0])
 			{
 			case '@':
 				switch (words[1][1])
 				{
 				case '@':
-					if (words[1][2] == '_') { if (suffix.empty()) { suffix_bits = 0b1000; } Asm::global_ref.emplace(Asm::pc, words[1].substr(3)); Asm::pc += 2; hasDest = true; }
-					else { if (suffix.empty()) { suffix_bits = 0b1000; } local_ref.emplace(Asm::pc, words[1].substr(2)); Asm::pc += 2; hasDest = true; }
+					if (words[1][2] == '_') { suffix_bits |= 0b1000; Asm::global_ref.emplace(Asm::pc, words[1].substr(3)); }
+					else { suffix_bits |= 0b1000; local_ref.emplace(Asm::pc, words[1].substr(2)); }
 					break;
-				case '^': if (suffix.empty()) { suffix_bits = 0b0100; } break;
-				case '#': hasDest = true; Asm::pc += 2; dest = parseBytes(words[1].substr(2)); break;
-				case '_': Asm::global_ref.emplace(Asm::pc, words[1].substr(2)); Asm::pc += 2; hasDest = true; break;
-				default: local_ref.emplace(Asm::pc, words[1].substr(1)); Asm::pc += 2; hasDest = true;
+				case '#': dest = parseBytes(words[1].substr(2)); break;
+				case '_': Asm::global_ref.emplace(Asm::pc, words[1].substr(2)); break;
+				default: local_ref.emplace(Asm::pc, words[1].substr(1));
 				} break;
-			case '^': if (suffix.empty()) suffix_bits = 0b1100; break;
-			case '#': hasDest = true; Asm::pc += 2; dest = parseBytes(words[1].substr(1)); break;
-			case '_': Asm::global_ref.emplace(Asm::pc, words[1].substr(1)); Asm::pc += 2; hasDest = true; break;
-			default: local_ref.emplace(Asm::pc, words[1]); Asm::pc += 2; hasDest = true;
+			case '#': dest = parseBytes(words[1].substr(1)); break;
+			case '_': Asm::global_ref.emplace(Asm::pc, words[1].substr(1)); break;
+			default: local_ref.emplace(Asm::pc, words[1]);
 			}
+			Asm::pc += 2;
 
-			if (suffix.empty()) opByte |= suffix_bits;
+			opByte |= suffix_bits;
 			if (words.size() == 2)
 			{
 				out.push_back(opByte);
-				if (hasDest)
-				{
-					out.push_back((dest & 0xff00) >> 8);
-					out.push_back(dest & 0xff);
-				}
+				out.push_back((dest & 0xff00) >> 8);
+				out.push_back(dest & 0xff);
 				continue;
 			}
 
 			unsigned short srce{};
-			bool hasSrce{};
 			switch (words[2][0])
 			{
-			case '#': srce = parseBytes(words[2].substr(1)); hasSrce = true; Asm::pc += 2; break;
+			case '#': srce = parseBytes(words[2].substr(1)); break;
 			case '@':
 				switch (words[2][1])
 				{
-				case '^': if (suffix.empty()) { suffix_bits |= 0b0001; } break;
-				case '#': if (suffix.empty()) { suffix_bits |= 0b0010; } hasSrce = true; Asm::pc += 2; srce = parseBytes(words[2].substr(2)); break;
-				case '_': if (suffix.empty()) { suffix_bits |= 0b0010; } hasSrce = true; Asm::global_ref.emplace(Asm::pc, words[2].substr(2)); Asm::pc += 2; break;
-				default: if (suffix.empty()) { suffix_bits |= 0b0010; } hasSrce = true; local_ref.emplace(Asm::pc, words[2].substr(1)); Asm::pc += 2;
+				case '@':
+					if (words[2][2] == '_') { suffix_bits |= 0b0100; Asm::global_ref.emplace(Asm::pc, words[2].substr(3)); }
+					else { suffix_bits |= 0b0100; local_ref.emplace(Asm::pc, words[2].substr(2)); }
+					break;
+				case '#': suffix_bits |= 0b0010; srce = parseBytes(words[2].substr(2)); break;
+				case '_': suffix_bits |= 0b0010; Asm::global_ref.emplace(Asm::pc, words[2].substr(2)); break;
+				default: suffix_bits |= 0b0010; local_ref.emplace(Asm::pc, words[2].substr(1));
 				} break;
-			case '^': if (suffix.empty()) { suffix_bits |= 0b0011; } break;
-			case '_': hasSrce = true; Asm::global_ref.emplace(Asm::pc, words[2].substr(1)); Asm::pc += 2; break;
-			default: hasSrce = true; local_ref.emplace(Asm::pc, words[2]); Asm::pc += 2;
+			case '_': Asm::global_ref.emplace(Asm::pc, words[2].substr(1)); break;
+			default: local_ref.emplace(Asm::pc, words[2]);
 			}
-			if (suffix.empty()) opByte |= suffix_bits;
+			Asm::pc += 2;
+
+			opByte |= suffix_bits;
 			out.push_back(opByte);
-			if (hasDest)
-			{
-				out.push_back((dest & 0xff00) >> 8);
-				out.push_back(dest & 0xff);
-			}
-			if (hasSrce)
-			{
-				out.push_back((srce & 0xff00) >> 8);
-				out.push_back(srce & 0xff);
-			}
+			out.push_back((dest & 0xff00) >> 8);
+			out.push_back(dest & 0xff);
+			out.push_back((srce & 0xff00) >> 8);
+			out.push_back(srce & 0xff);
 		}
 	}
 

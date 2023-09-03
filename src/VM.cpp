@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #define OPCODE ((opByte & 0xf0) >> 4)
-#define DEST(v) { if (((opByte & 0b1100) >> 2) == 3) { stack.top() = v; } else { RAM[dest] = (v); } }
 
 static unsigned short nextShort()
 {
@@ -53,6 +52,47 @@ void VM::loadCommands(const std::filesystem::path& path)
 	Core::executing = true;
 }
 
+static unsigned short getSource(unsigned char opByte, unsigned short srce)
+{
+	unsigned short res{};
+
+	switch (opByte & 0b110)
+	{
+	case 0b000: res = srce; break;
+	case 0b010:
+		if (opByte & 1) res = (VM::RAM[srce] << 8) | VM::RAM[srce + 1];
+		else res = VM::RAM[srce];
+		break;
+	case 0b100:
+		res = (VM::RAM[srce] << 8) | VM::RAM[srce + 1];
+		if (opByte & 1) res = (VM::RAM[res] << 8) | VM::RAM[res + 1];
+		else res = VM::RAM[res];
+		break;
+	}
+
+	return res;
+}
+
+static void writeDest(unsigned short opByte, unsigned short dest, unsigned short srce)
+{
+	unsigned short addr{ dest };
+	if (opByte & 0b1000) addr = (VM::RAM[addr] << 8) | VM::RAM[addr + 1];
+	if (opByte & 1)
+	{
+		VM::RAM[addr] = (srce & 0xff00) >> 8;
+		VM::RAM[addr + 1] = srce & 0xff;
+	}
+	else VM::RAM[addr] = srce;
+}
+
+static unsigned short getDest(unsigned short opByte, unsigned short dest)
+{
+	unsigned short val{ dest };
+	if (opByte & 0b1000) val = (VM::RAM[val] << 8) | VM::RAM[val + 1];
+	if (opByte & 1) return (VM::RAM[val] << 8) | VM::RAM[val + 1];
+	else return VM::RAM[val];
+}
+
 void VM::execute(const std::string& command)
 {
 	pc = commands[command];
@@ -64,7 +104,7 @@ void VM::execute(const std::string& command)
 		flags[always_true] = true;
 		pc++;
 
-		// std::cout << std::hex << pc << ' ' << std::find_if(opcodes.begin(), opcodes.end(), [&](const std::pair<std::string, unsigned char>& p){ return p.second == OPCODE; })->first << std::endl;
+		// std::cout << std::hex << pc - 1 << ' ' << std::find_if(opcodes.begin(), opcodes.end(), [&](const std::pair<std::string, unsigned char>& p){ return p.second == OPCODE; })->first << std::endl;
 
 		switch (OPCODE)
 		{
@@ -86,52 +126,42 @@ void VM::execute(const std::string& command)
 		}
 
 		// bit	desc
-		// 0-1	srce: imm(0) / RAM[stack](1) / RAM(2) / stack(3)
-		// 2-3	dest: RAM(0) / RAM[stack](1) / RAM[RAM](2) / stack(3)
+		// 0	srce and dest: 1 byte (0) / 2 bytes (1)
+		// 1-2	srce: imm(0) / RAM(1) / RAM[RAM](2)
+		// 3	dest: RAM(0) / RAM[RAM](1)
 		// 4-7	opcode
 
-		unsigned short dest{};
-		if (((opByte & 4) >> 2) == 0 || OPCODE == JMP || OPCODE == SIG || OPCODE == CAL || OPCODE == PSH || OPCODE == POP) dest = nextShort();
-		else dest = stack.top();
-		if (((opByte & 12) >> 2) == 2) dest = static_cast<unsigned short>(RAM[dest] << 8) | RAM[dest + 1];
-		unsigned short DEST_VAL{};
-		if (((opByte & 12) >> 2) == 3) DEST_VAL = stack.top();
-		else DEST_VAL = RAM[dest]; 
+		unsigned short dest{ nextShort() };
 		switch (OPCODE)
 		{
 		case CAL: call_stack.push(pc); pc = dest; continue;
-		case PSH: stack.push(dest); continue;
-		case POP: DEST(stack.top()) stack.pop(); continue;
+		case PSH: stack.push(getSource(opByte, dest)); continue;
+		case POP: writeDest(opByte, dest, stack.top()); stack.pop(); continue;
 		case SIG: Dev::devices[(dest & 0xff00) >> 8](dest & 0xff); continue;
 		case JMP: if (flags[opByte & 0xf]) pc = dest; continue;
-		case NOT: DEST(~DEST_VAL) continue;
+		case NOT: writeDest(opByte, dest, ~getDest(opByte, dest)); continue;
 		}
 
-		unsigned short srce{};
-		if ((opByte & 1) == 0) srce = nextShort();
-		switch (opByte & 3)
-		{
-		case 1: srce = RAM[stack.top()]; break;
-		case 2: srce = RAM[srce]; break;
-		case 3: srce = stack.top(); break;
-		}
+		unsigned short srce{ nextShort() };
+		srce = getSource(opByte, srce);
+		unsigned short destVal{ getDest(opByte, dest) };
 		switch (OPCODE)
 		{
-		case MOV: DEST(srce) continue;
+		case MOV: writeDest(opByte, dest, srce); continue;
 		case CMP:
-			flags[equal] = DEST_VAL == srce;
-			flags[not_equal] = DEST_VAL != srce;
-			flags[greater] = DEST_VAL > srce;
-			flags[greater_equal] = DEST_VAL >= srce;
-			flags[lower] = DEST_VAL < srce;
-			flags[lower_equal] = DEST_VAL <= srce;
+			flags[equal] = destVal == srce;
+			flags[not_equal] = destVal != srce;
+			flags[greater] = destVal > srce;
+			flags[greater_equal] = destVal >= srce;
+			flags[lower] = destVal < srce;
+			flags[lower_equal] = destVal <= srce;
 			continue;
-		case ADD: DEST(DEST_VAL + srce); flags[zero] = DEST_VAL == 0; continue;
-		case SUB: DEST(DEST_VAL - srce); flags[zero] = DEST_VAL == 0; continue;
-		case MUL: DEST(DEST_VAL * srce); flags[zero] = DEST_VAL == 0; continue;
-		case DIV: DEST(DEST_VAL / srce); flags[zero] = DEST_VAL == 0; continue;
-		case MOD: DEST(DEST_VAL % srce); flags[zero] = DEST_VAL == 0; continue;
-		case AND: DEST(DEST_VAL & (srce | 0xff00)); flags[zero] = DEST_VAL == 0; continue;
+		case ADD: writeDest(opByte, dest, destVal + srce); flags[zero] = destVal == 0; continue;
+		case SUB: writeDest(opByte, dest, destVal - srce); flags[zero] = destVal == 0; continue;
+		case MUL: writeDest(opByte, dest, destVal * srce); flags[zero] = destVal == 0; continue;
+		case DIV: writeDest(opByte, dest, destVal / srce); flags[zero] = destVal == 0; continue;
+		case MOD: writeDest(opByte, dest, destVal % srce); flags[zero] = destVal == 0; continue;
+		case AND: writeDest(opByte, dest, destVal & srce); flags[zero] = destVal == 0; continue;
 		}
 	}
 }

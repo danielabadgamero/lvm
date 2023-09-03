@@ -16,7 +16,7 @@ namespace VM
 		HLT,//	----	----
 		CAL,//	dest	----
 		RET,//	----	----
-		PSH,//	dest	----
+		PSH,//	srce	----
 		POP,//	dest	----
 		SIG,//	dest	----
 		MOV,//	dest	srce
