@@ -51,6 +51,7 @@ namespace Graphics
 	inline bool windowShouldClose{ true };
 	inline TTF_Font* font{};
 	inline SDL_DisplayMode screen{};
+	inline std::string buffer{};
 
 	struct Label
 	{
@@ -65,6 +66,7 @@ namespace Graphics
 	void init()
 	{
 		SDL_Init(SDL_INIT_EVERYTHING);
+		SDL_StartTextInput();
 		TTF_Init();
 		SDL_GetCurrentDisplayMode(0, &screen);
 		window = SDL_CreateWindow((char*)VM::RAM, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen.w, screen.h, SDL_WINDOW_BORDERLESS);
@@ -93,6 +95,17 @@ namespace Graphics
 			{
 			case SDL_QUIT:
 				windowShouldClose = true;
+				break;
+			case SDL_TEXTINPUT:
+				buffer.append(e.text.text);
+				break;
+			case SDL_KEYDOWN:
+				switch (e.key.keysym.scancode)
+				{
+				case SDL_SCANCODE_BACKSPACE: if (!buffer.empty()) buffer.pop_back(); break;
+				case SDL_SCANCODE_RETURN: buffer.clear(); break;
+				default: break;
+				}
 				break;
 			}
 	}
@@ -129,6 +142,7 @@ namespace Graphics
 
 	void quit()
 	{
+		SDL_StopTextInput();
 		TTF_CloseFont(font);
 		SDL_DestroyRenderer(renderer);
 		SDL_DestroyWindow(window);
@@ -155,6 +169,12 @@ namespace Graphics
 		labels[id] = label;
 	}
 
+	void text_input()
+	{
+		for (size_t i{}; i != 1024 && i != buffer.size(); i++)
+			VM::RAM[i] = buffer[i];
+	}
+
 	void map(int func)
 	{
 		switch (func)
@@ -165,6 +185,7 @@ namespace Graphics
 		case 0x03: get_state(); break;
 		case 0x04: quit(); break;
 		case 0x05: create_label(); break;
+		case 0x06: text_input(); break;
 		}
 	}
 }
