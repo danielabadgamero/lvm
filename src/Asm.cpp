@@ -94,6 +94,7 @@ static std::vector<unsigned char> compile(const std::filesystem::path& file)
 				unsigned short num{ parseBytes(words[1]) };
 				Asm::pc += num;
 				for (unsigned short i{}; i != num; i++) out.push_back(0);
+				continue;
 			}
 
 			std::string suffix{};
@@ -130,13 +131,9 @@ static std::vector<unsigned char> compile(const std::filesystem::path& file)
 			case '@':
 				switch (words[1][1])
 				{
-				case '@':
-					if (words[1][2] == '_') { suffix_bits |= 0b1000; Asm::global_ref.emplace(Asm::pc, words[1].substr(3)); }
-					else { suffix_bits |= 0b1000; local_ref.emplace(Asm::pc, words[1].substr(2)); }
-					break;
 				case '#': dest = parseBytes(words[1].substr(2)); break;
-				case '_': Asm::global_ref.emplace(Asm::pc, words[1].substr(2)); break;
-				default: local_ref.emplace(Asm::pc, words[1].substr(1));
+				case '_': suffix_bits |= 0b1000; Asm::global_ref.emplace(Asm::pc, words[1].substr(2)); break;
+				default: suffix_bits |= 0b1000; local_ref.emplace(Asm::pc, words[1].substr(1));
 				} break;
 			case '#': dest = parseBytes(words[1].substr(1)); break;
 			case '_': Asm::global_ref.emplace(Asm::pc, words[1].substr(1)); break;
@@ -189,7 +186,7 @@ static std::vector<unsigned char> compile(const std::filesystem::path& file)
 			std::cout << "Undefined symbol: \"" << ref.second << "\" (" << ref.first << ", " << file.filename() << ')' << std::endl;
 			return {};
 		}
-		unsigned short val{ static_cast<unsigned short>(local_def.at(ref.second) + 1024) };
+		unsigned short val{ local_def.at(ref.second) };
 		out.at(ref.first - offset) = (val & 0xff00) >> 8;
 		out.at(ref.first + 1 - offset) = val & 0xff;
 	}
@@ -206,6 +203,8 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 	std::unordered_set<std::string> files{};
 
 	for (const std::filesystem::directory_entry& d : std::filesystem::directory_iterator(prog_path))
+		if (d.path().extension() == ".asm") files.emplace(d.path().string());
+	for (const std::filesystem::directory_entry& d : std::filesystem::directory_iterator("./prog/llib"))
 		if (d.path().extension() == ".asm") files.emplace(d.path().string());
 
 	std::vector<unsigned char> bin{};
@@ -228,7 +227,7 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 			std::cout << "Undefined symbol: \"" << ref.second << "\" (" << ref.first << ')' << std::endl;
 			return;
 		}
-		unsigned short val{ static_cast<unsigned short>(global_def.at(ref.second) + 1024) };
+		unsigned short val{ global_def.at(ref.second) };
 		bin.at(ref.first) = (val & 0xff00) >> 8;
 		bin.at(ref.first + 1) = val & 0xff;
 	}
@@ -239,7 +238,6 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 	out.write((char*)bin.data(), bin.size());
 	for (auto& c : command_def)
 	{
-		c.second += 1024;
 		sym.write(c.first.c_str(), c.first.size());
 		char sep[1]{ ':' };
 		sym.write(sep, 1);

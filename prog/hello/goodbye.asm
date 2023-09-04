@@ -1,7 +1,7 @@
 .goodbye:
-	PSH goodbye_msg		; Push the address of 'goodbye_msg' to the stack
-	CAL _print_string	; Print the message
-	HLT			; Terminate execution and exit the programme
+	PSH goodbye_msg
+	CAL _print_string
+	HLT
 
 goodbye_msg:
-	ws Goodbye!\0
+	ws Goodbye!\n\0

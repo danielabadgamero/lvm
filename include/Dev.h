@@ -5,14 +5,8 @@
 
 namespace Dev
 {
-	inline std::function<void(int)> devices[256]{};
+	inline std::function<void(unsigned shot, unsigned short)> devices[4][4]{};
 	
-	enum Device
-	{
-		CONSOLE,
-		GRAPHICS,
-	};
-
 	void init();
 }
 

@@ -7,45 +7,19 @@
 
 namespace Console
 {
-	void print_char()
+	void print_char(unsigned short, unsigned short c)
 	{
-		std::cout << VM::RAM[0] << std::flush;
+		std::cout << (char)c << std::flush;
 	}
 
-	void print_string()
+	void get_char(unsigned short, unsigned short addr)
 	{
-		std::cout << VM::RAM << std::flush;
-	}
-
-	void print_stringln()
-	{
-		std::cout << VM::RAM << std::endl;
-	}
-	
-	void new_line()
-	{
-		std::cout << std::endl;
-	}
-
-	void get_char()
-	{
-		std::cin.get((char*)(VM::RAM))
-	}
-
-	void map(int func)
-	{
-		switch (func)
-		{
-		case 0x00: print_char(); break;
-		case 0x01: print_string(); break;
-		case 0x02: print_stringln(); break;
-		case 0x03: new_line(); break;
-		case 0x04: get_char(); break;
-		}
+		std::cin.get((char&)VM::RAM[addr]);
 	}
 }
 
 void Dev::init()
 {
-	devices[CONSOLE] = Console::map;
+	devices[0][0] = Console::print_char;
+	devices[0][1] = Console::get_char;
 }

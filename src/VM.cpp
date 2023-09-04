@@ -41,13 +41,13 @@ void VM::loadCommands(const std::filesystem::path& path)
 	std::filesystem::path bin_path{ prog_path / "bin" };
 	std::ifstream bin{ bin_path.string(), std::ios::binary };
 	size_t size{ std::filesystem::file_size(bin_path) };
-	if (size > ((1 << 16) - 1024))
+	if (size > (1 << 16))
 	{
 		std::cout << "Programme is too big" << std::endl;
 		return;
 	}
 
-	bin.read((char*)RAM + 1024, size);
+	bin.read((char*)RAM, size);
 
 	Core::executing = true;
 }
@@ -123,6 +123,10 @@ void VM::execute(const std::string& command)
 			pc = call_stack.top();
 			call_stack.pop();
 			continue;
+		case SET:
+			dev = (opByte & 0b1100) >> 2;
+			fun = opByte & 0b11;
+			continue;
 		}
 
 		// bit	desc
@@ -137,7 +141,6 @@ void VM::execute(const std::string& command)
 		case CAL: call_stack.push(pc); pc = dest; continue;
 		case PSH: stack.push(getSource(opByte, dest)); continue;
 		case POP: writeDest(opByte, dest, stack.top()); stack.pop(); continue;
-		case SIG: Dev::devices[(dest & 0xff00) >> 8](dest & 0xff); continue;
 		case JMP: if (flags[opByte & 0xf]) pc = dest; continue;
 		case NOT: writeDest(opByte, dest, ~getDest(opByte, dest)); continue;
 		}
@@ -147,6 +150,7 @@ void VM::execute(const std::string& command)
 		unsigned short destVal{ getDest(opByte, dest) };
 		switch (OPCODE)
 		{
+		case SIG: Dev::devices[dev][fun](destVal, srce); continue;
 		case MOV: writeDest(opByte, dest, srce); continue;
 		case CMP:
 			flags[equal] = destVal == srce;
@@ -160,7 +164,6 @@ void VM::execute(const std::string& command)
 		case SUB: writeDest(opByte, dest, destVal - srce); flags[zero] = destVal == 0; continue;
 		case MUL: writeDest(opByte, dest, destVal * srce); flags[zero] = destVal == 0; continue;
 		case DIV: writeDest(opByte, dest, destVal / srce); flags[zero] = destVal == 0; continue;
-		case MOD: writeDest(opByte, dest, destVal % srce); flags[zero] = destVal == 0; continue;
 		case AND: writeDest(opByte, dest, destVal & srce); flags[zero] = destVal == 0; continue;
 		}
 	}
