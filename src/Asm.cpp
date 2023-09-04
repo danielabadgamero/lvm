@@ -85,9 +85,15 @@ static std::vector<unsigned char> compile(const std::filesystem::path& file)
 			}
 			else if (words[0] == "ws")
 			{
-				for (const char& c : words[1]) { out.push_back(c); }
+				for (const char& c : words[1]) out.push_back(c);
 				Asm::pc += words[1].size();
 				continue;
+			}
+			else if (words[0] == "rb")
+			{
+				unsigned short num{ parseBytes(words[1]) };
+				Asm::pc += num;
+				for (unsigned short i{}; i != num; i++) out.push_back(0);
 			}
 
 			std::string suffix{};
