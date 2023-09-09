@@ -1,7 +1,7 @@
-.hello:
+_main:
 	PSH hello_msg
 	CAL _print_string
-	HLT1
+	HLT
 
 hello_msg:
 	ws Hello,\ World!\n\0

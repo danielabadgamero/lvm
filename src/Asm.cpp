@@ -41,9 +41,6 @@ static std::vector<unsigned char> compile(const std::filesystem::path& file)
 		bool code{};
 		switch (line[0])
 		{
-		case '.':
-			Asm::command_def.emplace(line.substr(1, line.size() - 2), Asm::pc);
-			break;
 		case '_':
 			Asm::global_def.emplace(line.substr(1, line.size() - 2), Asm::pc);
 			break;
@@ -199,7 +196,6 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 	pc = 0;
 	global_ref.clear();
 	global_def.clear();
-	command_def.clear();
 	std::unordered_set<std::string> files{};
 
 	for (const std::filesystem::directory_entry& d : std::filesystem::directory_iterator(prog_path))
@@ -236,11 +232,11 @@ void Asm::assemble(const std::filesystem::path& prog_path)
 	std::ofstream sym{ (prog_path / "sym").string(), std::ios::binary | std::ios::trunc };
 
 	out.write((char*)bin.data(), bin.size());
-	for (auto& c : command_def)
+
+	if (!global_def.contains("main"))
 	{
-		sym.write(c.first.c_str(), c.first.size());
-		char sep[1]{ ':' };
-		sym.write(sep, 1);
-		sym.write((char*)(&c.second), 2);
+		std::cout << "Enty point not defined (did you define \"_main\"?)" << std::endl;
+		return;
 	}
+	sym.write((char*)(&global_def.at("main")), 2);
 }

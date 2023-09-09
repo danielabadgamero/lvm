@@ -7,12 +7,12 @@
 
 namespace Console
 {
-	void print_char(unsigned short, unsigned short c)
+	void print_char(unsigned short c)
 	{
 		std::cout << (char)c << std::flush;
 	}
 
-	void get_char(unsigned short, unsigned short addr)
+	void get_char(unsigned short addr)
 	{
 		std::cin.get((char&)VM::RAM[addr]);
 	}

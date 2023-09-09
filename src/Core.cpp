@@ -49,14 +49,13 @@ void Core::init()
 	commands["run"] =
 		[](const std::string& prog)
 		{
-			VM::commands.clear();
 			const std::filesystem::path prog_path{ "./prog/" + prog };
 			if (!std::filesystem::exists(prog_path))
 			{
 				std::cout << "Programme does not exist" << std::endl;
 				return;
 			}
-			VM::loadCommands(prog_path);
+			VM::loadProgramme(prog_path);
 		};
 	desc["run"] = "Initialize a programme to handle further commands until it terminates";
 
@@ -76,16 +75,8 @@ void Core::loop()
 		std::getline(line, cmd, ' ');
 		std::getline(line, arg, ' ');
 		
-		if (executing)
-		{
-			if (VM::commands.contains(cmd)) VM::execute(cmd);
-			else std::cout << "Unregistered command" << std::endl;
-		}
-		else
-		{
-			if (commands.contains(cmd)) commands.at(cmd)(arg);
-			else std::cout << "Unknown command" << std::endl;
-		}
+		if (commands.contains(cmd)) commands.at(cmd)(arg);
+		else std::cout << "Unknown command" << std::endl;
 	}
 }
 
