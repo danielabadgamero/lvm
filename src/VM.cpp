@@ -15,28 +15,10 @@ static unsigned short nextShort()
 	return next;
 }
 
-void VM::loadCommands(const std::filesystem::path& path)
+void VM::loadProgramme(const std::filesystem::path& path)
 {
 	prog_path = path;
 	prog_name = prog_path.filename();
-	std::filesystem::path sym_path{ prog_path / "sym" };
-	std::ifstream sym{ sym_path.string(), std::ios::binary };
-
-	char byte{};
-	std::string command{};
-	while (!sym.eof())
-	{
-		sym.read(&byte, 1);
-		if (sym.eof()) break;
-		if (byte == ':')
-		{
-			unsigned short address{};
-			sym.read((char*)(&address), 2);
-			commands[command] = address;
-			command.clear();
-		}
-		else command.push_back(byte);
-	}
 
 	std::filesystem::path bin_path{ prog_path / "bin" };
 	std::ifstream bin{ bin_path.string(), std::ios::binary };
@@ -49,7 +31,11 @@ void VM::loadCommands(const std::filesystem::path& path)
 
 	bin.read((char*)RAM, size);
 
-	Core::executing = true;
+	std::filesystem::path sym_path{ prog_path / "sym" };
+	std::ifstream sym{ sym_path.string(), std::ios::binary };
+	sym.read((char*)(&pc), 2);
+
+	execute();
 }
 
 static unsigned short getSource(unsigned char opByte, unsigned short srce)
@@ -93,10 +79,9 @@ static unsigned short getDest(unsigned short opByte, unsigned short dest)
 	else return VM::RAM[val];
 }
 
-void VM::execute(const std::string& command)
+void VM::execute()
 {
-	pc = commands[command];
-	running = true;
+	bool running = true;
 
 	while (running)
 	{
@@ -109,23 +94,15 @@ void VM::execute(const std::string& command)
 		switch (OPCODE)
 		{
 		case HLT:
-			if ((opByte & 1) == 0)
-			{
-				Core::executing = false;
-				for (unsigned char& b : RAM) b = 0;
-				prog_path = "";
-				prog_name.clear();
-				return;
-			}
-			else running = false;
+			Core::executing = false;
+			for (unsigned char& b : RAM) b = 0;
+			prog_path = "";
+			prog_name.clear();
+			return;
 			continue;
 		case RET:
 			pc = call_stack.top();
 			call_stack.pop();
-			continue;
-		case SET:
-			dev = (opByte & 0b1100) >> 2;
-			fun = opByte & 0b11;
 			continue;
 		}
 
@@ -150,7 +127,7 @@ void VM::execute(const std::string& command)
 		unsigned short destVal{ getDest(opByte, dest) };
 		switch (OPCODE)
 		{
-		case SIG: Dev::devices[dev][fun](destVal, srce); continue;
+		case SIG: Dev::devices[(dest & 0xff00) >> 8][dest & 0xff](srce); continue;
 		case MOV: writeDest(opByte, dest, srce); continue;
 		case CMP:
 			flags[equal] = destVal == srce;
@@ -164,6 +141,7 @@ void VM::execute(const std::string& command)
 		case SUB: writeDest(opByte, dest, destVal - srce); flags[zero] = destVal == 0; continue;
 		case MUL: writeDest(opByte, dest, destVal * srce); flags[zero] = destVal == 0; continue;
 		case DIV: writeDest(opByte, dest, destVal / srce); flags[zero] = destVal == 0; continue;
+		case MOD: writeDest(opByte, dest, destVal % srce); flags[zero] = destVal == 0; continue;
 		case AND: writeDest(opByte, dest, destVal & srce); flags[zero] = destVal == 0; continue;
 		}
 	}

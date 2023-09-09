@@ -5,7 +5,7 @@
 
 namespace Dev
 {
-	inline std::function<void(unsigned shot, unsigned short)> devices[4][4]{};
+	inline std::function<void(unsigned shot)> devices[0xff][0xff]{};
 	
 	void init();
 }

@@ -7,7 +7,6 @@
 
 namespace Asm
 {
-	inline std::unordered_map<std::string, unsigned short> command_def{};
 	inline std::unordered_map<std::string, unsigned short> global_def{};
 	inline std::unordered_map<unsigned short, std::string> global_ref{};
 

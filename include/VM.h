@@ -8,8 +8,6 @@
 
 namespace VM
 {
-	inline std::unordered_map<std::string, unsigned short> commands{};
-
 	enum Opcode
 	{
 		//	arg1	arg2
@@ -19,7 +17,6 @@ namespace VM
 		PSH,//	srce	----
 		POP,//	dest	----
 		SIG,//	dest	srce
-		SET,//	----	----
 		MOV,//	dest	srce
 		CMP,//	dest	srce
 		JMP,//	dest	----
@@ -27,6 +24,7 @@ namespace VM
 		SUB,//	dest	srce
 		MUL,//	dest	srce
 		DIV,//	dest	srce
+		MOD,//	dest	srce
 		AND,//	dest	srce
 		NOT,//	dest	----
 	};
@@ -39,13 +37,13 @@ namespace VM
 		{ "PSH", 3 },
 		{ "POP", 4 },
 		{ "SIG", 5 },
-		{ "SET", 6 },
-		{ "MOV", 7 },
-		{ "CMP", 8 },
-		{ "JMP", 9 },
-		{ "ADD", 10 },
-		{ "SUB", 11 },
-		{ "MUL", 12 },
+		{ "MOV", 6 },
+		{ "CMP", 7 },
+		{ "JMP", 8 },
+		{ "ADD", 9 },
+		{ "SUB", 10 },
+		{ "MUL", 11 },
+		{ "MOD", 12 },
 		{ "DIV", 13 },
 		{ "AND", 14 },
 		{ "NOT", 15 },
@@ -66,17 +64,14 @@ namespace VM
 	inline unsigned short pc{};
 	inline unsigned char RAM[1 << 16]{};
 	inline unsigned char disk[1 << 16]{};
-	inline bool running{};
 	inline bool flags[8]{};
 	inline std::filesystem::path prog_path{};
 	inline std::string prog_name{};
 	inline std::stack<unsigned short> stack{};
 	inline std::stack<unsigned short> call_stack{};
-	inline unsigned char dev{};
-	inline unsigned char fun{};
 
-	void loadCommands(const std::filesystem::path&);
-	void execute(const std::string&);
+	void loadProgramme(const std::filesystem::path&);
+	void execute();
 }
 
 #endif
