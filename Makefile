@@ -1,10 +1,12 @@
-SRC = $(wildcard src/*.cpp)
-OBJ = $(patsubst src/%.cpp,obj/%.o,$(SRC))
+SRC = $(wildcard src/*.c)
+OBJ = $(patsubst src/%.c,obj/%.o,$(SRC))
 
-FLAGS = -Wall -Wextra -Werror -std=c++20 -g
+EXE = lvm
 
-bin: $(OBJ)
-	g++ $^ -o $@ $(FLAGS)
+FLAGS = -Wall -Wextra -Werror -g
 
-obj/%.o: src/%.cpp
-	g++ -c -Iinclude $^ -o $@ $(FLAGS)
+$(EXE): $(OBJ)
+	gcc $^ -o $@ $(FLAGS)
+
+obj/%.o: src/%.c
+	gcc -c -Iinclude $^ -o $@ $(FLAGS)
