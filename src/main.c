@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
 			while (running) lvm_exec();
 			lvm_quit();
 		}
-		else if (strcmp(argv[1], "build") == 0)
+		else if (strcmp(argv[1], "asm") == 0)
 		{
 			asm_build(argv[2]);
 		}
