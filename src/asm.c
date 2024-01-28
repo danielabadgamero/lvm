@@ -1,5 +1,5 @@
 #include "asm.h"
-65;7400;1c#include <stdio.h>
+#include <stdio.h>
 #include <string.h>
 #include <dirent.h>
 #include <stdlib.h>
